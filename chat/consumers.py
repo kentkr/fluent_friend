@@ -19,6 +19,18 @@ class ChatConsumer(WebsocketConsumer):
             },
         )
 
+        # We will later replace this call with a celery task that will
+        # use a Python library called ChatterBot to generate an automated
+        # response to a user's input.
+        async_to_sync(self.channel_layer.send)(
+            self.channel_name,
+            {
+                "type": "chat.message",
+                "text": {"msg": "Bot says hello", "source": "bot"},
+            },
+        )
+
     def chat_message(self, event):
+        #text = event["text"]
         text = event["text"]
         self.send(text_data=json.dumps({"text": text}))
