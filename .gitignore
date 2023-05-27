@@ -133,3 +133,6 @@ dmypy.json
 media/
 mediafiles/
 staticfiles/
+
+# tmp file
+tmp.py
