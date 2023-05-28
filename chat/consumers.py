@@ -1,36 +1,26 @@
 import json
 
 from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 
-from .tasks import get_response, gpt_response, gpt_correction
+from .tasks import get_gpt_response, get_gpt_correction
 
-class ChatConsumer(WebsocketConsumer):
-    def receive(self, text_data):
-        text_data_json = json.loads(text_data)
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def receive(self, text_data):
+        # convert json to string
+        message = json.loads(text_data)['text']
+        # add to user message
+        user_dict = {'text':{'msg':message, 'source':'user'}}
+        # immediately send to frontend
+        await self.send(text_data=json.dumps(user_dict))
 
-        message_response = gpt_response(text_data_json['text'])
-        correction_response = gpt_correction(text_data_json['text'])
+        # get chat gpt response
+        gpt_r = await get_gpt_response(message)
+        # bot dict
+        bot_dict = {'text':{'msg':gpt_r, 'source':'bot'}}
+        await self.send(text_data=json.dumps(bot_dict))
 
-        # send user message to front end
-        async_to_sync(self.channel_layer.send)(
-            self.channel_name,
-            {
-                "type": "chat_message",
-                "text": {"msg": text_data_json["text"], "source": "user"},
-            },
-        )
+        # get correction - dont do aything with it yet
+        gpt_correction = await get_gpt_correction(message)
+        print(gpt_correction)
 
-        # send chat gpt response to frontend
-        async_to_sync(self.channel_layer.send)(
-            self.channel_name,
-            {
-                "type": "chat.message",
-                "text": {"msg": message_response, "source": "bot"},
-            },
-        )
-
-    def chat_message(self, event):
-        #text = event["text"]
-        text = event["text"]
-        self.send(text_data=json.dumps({"text": text}))

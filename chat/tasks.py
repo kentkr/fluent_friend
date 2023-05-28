@@ -12,21 +12,7 @@ import openai
 from decouple import config
 
 @shared_task
-def get_response(channel_name, input_data):
-    chatterbot = ChatBot(**settings.CHATTERBOT)
-    response = chatterbot.get_response(input_data)
-    response_data = response.serialize()
-
-    async_to_sync(channel_layer.send)(
-        channel_name,
-        {
-            "type": "chat.message",
-            "text": {"msg": response_data["text"], "source": "bot"},
-        },
-    )
-
-@shared_task
-def gpt_response(message):
+async def get_gpt_response(message):
 
     ## auth open ai
     #openai.api_key = config('open_ai_key')
@@ -65,7 +51,7 @@ def remedy_corrections(original_message, corrected_message):
     return corrections
 
 @shared_task
-def gpt_correction(message):
+async def get_gpt_correction(message):
 
     ## auth open ai
     #openai.api_key = config('open_ai_key')
