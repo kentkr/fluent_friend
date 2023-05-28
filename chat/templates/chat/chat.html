@@ -33,6 +33,24 @@
   chatSocket.onopen = function (e) {
     document.querySelector("#chat-header").innerHTML =
       "Welcome to Django Chatbot";
+    // copied from below to create intro message
+    messages.push({'msg' : "Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation.", 'source' : 'bot'})
+    var str = '<ul class="space-y-2">';
+    console.log(messages)
+    messages.forEach(function (msg) {
+      str += `<li class="flex ${
+        msg.source == "bot" ? "justify-start" : "justify-end"
+      }">
+      <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md
+        ${
+          msg.source == "bot"
+            ? "text-gray-700 bg-white border border-gray-200"
+            : "bg-blue-600 text-white"
+        }">
+        <span className="block font-normal">${msg.msg}</span></div></li>`;
+    });
+    str += "</ul>";
+    document.querySelector("#chat-log").innerHTML = str;
   };
 
   chatSocket.onmessage = function (e) {
@@ -41,6 +59,7 @@
     messages.push(message);
 
     var str = '<ul class="space-y-2">';
+    console.log(messages)
     messages.forEach(function (msg) {
       str += `<li class="flex ${
         msg.source == "bot" ? "justify-start" : "justify-end"
