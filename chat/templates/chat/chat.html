@@ -3,8 +3,7 @@
   <h1 class="text-3xl tracking-tight font-light" id="chat-header"></h1>
   <div
     class="mt-4 w-full relative p-6 overflow-y-auto h-[30rem] bg-gray-50 border border-gray-200"
-    id="chat-box"
-  >
+    id="chat-box">
     <ul class="space-y-2" id="chat-log">
     </ul>
   </div>
@@ -56,26 +55,16 @@
       "Welcome to Django Chatbot";
     // copied from below to create intro message
     messages.push({'msg' : "Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation.", 'source' : 'bot'})
-    str = ''
-    messages.forEach(function (msg) {
-        str += create_message_container(msg)
-        console.log(str)
-    });
-    document.querySelector("#chat-log").innerHTML = str;
+
+    var message = {'msg' : "Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation.", 'source' : 'bot'}
+    document.querySelector("#chat-log").innerHTML += create_message_container(message);
   };
 
   chatSocket.onmessage = function (e) {
     var data = JSON.parse(e.data);
     var message = data["text"];
-    messages.push(message);
 
-    var str = ''
-    console.log(str)
-    messages.forEach(function (msg) {
-        str += create_message_container(msg)
-    });
-    console.log(str)
-    document.querySelector("#chat-log").innerHTML = str;
+    document.querySelector("#chat-log").innerHTML += create_message_container(message);
   };
 
   chatSocket.onclose = function (e) {
