@@ -1,4 +1,10 @@
 {% extends 'base.html' %} {% block body %}
+<style>
+  .line_separator {
+    border-top: 2px solid #0D47A1;
+  }
+</style>
+
 <div class="p-6 w-full">
   <h1 class="text-3xl tracking-tight font-light" id="chat-header"></h1>
   <div
@@ -45,6 +51,9 @@
             `<li class="flex ${start_end_val}"> 
             <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md ${color}">
             <span className="block font-normal">${msg.msg}</span>
+            <div class="line_separator">
+            <span className="block font-normal">${msg.msg}</span>
+</div>
             </div></li>`
 
         return container
