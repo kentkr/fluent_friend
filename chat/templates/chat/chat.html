@@ -42,18 +42,22 @@
         if (msg.source == 'bot'){
             var start_end_val = 'justify-start'
             var color = 'text-gray-700 bg-white border border-gray-200'
+            var separator = ''
+            var correction = ''
+
         } else if (msg.source == 'user') {
             var start_end_val = 'justify-end'
             var color = "bg-blue-600 text-white"
+            var separator = '<div class="line_separator"></div>'
+            var correction = `<span className="block font-normal">${msg.correction}</span>`
         }
 
         const container = 
             `<li class="flex ${start_end_val}"> 
             <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md ${color}">
             <span className="block font-normal">${msg.msg}</span>
-            <div class="line_separator">
-            <span className="block font-normal">${msg.msg}</span>
-</div>
+            ${separator}
+            ${correction}
             </div></li>`
 
         return container
