@@ -53,8 +53,6 @@
   chatSocket.onopen = function (e) {
     document.querySelector("#chat-header").innerHTML =
       "Welcome to Django Chatbot";
-    // copied from below to create intro message
-    messages.push({'msg' : "Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation.", 'source' : 'bot'})
 
     var message = {'msg' : "Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation.", 'source' : 'bot'}
     document.querySelector("#chat-log").innerHTML += create_message_container(message);
