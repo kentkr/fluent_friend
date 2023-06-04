@@ -2,9 +2,12 @@
 <div class="p-6 w-full">
   <h1 class="text-3xl tracking-tight font-light" id="chat-header"></h1>
   <div
-    id="chat-log"
     class="mt-4 w-full relative p-6 overflow-y-auto h-[30rem] bg-gray-50 border border-gray-200"
-  ></div>
+    id="chat-box"
+  >
+    <ul class="space-y-2" id="chat-log">
+    </ul>
+  </div>
   <div class="mt-4 in-line flex">
     <input
       id="chat-message-input"
@@ -30,26 +33,34 @@
   );
   var messages = [];
 
+    function create_message_container (msg){
+        if (msg.source == 'bot'){
+            var start_end_val = 'justify-start'
+            var color = 'text-gray-700 bg-white border border-gray-200'
+        } else if (msg.source == 'user') {
+            var start_end_val = 'justify-end'
+            var color = "bg-blue-600 text-white"
+        }
+
+        const container = 
+            `<li class="flex ${start_end_val}"> 
+            <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md ${color}">
+            <span className="block font-normal">${msg.msg}</span>
+            </div></li>`
+
+        return container
+    }
+
   chatSocket.onopen = function (e) {
     document.querySelector("#chat-header").innerHTML =
       "Welcome to Django Chatbot";
     // copied from below to create intro message
     messages.push({'msg' : "Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation.", 'source' : 'bot'})
-    var str = '<ul class="space-y-2">';
-    console.log(messages)
+    str = ''
     messages.forEach(function (msg) {
-      str += `<li class="flex ${
-        msg.source == "bot" ? "justify-start" : "justify-end"
-      }">
-      <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md
-        ${
-          msg.source == "bot"
-            ? "text-gray-700 bg-white border border-gray-200"
-            : "bg-blue-600 text-white"
-        }">
-        <span className="block font-normal">${msg.msg}</span></div></li>`;
+        str += create_message_container(msg)
+        console.log(str)
     });
-    str += "</ul>";
     document.querySelector("#chat-log").innerHTML = str;
   };
 
@@ -58,21 +69,12 @@
     var message = data["text"];
     messages.push(message);
 
-    var str = '<ul class="space-y-2">';
-    console.log(messages)
+    var str = ''
+    console.log(str)
     messages.forEach(function (msg) {
-      str += `<li class="flex ${
-        msg.source == "bot" ? "justify-start" : "justify-end"
-      }">
-      <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md
-        ${
-          msg.source == "bot"
-            ? "text-gray-700 bg-white border border-gray-200"
-            : "bg-blue-600 text-white"
-        }">
-        <span className="block font-normal">${msg.msg}</span></div></li>`;
+        str += create_message_container(msg)
     });
-    str += "</ul>";
+    console.log(str)
     document.querySelector("#chat-log").innerHTML = str;
   };
 
