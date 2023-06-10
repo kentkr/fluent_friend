@@ -46,26 +46,25 @@
   );
   var messages = [];
 
-    function create_message_container (msg){
-        console.log(msg)
-        if (msg.source == 'bot'){
+    function create_message_container (message, source, message_id){
+        if (source == 'bot'){
             var start_end_val = 'justify-start'
             var color = 'text-gray-700 bg-white border border-gray-200'
             var separator = ''
             var correction = ''
 
-        } else if (msg.source == 'user') {
+        } else if (source == 'user') {
             var start_end_val = 'justify-end'
             var color = "bg-blue-600 text-white"
             var separator = '<div class="line_separator"></div>'
-            var correction = `<span className="block font-normal">${msg.correction}</span>`
+            var correction = `<span className="block font-normal">place holder</span>`
             //var correction = `<span className="block font-normal">${msg.correction}</span>`
         }
 
         const container = 
             `<li class="flex ${start_end_val}"> 
             <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md ${color}">
-            <span className="block font-normal">${msg.msg}</span>
+            <span className="block font-normal">${message}</span>
             ${separator}
             ${correction}
             </div></li>`
@@ -77,15 +76,21 @@
     document.querySelector("#chat-header").innerHTML =
       "Welcome to Django Chatbot";
 
-    var message = {'msg' : "Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation.", 'source' : 'bot'}
-    document.querySelector("#chat-log").innerHTML += create_message_container(message);
+    var message = "Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation."
+    var source = 'bot'
+    var message_id = 0
+    document.querySelector("#chat-log").innerHTML += create_message_container(message, 'bot', message_id);
   };
 
   chatSocket.onmessage = function (e) {
+    //console.log(e)
     var data = JSON.parse(e.data);
-    var message = data["text"];
+    console.log(data)
 
-    document.querySelector("#chat-log").innerHTML += create_message_container(message);
+    var message = data["message"];
+    console.log(message)
+
+    document.querySelector("#chat-log").innerHTML += create_message_container(data['message'], data['source'], data['message_id']);
   };
 
   chatSocket.onclose = function (e) {

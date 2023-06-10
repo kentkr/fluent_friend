@@ -17,14 +17,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def send_user_message(self, message, message_id):
         # add to user message
-        user_dict = json.dumps({'text':{'msg':message, 'source':'user', 'correction':None}})
+        user_dict = json.dumps({'message':message, 'source':'user', 'id':message_id})
         await self.send(text_data=user_dict)
 
     async def send_gpt_message(self, message, message_id):
         response = await get_gpt_response(message)
-        bot_dict = json.dumps({'text':{'msg':response + '1', 'source':'bot', 'correction': None}})
+        bot_dict = json.dumps({'message':response + '1', 'source':'bot', 'id':message_id})
         await self.send(text_data=bot_dict)
         await asyncio.sleep(2)
-        bot_dict = json.dumps({'text':{'msg':response + '2', 'source':'bot', 'correction': None}})
+        bot_dict = json.dumps({'message':response + '2', 'source':'bot', 'id':message_id})
         await self.send(text_data=bot_dict)
 
