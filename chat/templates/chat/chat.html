@@ -47,6 +47,7 @@
   var messages = [];
 
     function create_message_container (msg){
+        console.log(msg)
         if (msg.source == 'bot'){
             var start_end_val = 'justify-start'
             var color = 'text-gray-700 bg-white border border-gray-200'
@@ -58,6 +59,7 @@
             var color = "bg-blue-600 text-white"
             var separator = '<div class="line_separator"></div>'
             var correction = `<span className="block font-normal">${msg.correction}</span>`
+            //var correction = `<span className="block font-normal">${msg.correction}</span>`
         }
 
         const container = 
@@ -98,12 +100,17 @@
     }
   };
 
+    // define how many messages sent for ids
+    var message_count = 0
   document.querySelector("#chat-message-submit").onclick = function (e) {
     var messageInputDom = document.querySelector("#chat-message-input");
+    message_count += 1
+    console.log(message_count)
     var message = messageInputDom.value;
     chatSocket.send(
       JSON.stringify({
-        text: message,
+        message: message,
+        message_id: message_count
       })
     );
 
