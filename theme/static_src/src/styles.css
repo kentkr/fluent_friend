@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 @layer utilities {
   .animation-delay-200 {
     animation-delay: 0.2s;
@@ -12,5 +13,5 @@
 }
 
 .circle {
-  @apply w-4 h-4 my-12 mx-1 bg-gray-500 rounded-full;
+  @apply w-2 h-2 my-12 mx-1 bg-gray-500 rounded-full;
 }
