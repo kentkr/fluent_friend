@@ -30,14 +30,6 @@
   </div>
 </div>
 
-<div class="p-6 w-full">
-<div class="flex justify-center">
-  <span class="circle animate-loader"></span>
-  <span class="circle animate-loader animation-delay-200"></span>
-  <span class="circle animate-loader animation-delay-400"></span>
-</div>
-</div>
-
 {% endblock %} {% block scripts%}
 <script>
   var wss_protocol = window.location.protocol == "https:" ? "wss://" : "ws://";
@@ -166,18 +158,6 @@
         console.log('updating')
         update_gpt_message(data['message'], data['source'], data['message_id'])
     }
-
-    //message_element = document.getElementById(id)
-
-    //// get message element, if exists update it with response
-    //if (message_element !== null) {
-    //    console.log(message_element)
-    //    message_element.textContent = data['message']
-    //// else add it to list with ellipsis
-    //} else {
-    //    console.log('No exist yet')
-    //    document.querySelector("#chat-log").innerHTML += create_message_container(data['message'], data['source'], data['message_id']);
-    //}
 
   };
 

@@ -49,8 +49,8 @@ module.exports = {
             keyframes: {
                 loader: {
                     to: {
-                        opacity: 0.1,
-                        transform: 'translate3d(0, -1rem, 0)'
+                        opacity: 0.5,
+                        transform: 'translate3d(0, -.25rem, 0)'
                     }
                 }
             }

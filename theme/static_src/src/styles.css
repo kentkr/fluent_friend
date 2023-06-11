@@ -13,5 +13,5 @@
 }
 
 .circle {
-  @apply w-2 h-2 my-12 mx-1 bg-gray-500 rounded-full;
+  @apply w-1 h-1 mt-2 mb-1 mx-1 bg-black rounded-full;
 }
