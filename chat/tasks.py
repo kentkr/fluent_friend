@@ -26,7 +26,7 @@ async def get_gpt_response(message):
     response_json = await async_chat_creation(
         model = 'gpt-3.5-turbo',
         messages = [
-            {"role": "system", "content": 'Have a conversation in the language of the user'},
+            {"role": "system", "content": 'Have a conversation in the language of the message.'},
             {"role": "user", "content": message},
         ],
         n = 1,
@@ -67,12 +67,12 @@ async def get_gpt_correction(message):
     response_json = await async_chat_creation(
         model = 'gpt-3.5-turbo',
         messages = [
-            {"role": "system", "content": 'Correct this message in one line'},
+            {"role": "system", "content": 'Correct this message. Keep it very simple. Only correct grammar and spelling.'},
             {"role": "user", "content": message},
         ],
         n = 1,
         max_tokens = 100,
-        temperature = .1,
+        temperature = .4,
     )
     corrected_message = response_json['choices'][0]['message']['content']
     print(f"Correction: {corrected_message}")
