@@ -67,12 +67,13 @@ async def get_gpt_correction(message):
     response_json = await async_edit_creation(
         model="text-davinci-edit-001",
         input=message,
-        instruction="Repeat this phrase verbatim but fix grammar and spelling",
-        temperature=0.1,
-        top_p=1
+        instruction="Correct for spelling , grammar, and accent mistakes.",
+        temperature=1,
+        top_p=.3
     )
 
     corrected_message = response_json['choices'][0]['text']
+    print(f'Corrected message: {corrected_message}')
     #corrected_message = 'Corrected message'
     corrections = remedy_corrections(message, corrected_message)
 

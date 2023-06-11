@@ -12,7 +12,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.message_history = []
 
         data = json.loads(text_data)
-        print(data)
 
         # add message history here so gpt always gets user message
         self.message_history += [{'role': 'user', 'content': data['message']}]
