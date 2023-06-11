@@ -52,19 +52,21 @@
             var color = 'text-gray-700 bg-white border border-gray-200'
             var separator = ''
             var correction = ''
+            var id = `${source}-${message_id}`
 
         } else if (source == 'user') {
             var start_end_val = 'justify-end'
             var color = "bg-blue-600 text-white"
             var separator = '<div class="line_separator"></div>'
-            var correction = `<span className="block font-normal">place holder</span>`
+            var correction = `<span id=${id} className="block font-normal">place holder</span>`
+            var id = `${source}-${message_id}`
             //var correction = `<span className="block font-normal">${msg.correction}</span>`
         }
 
         const container = 
             `<li class="flex ${start_end_val}"> 
             <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md ${color}">
-            <span className="block font-normal">${message}</span>
+            <span id=${id} className="block font-normal">${message}</span>
             ${separator}
             ${correction}
             </div></li>`
@@ -86,11 +88,22 @@
     //console.log(e)
     var data = JSON.parse(e.data);
     console.log(data)
-
     var message = data["message"];
-    console.log(message)
 
-    document.querySelector("#chat-log").innerHTML += create_message_container(data['message'], data['source'], data['message_id']);
+    id = `${data['source']}-${data['message_id']}`
+    console.log(id)
+    message_element = document.getElementById(id)
+
+    // get message element, if exists update it with response
+    if (message_element !== null) {
+        console.log(message_element)
+            message_element.textContent = data['message']
+    // else add it to list with ellipsis
+    } else {
+        console.log('No exist yet')
+        document.querySelector("#chat-log").innerHTML += create_message_container(data['message'], data['source'], data['message_id']);
+    }
+
   };
 
   chatSocket.onclose = function (e) {
