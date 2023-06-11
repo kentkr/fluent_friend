@@ -15,7 +15,7 @@ import asyncio
 import time
 from asgiref.sync import sync_to_async
 
-async def get_gpt_response(message):
+async def get_gpt_response(message_history):
 
     ## auth open ai
     async_config = sync_to_async(config)
@@ -23,12 +23,12 @@ async def get_gpt_response(message):
 
     async_chat_creation = sync_to_async(openai.ChatCompletion.create)
 
+    messages = [{"role": "system", "content": 'Have a conversation in the language of the message.'}]
+    messages += message_history
+
     response_json = await async_chat_creation(
         model = 'gpt-3.5-turbo',
-        messages = [
-            {"role": "system", "content": 'Have a conversation in the language of the message.'},
-            {"role": "user", "content": message},
-        ],
+        messages = messages,
         n = 1,
         max_tokens = 100,
         temperature = .7,
@@ -72,9 +72,7 @@ async def get_gpt_correction(message):
         top_p=1
     )
 
-    print(response_json)
     corrected_message = response_json['choices'][0]['text']
-    print(f"Correction: {corrected_message}")
     #corrected_message = 'Corrected message'
     corrections = remedy_corrections(message, corrected_message)
 
