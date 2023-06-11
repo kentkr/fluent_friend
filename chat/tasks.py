@@ -75,6 +75,7 @@ async def get_gpt_correction(message):
         temperature = .1,
     )
     corrected_message = response_json['choices'][0]['message']['content']
+    print(f"Correction: {corrected_message}")
     #corrected_message = 'Corrected message'
     corrections = remedy_corrections(message, corrected_message)
 

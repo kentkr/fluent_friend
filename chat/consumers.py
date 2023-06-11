@@ -8,9 +8,9 @@ import asyncio
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
-        print(json.loads(text_data))
         # convert json to string
         data = json.loads(text_data)
+        print(data)
         
         asyncio.create_task(self.send_user_message(data['message'], data['message_id']))
         asyncio.create_task(self.send_gpt_message(data['message'], data['message_id']))
