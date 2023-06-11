@@ -22,9 +22,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def send_gpt_message(self, message, message_id):
         response = await get_gpt_response(message)
-        bot_dict = json.dumps({'message':response + '1', 'source':'bot', 'message_id':message_id})
-        await self.send(text_data=bot_dict)
+        #bot_dict = json.dumps({'message':response + '1', 'source':'bot', 'message_id':message_id})
+        #await self.send(text_data=bot_dict)
         await asyncio.sleep(2)
         bot_dict = json.dumps({'message':response + '2', 'source':'bot', 'message_id':message_id})
+        await self.send(text_data=bot_dict)
+        bot_dict = json.dumps({'message':response + '2', 'source':'correction', 'message_id':message_id})
         await self.send(text_data=bot_dict)
 

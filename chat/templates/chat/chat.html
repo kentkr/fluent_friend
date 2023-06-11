@@ -46,27 +46,37 @@
   );
   var messages = [];
 
-    function create_message_container (message, source, message_id){
+    function create_message_container(message, source, message_id){
+
+        var id = `${source}-${message_id}`
+        var animation_div = `
+           <div class="flex justify-center" id=${id}>
+                <span class="circle animate-loader"></span>
+                <span class="circle animate-loader animation-delay-200"></span>
+                <span class="circle animate-loader animation-delay-400"></span>
+            </div>
+        `
+
         if (source == 'bot'){
             var start_end_val = 'justify-start'
             var color = 'text-gray-700 bg-white border border-gray-200'
             var separator = ''
             var correction = ''
-            var id = `${source}-${message_id}`
+            var message_div = animation_div
 
         } else if (source == 'user') {
             var start_end_val = 'justify-end'
             var color = "bg-blue-600 text-white"
             var separator = '<div class="line_separator"></div>'
-            var correction = `<span id=${id} className="block font-normal">place holder</span>`
-            var id = `${source}-${message_id}`
+            var correction = `<div id=${source}-${message-id} className="block font-normal">place holder</div>`
+            var message_div = `<div id=${id} className="block font-normal">${message}</div>`
             //var correction = `<span className="block font-normal">${msg.correction}</span>`
         }
 
         const container = 
             `<li class="flex ${start_end_val}"> 
             <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md ${color}">
-            <span id=${id} className="block font-normal">${message}</span>
+            ${message_div}
             ${separator}
             ${correction}
             </div></li>`
@@ -74,14 +84,69 @@
         return container
     }
 
+    function create_user_message(message, message_id){
+        var id = `user-${message_id}`
+        // only for correction
+        var animation_div = `
+           <div class="flex justify-center" id=correction-${message_id}>
+                <span class="circle animate-loader"></span>
+                <span class="circle animate-loader animation-delay-200"></span>
+                <span class="circle animate-loader animation-delay-400"></span>
+            </div>
+        `
+        container =
+            `<li class="flex justify-end"> 
+                <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md bg-blue-600 text-white">
+                <div id=${id} className="block font-normal">${message}</div>
+                <div class="line_separator"></div>
+                ${animation_div}
+            </div></li>`
+
+        // add message to frontend
+        document.querySelector("#chat-log").innerHTML += container
+        
+    }
+
+    function create_response_message(message_id){
+        if (message_id == 0){
+            var message_div = `
+               <div id=bot-${message_id}>Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation.</div>
+            `
+
+        } else {
+            var message_div = `
+               <div class="flex justify-center" id=bot-${message_id}>
+                    <span class="circle animate-loader"></span>
+                    <span class="circle animate-loader animation-delay-200"></span>
+                    <span class="circle animate-loader animation-delay-400"></span>
+                </div>
+            `
+        }
+        const container = 
+            `<li class="flex justify-start"> 
+                <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md text-gray-700 bg-white border border-gray-200">
+                    ${message_div}
+                </div>
+            </li>`
+
+        // add to message list
+        document.querySelector("#chat-log").innerHTML += container;
+    }
+
+    function update_gpt_message(message, source, message_id){
+        var id = `${source}-${message_id}`
+        var message_div = `
+           <div>${message}</div>
+        `
+        message_element = document.getElementById(id)
+        message_element.textContent = message
+    }
+
   chatSocket.onopen = function (e) {
     document.querySelector("#chat-header").innerHTML =
       "Welcome to Django Chatbot";
 
-    var message = "Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation."
-    var source = 'bot'
-    var message_id = 0
-    document.querySelector("#chat-log").innerHTML += create_message_container(message, 'bot', message_id);
+    create_response_message(message_id = 0);
   };
 
   chatSocket.onmessage = function (e) {
@@ -89,20 +154,30 @@
     var data = JSON.parse(e.data);
     console.log(data)
     var message = data["message"];
+    var id = `${data['source']}-${data['message_id']}`
 
-    id = `${data['source']}-${data['message_id']}`
-    console.log(id)
-    message_element = document.getElementById(id)
-
-    // get message element, if exists update it with response
-    if (message_element !== null) {
-        console.log(message_element)
-            message_element.textContent = data['message']
-    // else add it to list with ellipsis
+    // on user message greate it and empty response
+    if (data['source'] == 'user'){
+        create_user_message(data['message'], data['message_id'])        
+        // create empty response message
+        create_response_message(data['message_id'])
+    // not a user message so update correction or response
     } else {
-        console.log('No exist yet')
-        document.querySelector("#chat-log").innerHTML += create_message_container(data['message'], data['source'], data['message_id']);
+        console.log('updating')
+        update_gpt_message(data['message'], data['source'], data['message_id'])
     }
+
+    //message_element = document.getElementById(id)
+
+    //// get message element, if exists update it with response
+    //if (message_element !== null) {
+    //    console.log(message_element)
+    //    message_element.textContent = data['message']
+    //// else add it to list with ellipsis
+    //} else {
+    //    console.log('No exist yet')
+    //    document.querySelector("#chat-log").innerHTML += create_message_container(data['message'], data['source'], data['message_id']);
+    //}
 
   };
 
