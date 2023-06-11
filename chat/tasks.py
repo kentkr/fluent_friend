@@ -11,25 +11,31 @@ import difflib
 import openai
 from decouple import config
 
-@shared_task
+import asyncio
+import time
+from asgiref.sync import sync_to_async
+
 async def get_gpt_response(message):
 
     ## auth open ai
-    #openai.api_key = config('open_ai_key')
+    async_config = sync_to_async(config)
+    openai.api_key = await async_config('open_ai_key')
 
-    #response_json = openai.ChatCompletion.create(
-    #    model = 'gpt-3.5-turbo',
-    #    messages = [
-    #        {"role": "system", "content": 'Have a conversation in the language of the user'},
-    #        {"role": "user", "content": message},
-    #    ],
-    #    n = 1,
-    #    max_tokens = 100,
-    #    temperature = .7,
-    #)
+    async_chat_creation = sync_to_async(openai.ChatCompletion.create)
 
-    #message_response = response_json['choices'][0]['message']['content']
-    message_response = 'Response!'
+    response_json = await async_chat_creation(
+        model = 'gpt-3.5-turbo',
+        messages = [
+            {"role": "system", "content": 'Have a conversation in the language of the user'},
+            {"role": "user", "content": message},
+        ],
+        n = 1,
+        max_tokens = 100,
+        temperature = .7,
+    )
+
+    message_response = response_json['choices'][0]['message']['content']
+    #message_response = 'Response!'
     return message_response
 
 def remedy_corrections(original_message, corrected_message):
@@ -50,24 +56,26 @@ def remedy_corrections(original_message, corrected_message):
 
     return corrections
 
-@shared_task
 async def get_gpt_correction(message):
 
     ## auth open ai
-    #openai.api_key = config('open_ai_key')
+    async_config = sync_to_async(config)
+    openai.api_key = await async_config('open_ai_key')
 
-    #response_json = openai.ChatCompletion.create(
-    #    model = 'gpt-3.5-turbo',
-    #    messages = [
-    #        {"role": "system", "content": 'Correct this message in one line'},
-    #        {"role": "user", "content": message},
-    #    ],
-    #    n = 1,
-    #    max_tokens = 100,
-    #    temperature = .1,
-    #)
-    #corrected_message = response_json['choices'][0]['message']['content']
-    corrected_message = 'Corrected message'
+    async_chat_creation = sync_to_async(openai.ChatCompletion.create)
+
+    response_json = await async_chat_creation(
+        model = 'gpt-3.5-turbo',
+        messages = [
+            {"role": "system", "content": 'Correct this message in one line'},
+            {"role": "user", "content": message},
+        ],
+        n = 1,
+        max_tokens = 100,
+        temperature = .1,
+    )
+    corrected_message = response_json['choices'][0]['message']['content']
+    #corrected_message = 'Corrected message'
     corrections = remedy_corrections(message, corrected_message)
 
     return corrections

@@ -14,6 +14,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         asyncio.create_task(self.send_user_message(data['message'], data['message_id']))
         asyncio.create_task(self.send_gpt_message(data['message'], data['message_id']))
+        asyncio.create_task(self.send_gpt_correction(data['message'], data['message_id']))
 
     async def send_user_message(self, message, message_id):
         # add to user message
@@ -25,8 +26,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         #bot_dict = json.dumps({'message':response + '1', 'source':'bot', 'message_id':message_id})
         #await self.send(text_data=bot_dict)
         await asyncio.sleep(2)
-        bot_dict = json.dumps({'message':response + '2', 'source':'bot', 'message_id':message_id})
+        bot_dict = json.dumps({'message':response, 'source':'bot', 'message_id':message_id})
         await self.send(text_data=bot_dict)
-        bot_dict = json.dumps({'message':response + '2', 'source':'correction', 'message_id':message_id})
+
+    async def send_gpt_correction(self, message, message_id):
+        response = await get_gpt_correction(message)
+        await asyncio.sleep(1)
+        bot_dict = json.dumps({'message':response, 'source':'correction', 'message_id':message_id})
         await self.send(text_data=bot_dict)
 
