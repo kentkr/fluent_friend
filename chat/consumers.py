@@ -17,8 +17,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.message_history += [{'role': 'user', 'content': data['message']}]
 
         asyncio.create_task(self.send_user_message(data['message'], data['message_id']))
-        asyncio.create_task(self.send_gpt_message(data['message_id'], self.message_history))
         asyncio.create_task(self.send_gpt_correction(data['message'], data['message_id']))
+        asyncio.create_task(self.send_gpt_message(data['message_id'], self.message_history))
 
     async def send_user_message(self, message, message_id):
         # add to user message

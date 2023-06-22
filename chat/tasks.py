@@ -23,15 +23,16 @@ async def get_gpt_response(message_history):
 
     async_chat_creation = sync_to_async(openai.ChatCompletion.create)
 
-    messages = [{"role": "system", "content": 'Have a conversation in the language of the message.'}]
+    messages = [{"role": "system", "content": 'Have a fun conversation in the language of the message. Be a bit crass and amusing.'}]
     messages += message_history
 
     response_json = await async_chat_creation(
-        model = 'gpt-3.5-turbo',
+        model = 'gpt-3.5-turbo-0613',
         messages = messages,
         n = 1,
         max_tokens = 100,
-        temperature = .7,
+        temperature = 1,
+        presence_penalty = 1
     )
 
     message_response = response_json['choices'][0]['message']['content']
@@ -62,19 +63,29 @@ async def get_gpt_correction(message):
     async_config = sync_to_async(config)
     openai.api_key = await async_config('open_ai_key')
 
-    async_edit_creation = sync_to_async(openai.Edit.create)
+    async_chat_creation = sync_to_async(openai.ChatCompletion.create)
 
-    response_json = await async_edit_creation(
-        model="text-davinci-edit-001",
-        input=message,
-        instruction="Correct for spelling , grammar, and accent mistakes.",
-        temperature=1,
-        top_p=.3
+    system_prompt = """
+        In the language that the phrase is written, replace it for spelling and grammar. 
+        Be sure to add or replace accent marks if necessary. If the use of a word is 
+        incorrect replace it. Do not respond to questions.
+    """
+
+    response_json = await async_chat_creation(
+        model = 'gpt-3.5-turbo-0613',
+        messages = [
+            {'role': 'system', 'content': system_prompt},
+            {'role': 'user', 'content': message}
+        ],
+        n = 1,
+        max_tokens = 100,
+        temperature = .1,
     )
 
-    corrected_message = response_json['choices'][0]['text']
-    print(f'Corrected message: {corrected_message}')
+    message_response = response_json['choices'][0]['message']['content']
+
+    print(f'Corrected message: {message_response}')
     #corrected_message = 'Corrected message'
-    corrections = remedy_corrections(message, corrected_message)
+    corrections = remedy_corrections(message, message_response)
 
     return corrections
