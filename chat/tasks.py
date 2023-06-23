@@ -23,7 +23,7 @@ async def get_gpt_response(message_history):
 
     async_chat_creation = sync_to_async(openai.ChatCompletion.create)
 
-    messages = [{"role": "system", "content": 'Have a fun conversation in the language of the message. Be a bit crass and amusing.'}]
+    messages = [{"role": "system", "content": 'Have a fun conversation in the language of the message. Be a bit crass and amusing. Keep responses short at around three sentences.'}]
     messages += message_history
 
     response_json = await async_chat_creation(
@@ -36,6 +36,10 @@ async def get_gpt_response(message_history):
     )
 
     message_response = response_json['choices'][0]['message']['content']
+    # if response is 100 tokenns add an mark to indicate the message was cut off.
+    if response_json['usage']['completion_tokens'] >= 100:
+        message_response += [' –']
+
     #message_response = 'Response!'
     return message_response
 
