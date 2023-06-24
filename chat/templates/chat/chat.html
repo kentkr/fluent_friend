@@ -143,15 +143,11 @@
 
     message_history = []
   chatSocket.onmessage = function (e) {
-    //console.log(e)
     var data = JSON.parse(e.data);
-    console.log(data)
     var message = data["message"];
-    console.log(message)
     var id = `${data['source']}-${data['message_id']}`
 
     message_history += [data]
-    console.log(message_history)
     // on user message greate it and empty response
     if (data['source'] == 'user'){
         create_user_message(data['message'], data['message_id'])        
@@ -159,7 +155,6 @@
         create_response_message(data['message_id'])
     // not a user message so update correction or response
     } else {
-        console.log('updating')
         update_gpt_message(data['message'], data['source'], data['message_id'])
     }
 
@@ -185,7 +180,6 @@
   document.querySelector("#chat-message-submit").onclick = function (e) {
     var messageInputDom = document.querySelector("#chat-message-input");
     message_count += 1
-    console.log(message_count)
     var message = messageInputDom.value;
     chatSocket.send(
       JSON.stringify({
