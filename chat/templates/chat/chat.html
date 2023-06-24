@@ -163,6 +163,9 @@
         update_gpt_message(data['message'], data['source'], data['message_id'])
     }
 
+    // scroll down to bot message
+    document.getElementById(`bot-${data['message_id']}`).scrollIntoView()
+
   };
 
   chatSocket.onclose = function (e) {
