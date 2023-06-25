@@ -17,10 +17,12 @@ click==8.1.3
 click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.2.0
+cmake==3.26.4
 constantly==15.1.0
 cryptography==40.0.2
 daphne==4.0.0
 Deprecated==1.2.14
+dj-database-url==2.0.0
 Django==4.1.2
 django-browser-reload==1.8.0
 django-tailwind==3.4.0
@@ -33,6 +35,7 @@ kombu==5.2.4
 mathparse==0.1.2
 msgpack==1.0.5
 multidict==6.0.4
+nltk==3.8.1
 openai==0.27.7
 packaging==23.1
 Pint==0.22
