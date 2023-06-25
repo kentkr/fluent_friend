@@ -124,7 +124,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Celery
-CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_BROKER_URL = config("REDIS_BACKEND")
 CELERY_RESULT_BACKEND = config("REDIS_BACKEND")
 
 # Redis Cache
