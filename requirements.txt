@@ -33,7 +33,6 @@ kombu==5.2.4
 mathparse==0.1.2
 msgpack==1.0.5
 multidict==6.0.4
-nltk==3.8.1
 openai==0.27.7
 packaging==23.1
 Pint==0.22
@@ -47,7 +46,6 @@ pyOpenSSL==23.1.1
 python-dateutil==2.7.5
 python-decouple==3.6
 pytz==2023.3
-PyYAML==6.0
 redis==4.3.4
 regex==2023.5.5
 requests==2.31.0
