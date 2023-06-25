@@ -29,7 +29,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Third party apps
-    "chatterbot.ext.django_chatterbot",
     "tailwind",
     "django_browser_reload",
     # Local apps
