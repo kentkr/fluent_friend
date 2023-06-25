@@ -1,4 +1,3 @@
-Cmake==3.26.4
 aiohttp==3.8.4
 aiosignal==1.3.1
 amqp==5.1.1
@@ -50,7 +49,7 @@ pyOpenSSL==23.1.1
 python-dateutil==2.7.5
 python-decouple==3.6
 pytz==2023.3
-PyYAML==3.13
+PyYAML==6.0
 redis==4.3.4
 regex==2023.5.5
 requests==2.31.0
