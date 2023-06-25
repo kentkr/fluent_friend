@@ -102,7 +102,7 @@
     function create_response_message(message_id){
         if (message_id == 0){
             var message_div = `
-               <div id=bot-${message_id}>Hi! I'm Fin, your fluent friend. Speak to me in any language and lets have a conversation.</div>
+               <div id=bot-${message_id}>Hi! I'm Fin, an AI chat bot that can speak in almost any language. Lets have a conversation and if you make mistakes I'll give you some corrections. Keep in mind the corrections won't be perfect. So to get the best possible results try to use full sentences!</div>
             `
 
         } else {
@@ -136,7 +136,7 @@
 
   chatSocket.onopen = function (e) {
     document.querySelector("#chat-header").innerHTML =
-      "Welcome to Django Chatbot";
+      "Meet your new fluent friend, Fin";
 
     create_response_message(message_id = 0);
   };
