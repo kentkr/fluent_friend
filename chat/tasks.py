@@ -36,7 +36,7 @@ async def get_gpt_response(message_history):
     message_response = response_json['choices'][0]['message']['content']
     # if response is 100 tokenns add an mark to indicate the message was cut off.
     if response_json['usage']['completion_tokens'] >= 100:
-        message_response += [' –']
+        message_response += ' –'
 
     #message_response = 'Response!'
     return message_response
