@@ -164,7 +164,7 @@
   };
 
   chatSocket.onclose = function (e) {
-    //alert("Socket closed unexpectedly, please reload the page.");
+    alert("The session expired. Please refresh the page.");
   };
 
   document.querySelector("#chat-message-input").focus();
