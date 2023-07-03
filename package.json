@@ -3,10 +3,15 @@
     "description": "Run the tailwind build step before django's collectstatic",
     "version": "1.0.0",
     "engines": {
-        "node": "18.x"
+        "node": "20.x"
     },
     "scripts": {
         "heroku-prebuild": "cd theme/static_src && npm ci --include=dev",
         "heroku-postbuild": "cd theme/static_src && npm run build"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.4.14",
+        "postcss": "^8.4.24",
+        "tailwindcss": "^3.3.2"
     }
 }
