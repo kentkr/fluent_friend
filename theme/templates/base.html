@@ -9,7 +9,33 @@
     {% tailwind_css %}
   </head>
 
-  <body>
+  <body class="h-screen">
+    <header class="bg-white ">
+      <nav class="">
+        <div>
+          <img class="w-16" src="https://cdn-icons-png.flaticon.com/512/5968/5968204.png" alt="..."> 
+        </div>
+        <div class="">
+          <ul>
+            <li>
+              <a href="#">Products</a>
+            </li>
+            <li>
+              <a href="#">Products</a>
+            </li>
+            <li>
+              <a href="#">Products</a>
+            </li>
+            <li>
+              <a href="#">Products</a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <button class="bg-black text-black px-5 py-2">Sign in</button>
+        </div>
+      </nav>
+    </header>
     {% block body %} {% endblock %}
   </body>
   {% block scripts%}{% endblock %}
