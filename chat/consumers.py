@@ -26,6 +26,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=user_dict)
 
     async def send_gpt_message(self, message_id, message_history):
+        print(message_history)
         # get last six messages
         response = await get_gpt_response(message_history[-6:])
         # add to message history
