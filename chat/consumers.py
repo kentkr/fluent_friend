@@ -13,8 +13,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         data = json.loads(text_data)
 
-        # add message history here so gpt always gets user message
-        self.message_history += [{'role': 'user', 'content': data['message']}]
+        # move message history to frontend -- #12
+        self.message_history = data['message_history']
 
         asyncio.create_task(self.send_user_message(data['message'], data['message_id']))
         asyncio.create_task(self.send_gpt_correction(data['message'], data['message_id']))

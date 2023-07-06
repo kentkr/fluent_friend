@@ -40,7 +40,6 @@
       wss_protocol + window.location.host + "/ws/chat/"
     );
 
-    console.log(chatSocket)
     chatSocket.onopen = function (e) {
       document.querySelector("#chat-header").innerHTML =
         "Meet your new fluent friend, Fin";
@@ -53,8 +52,10 @@
       var message = data["message"];
       var id = `${data['source']}-${data['message_id']}`
 
-      message_history += [data]
-      console.log(message_history)
+      if (data['source'] == 'bot') {
+        message_history.push({'role': 'assistant', 'content': data['message']})
+      }
+
       // on user message greate it and empty response
       if (data['source'] == 'user'){
         create_user_message(data['message'], data['message_id'])        
@@ -194,12 +195,16 @@
     message_count += 1
     var message = messageInputDom.value;
 
+    // push new message to message history
+    message_history.push({'role': 'user', 'content': message})
+
     // if socket closed reconnect on new message
     if (chatSocket.readyState == 1){
       chatSocket.send(
         JSON.stringify({
           message: message,
-          message_id: message_count
+          message_id: message_count,
+          message_history: message_history
         })
       );
     } else { 
@@ -208,7 +213,8 @@
       chatSocket.onopen = () => chatSocket.send(
         JSON.stringify({
           message: message,
-          message_id: message_count
+          message_id: message_count,
+          message_history: message_history
         })
       );
     }
