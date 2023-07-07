@@ -86,7 +86,6 @@ async def get_gpt_correction(message):
 
     message_response = response_json['choices'][0]['message']['content']
 
-    print(f'Corrected message: {message_response}')
     #corrected_message = 'Corrected message'
     corrections = remedy_corrections(message, message_response)
 
