@@ -14,22 +14,29 @@
   </head>
 
   <body class="h-screen bg-[#30365F]">
-    <header class="bg-white">
-      <nav class="flex justify-between items-center w-[92%] mx-auto">
-        <div>
-          <img class="w-16 cursor-pointer" src="https://cdn-icons-png.flaticon.com/512/5968/5968204.png" alt="...">
+    <header class="w-full bg-white">
+      <nav class="flex items-center justify-between flex-wrap w-[92%] mx-auto h-16">
+        <!-- left logo container -->
+        <div class="flex items-center flex-shrink-0 basis-[12%] mr-6">
+          <h1>Fluent Friend</h1>
         </div>
-        <div
-          class="nav-links duration-500 md:static absolute bg-white md:min-h-fit min-h-fit z-10 left-0 top-[-100%] md:w-auto w-full flex items-center py-4 px-6">
-          <ul class="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8">
-            <li>
-              <a class="hover:text-gray-500" href="#">About</a>
-            </li>
-          </ul>
-        </div>
-        <div class="flex items-center gap-6">
-          <button class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]">Sign in</button>
-          <ion-icon onclick="onToggleMenu(this)" name="menu" class="text-3xl cursor-pointer md:hidden"></ion-icon>
+        <!-- container for right of logo -->
+        <div class="flex flex-grow items-center w-auto">
+          <!-- center container -->
+          <div class="flex flex-grow">
+            <a class="block block-inline mt-0 mr-4 hover:text-gray-500" href="#">About</a>
+          </div>
+          <!-- center right container -->
+          <div class="flex flex-grow justify-end">
+            <div class="block block-inline mt-0 mr-4">
+              <button class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]">Feedback</button>
+              <ion-icon onclick="onToggleMenu(this)" name="menu" class="text-3xl cursor-pointer md:hidden"></ion-icon>
+            </div>
+            <div class="block block-inline mt-0 mr-4">
+              <button class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]">Buy me a coffee</button>
+              <ion-icon onclick="onToggleMenu(this)" name="menu" class="text-3xl cursor-pointer md:hidden"></ion-icon>
+            </div>
+          </div>
         </div>
     </header>
     <script>
