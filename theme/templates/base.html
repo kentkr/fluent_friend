@@ -13,41 +13,44 @@
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   </head>
 
-  <body class="h-screen bg-[#30365F]">
-    <header class="w-full bg-white">
-      <nav class="flex items-center justify-between flex-wrap bg-white mx-auto p-3 lg:w-[92%] lg:h-16">
+  <body class="h-screen bg-dark-background">
+    <header class="w-full bg-black">
+      <nav class="flex items-center justify-between flex-wrap bg-black mx-auto p-3 lg:w-[92%] lg:h-16">
         <!-- left logo container -->
         <div class="flex items-center flex-shrink-0 basis-[12%] mr-6">
-          <h1 class="flex-shrink-0">Fluent Friend</h1>
+          <h1 class="flex-shrink-0 text-foreground hover:text-cyan">Fluent Friend</h1>
         </div>
         <!-- hidden hamburger -->
         <div class="block lg:hidden">
-          <ion-icon onclick="toggle_dropdown_menu(this)" name="menu" class="flex items-center px-3 py-2 border rounded text-blue border-blue hover:text-black hover:border-black"></ion-icon>
+          <ion-icon id="hamburger-icon" onclick="toggle_dropdown_menu(this)" name="menu" size="large" class="flex items-center px-3 py-2 rounded text-purple hover:text-dark-purple"></ion-icon>
         </div>
         <!-- container for right of logo -->
         <div id="nav-bar" class="w-full block flex-grow hidden lg:flex lg:items-center lg:w-auto lg:visible">
           <!-- center container -->
           <div class="flex lg:flex-grow">
-            <a class="block mt-4 mr-4 lg:inline-block lg:mt-0 hover:text-gray-500" href="#">About</a>
+            <a class="block mt-4 mr-4 text-foreground hover:text-cyan lg:inline-block lg:mt-0" href="#">About</a>
           </div>
           <!-- center right container -->
           <div class="flex flex-col lg:flex lg:flex-row lg:flex-grow lg:justify-end">
             <div class="block inline-block mt-0 mr-4 pt-3 lg:pt-0">
-              <button class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]">Feedback</button>
+              <button class="bg-dark-purple hover:bg-purple text-light-purple hover:text-background px-5 py-2 rounded-full">Feedback</button>
             </div>
             <div class="block inline-block mt-0 mr-4 pt-3 lg:pt-0">
-              <button class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]">Buy me a coffee</button>
+              <button class="bg-dark-purple hover:bg-purple text-light-purple hover:text-background px-5 py-2 rounded-full hover:bg-[#87acec]">Buy me a coffee</button>
             </div>
           </div>
         </div>
     </header>
     <script>
       dropdown_menu = document.getElementById('nav-bar')
+      hamburger_icon = document.getElementById('hamburger-icon')
       function toggle_dropdown_menu(e){
         if (dropdown_menu.classList.contains('hidden')){
           dropdown_menu.classList.remove('hidden')
+          hamburger_icon.name = 'close'
         } else {
           dropdown_menu.classList.add('hidden')
+          hamburger_icon.name = 'menu'
         }
       }
     </script>

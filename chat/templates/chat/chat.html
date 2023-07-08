@@ -5,10 +5,9 @@
   }
 </style>
 
-<div class="p-6 flex flex-col w-full h-screen">
-  <h1 class="text-3xl tracking-tight font-light" id="chat-header"></h1>
+<div class="p-6 flex flex-col w-full h-screen bg-dark-purple">
   <div
-    class="mt-4 w-full h-full relative p-2 overflow-y-auto bg-gray-50 border border-gray-200"
+    class="mt-4 w-full h-full relative p-2 overflow-y-auto bg-background border border-foreground"
     id="chat-box">
     <ul class="space-y-2" id="chat-log">
     </ul>
@@ -16,13 +15,13 @@
   <div class="mt-4 in-line flex">
     <input
       id="chat-message-input"
-      class="w-full py-2 outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:border-blue-500"
+      class="w-full py-2 outline-none border border-foreground bg-background text-foreground text-sm focus:border-foreground"
       type="text"
       placeholder="Write your message here."
     />
     <button
       id="chat-message-submit"
-      class="py-2 px-4 ml-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-800 hover:bg-blue-900"
+      class="py-2 px-4 ml-2 border border-foreground text-sm font-medium rounded-md bg-dark-purple hover:bg-purple text-light-purple hover:text-background"
       type="submit"
     >
       Send
@@ -41,9 +40,6 @@
     );
 
     chatSocket.onopen = function (e) {
-      document.querySelector("#chat-header").innerHTML =
-        "Meet your new fluent friend, Fin";
-
       create_response_message(message_id = 0);
     };
 
@@ -97,14 +93,14 @@
 
         if (source == 'bot'){
             var start_end_val = 'justify-start'
-            var color = 'text-gray-700 bg-white border border-gray-200'
+            var color = 'bg-background text-foreground border border-gray-200'
             var separator = ''
             var correction = ''
             var message_div = animation_div
 
         } else if (source == 'user') {
             var start_end_val = 'justify-end'
-            var color = "bg-blue-600 text-white"
+            var color = "bg-foreground text-foreground"
             var separator = '<div class="line_separator"></div>'
             var correction = `<div id=${source}-${message-id} className="block font-normal">place holder</div>`
             var message_div = `<div id=${id} className="block font-normal">${message}</div>`
@@ -134,7 +130,7 @@
         `
         container =
             `<li class="flex justify-end"> 
-                <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md bg-blue-600 text-white">
+                <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md bg-foreground bg-background">
                 <div id=${id} className="block font-normal">${message}</div>
                 <div class="line_separator"></div>
                 ${animation_div}
@@ -148,7 +144,7 @@
     function create_response_message(message_id){
         if (message_id == 0){
             var message_div = `
-               <div id=bot-${message_id}>Hi! I'm Fin, an AI chat bot that can speak in almost any language. Lets have a conversation and if you make mistakes I'll give you some corrections. Keep in mind the corrections won't be perfect. So to get the best possible results try to use full sentences!</div>
+               <div id=bot-${message_id} class="bg-background text-foreground">Hi! I'm Fin, an AI chat bot that can speak in almost any language. Lets have a conversation and if you make mistakes I'll give you some corrections. Keep in mind the corrections won't be perfect. So to get the best possible results try to use full sentences!</div>
             `
 
         } else {
@@ -161,8 +157,8 @@
             `
         }
         const container = 
-            `<li class="flex justify-start"> 
-                <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md text-gray-700 bg-white border border-gray-200">
+            `<li class="flex justify-start class="bg-background text-foreground""> 
+                <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md bg-background text-foreground border border-foreground">
                     ${message_div}
                 </div>
             </li>`
@@ -174,13 +170,12 @@
     function update_gpt_message(message, source, message_id){
         var id = `${source}-${message_id}`
         var message_div = `
-           <div>${message}</div>
+           <div class="bg-background text-foreground">${message}</div>
         `
         message_element = document.getElementById(id)
         message_element.textContent = message
     }
 
-  document.querySelector("#chat-message-input").focus();
   document.querySelector("#chat-message-input").onkeyup = function (e) {
     if (e.keyCode === 13) {
       // enter, return
