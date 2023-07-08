@@ -22,12 +22,10 @@
         </div>
         <!-- hidden hamburger -->
         <div class="block lg:hidden">
-          <button class="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
-            <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
-          </button>
+          <ion-icon onclick="toggle_dropdown_menu(this)" name="menu" class="flex items-center px-3 py-2 border rounded text-blue border-blue hover:text-black hover:border-black"></ion-icon>
         </div>
         <!-- container for right of logo -->
-        <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+        <div id="nav-bar" class="w-full block flex-grow hidden lg:flex lg:items-center lg:w-auto lg:visible">
           <!-- center container -->
           <div class="flex lg:flex-grow">
             <a class="block mt-4 mr-4 lg:inline-block lg:mt-0 hover:text-gray-500" href="#">About</a>
@@ -44,11 +42,13 @@
         </div>
     </header>
     <script>
-      const navLinks = document.querySelector('.nav-links')
-      function onToggleMenu(e){
-        e.name = e.name === 'menu' ? 'close' : 'menu'
-        navLinks.classList.toggle('top-[8%]')
-        console.log(e)
+      dropdown_menu = document.getElementById('nav-bar')
+      function toggle_dropdown_menu(e){
+        if (dropdown_menu.classList.contains('hidden')){
+          dropdown_menu.classList.remove('hidden')
+        } else {
+          dropdown_menu.classList.add('hidden')
+        }
       }
     </script>
     {% block body %} {% endblock %}
