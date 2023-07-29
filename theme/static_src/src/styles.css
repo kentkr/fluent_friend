@@ -19,3 +19,11 @@
 .circle-dark {
   @apply w-1 h-1 mt-2 mb-1 mx-1 bg-background rounded-full;
 }
+
+.correction-insert {
+    @apply bg-green bg-opacity-50
+}
+
+.correction-delete {
+    @apply bg-red bg-opacity-30
+}

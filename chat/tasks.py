@@ -43,8 +43,8 @@ async def get_gpt_response(message_history):
 
 def remedy_corrections(original_message, corrected_message):
     # define correction spans
-    replace_delete_span = '<span class="bg-red bg-opacity-30">'
-    insert_span = '<span class="bg-green bg-opacity-50">'
+    replace_delete_span = '<span class="correction-delete">'
+    insert_span = '<span class="correction-insert">'
 
     # get seq of separated words
     seq = difflib.SequenceMatcher(None, original_message, corrected_message)
@@ -92,5 +92,7 @@ async def get_gpt_correction(message):
 
     #corrected_message = 'Corrected message'
     corrections = remedy_corrections(message, message_response)
+    print(message_response)
+    print(corrections)
 
     return corrections
