@@ -2,12 +2,13 @@
 <style>
   .line_separator {
     border-top: 2px solid #0D47A1;
+    border-color: black;
   }
 </style>
 
-<div class="p-6 flex flex-col w-full h-screen bg-dark-purple">
+<div class="p-6 flex flex-col w-full h-screen bg-foreground">
   <div
-    class="mt-4 w-full h-full relative p-2 overflow-y-auto bg-background border border-foreground"
+    class="mt-4 w-full h-full relative p-2 overflow-y-auto bg-foreground border border-background border-2 shadow-lg shadow-purple"
     id="chat-box">
     <ul class="space-y-2" id="chat-log">
     </ul>
@@ -15,13 +16,13 @@
   <div class="mt-4 in-line flex">
     <input
       id="chat-message-input"
-      class="w-full py-2 outline-none border border-foreground bg-background text-foreground text-sm focus:border-foreground"
+      class="w-full py-2 outline-none border border-background border-2 rounded-md bg-foreground text-background text-sm shadow-md shadow-purple focus:border-cyan focus:ring-0 focus:shadow-cyan"
       type="text"
       placeholder="Write your message here."
     />
     <button
       id="chat-message-submit"
-      class="py-2 px-4 ml-2 border border-foreground text-sm font-medium rounded-md bg-dark-purple hover:bg-purple text-light-purple hover:text-background"
+      class="py-2 px-4 ml-2 border border-foreground text-sm font-medium rounded-md bg-background shadow-md shadow-purple hover:bg-cyan text-foreground hover:text-background hover:shadow-cyan"
       type="submit"
     >
       Send
@@ -121,19 +122,19 @@
     function create_user_message(message, message_id){
         var id = `user-${message_id}`
         // only for correction
-        var animation_div = `
+        var dark_animation_div = `
            <div class="flex justify-center" id=correction-${message_id}>
-                <span class="circle animate-loader"></span>
-                <span class="circle animate-loader animation-delay-200"></span>
-                <span class="circle animate-loader animation-delay-400"></span>
+                <span class="circle-dark animate-loader"></span>
+                <span class="circle-dark animate-loader animation-delay-200"></span>
+                <span class="circle-dark animate-loader animation-delay-400"></span>
             </div>
         `
         container =
             `<li class="flex justify-end"> 
-                <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md bg-foreground bg-background">
+                <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md shadow-purple bg-foreground text-background">
                 <div id=${id} className="block font-normal">${message}</div>
                 <div class="line_separator"></div>
-                ${animation_div}
+                ${dark_animation_div}
             </div></li>`
 
         // add message to frontend
@@ -144,7 +145,7 @@
     function create_response_message(message_id){
         if (message_id == 0){
             var message_div = `
-               <div id=bot-${message_id} class="bg-background text-foreground">Hi! I'm Fin, an AI chat bot that can speak in almost any language. Lets have a conversation and if you make mistakes I'll give you some corrections. Keep in mind the corrections won't be perfect. So to get the best possible results try to use full sentences!</div>
+               <div id=bot-${message_id}>Hi! I'm Fin, an AI chat bot that can speak in almost any language. Lets have a conversation and if you make mistakes I'll give you some corrections. Keep in mind the corrections won't be perfect. So to get the best possible results try to use full sentences!</div>
             `
 
         } else {
@@ -157,8 +158,8 @@
             `
         }
         const container = 
-            `<li class="flex justify-start class="bg-background text-foreground""> 
-                <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md bg-background text-foreground border border-foreground">
+            `<li class="flex justify-start"> 
+                <div class="relative max-w-xl px-4 py-2 rounded-lg shadow-md bg-background text-foreground border border-background shadow-md shadow-purple">
                     ${message_div}
                 </div>
             </li>`

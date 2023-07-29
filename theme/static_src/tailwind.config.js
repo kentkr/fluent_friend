@@ -47,7 +47,7 @@ module.exports = {
                 current: 'currentColor',
                 transparent : 'transparent',
                 'black': '#000000',
-                'background': '#0f111b',
+                'background': '#16172d',
                 'grey': '#818596',
                 'grey-2': '#c1c3cc',
                 'dark-purple': '#30365F',
