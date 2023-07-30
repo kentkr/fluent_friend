@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     # Local apps
     "chat",
     "theme",
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
