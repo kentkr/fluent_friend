@@ -43,6 +43,11 @@ module.exports = {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                /* This modifies the default */
+                sans: ['DotGothic16', 'sans-serif'],
+                'dot-gothic': ['DotGothic16', 'sans-serif'],
+            },
             colors: {
                 current: 'currentColor',
                 transparent : 'transparent',
