@@ -43,6 +43,31 @@ module.exports = {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                /* This modifies the default */
+                sans: ['DotGothic16', 'sans-serif'],
+                'dot-gothic': ['DotGothic16', 'sans-serif'],
+            },
+            colors: {
+                current: 'currentColor',
+                transparent : 'transparent',
+                'black': '#000000',
+                'background': '#16172d',
+                'grey': '#818596',
+                'grey-2': '#c1c3cc',
+                'dark-purple': '#30365F',
+                'dark-purple-2': '#686f9a',
+                'purple': '#7a5ccc',
+                'light-purple': '#b3a1e6',
+                'cyan': '#00a3cc',
+                'green': '#5ccc96',
+                'yellow': '#f2ce00',
+                'orange': '#e39400',
+                'magenta': '#ce6f8f',
+                'red': '#e33400',
+                'foreground': '#ecf0c1',
+                'white': '#ffffff',
+            },
             animation: {
                 loader: 'loader 0.6s infinite alternate'
             },

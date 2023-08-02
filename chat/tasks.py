@@ -42,6 +42,10 @@ async def get_gpt_response(message_history):
     return message_response
 
 def remedy_corrections(original_message, corrected_message):
+    # define correction spans
+    replace_delete_span = '<span class="correction-delete">'
+    insert_span = '<span class="correction-insert">'
+
     # get seq of separated words
     seq = difflib.SequenceMatcher(None, original_message, corrected_message)
 
@@ -50,12 +54,12 @@ def remedy_corrections(original_message, corrected_message):
         if ops[0] == 'equal':
             corrections += corrected_message[ops[3]:ops[4]]
         if ops[0] == 'replace':
-            corrections += '\u0336'.join(original_message[ops[1]:ops[2]]) + '\u0336'
-            corrections += corrected_message[ops[3]:ops[4]]
+            corrections += insert_span + corrected_message[ops[3]:ops[4]] + '</span>'
+            corrections += replace_delete_span + original_message[ops[1]:ops[2]] + '</span>'
         if ops[0] == 'insert':
-            corrections += corrected_message[ops[3]:ops[4]]
+            corrections += insert_span + corrected_message[ops[3]:ops[4]] + '</span>'
         if ops[0] == 'delete':
-            corrections += '\u0336'.join(original_message[ops[1]:ops[2]]) + '\u0336'
+            corrections += replace_delete_span + original_message[ops[1]:ops[2]] + '</span>'
 
     return corrections
 
@@ -88,5 +92,7 @@ async def get_gpt_correction(message):
 
     #corrected_message = 'Corrected message'
     corrections = remedy_corrections(message, message_response)
+    print(message_response)
+    print(corrections)
 
     return corrections

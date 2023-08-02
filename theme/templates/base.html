@@ -6,10 +6,61 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <!-- DotGothic16 font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
     {% tailwind_css %}
+
+    <!-- menu icon -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   </head>
 
-  <body>
+  <body class="h-screen bg-dark-background">
+    <header class="w-full bg-background">
+      <nav class="flex items-center justify-between flex-wrap bg-background mx-auto p-3 lg:w-[92%] lg:h-16">
+        <!-- left logo container -->
+        <div class="flex items-center flex-shrink-0 basis-[12%] mr-6">
+          
+          <h1 class="flex-shrink-0 text-foreground text-xl hover:text-cyan">
+            <a href="{% url 'chat:chat_view' %}">Fluent Friend</a>
+          </h1>
+        </div>
+        <!-- hidden hamburger -->
+        <div class="block lg:hidden">
+          <ion-icon id="hamburger-icon" onclick="toggle_dropdown_menu(this)" name="menu" size="large" class="flex items-center px-3 py-2 rounded text-green hover:text-green"></ion-icon>
+        </div>
+        <!-- container for right of logo -->
+        <div id="nav-bar" class="w-full block flex-grow hidden lg:flex lg:items-center lg:w-auto lg:visible">
+          <!-- center container -->
+          <div class="flex lg:flex-grow">
+            <a class="block mt-4 mr-4 ml-2 text-foreground text-md hover:text-cyan lg:inline-block lg:mt-0" href="{% url 'chat:about_view' %}">About</a>
+          </div>
+          <!-- center right container -->
+          <div class="flex flex-col lg:flex lg:flex-row lg:flex-grow lg:justify-end">
+            <div class="block inline-block mt-0 mr-4 pt-3 lg:pt-0">
+              <button class="bg-green hover:bg-cyan text-background hover:text-background px-5 py-2 rounded-full"><a href="https://docs.google.com/forms/d/e/1FAIpQLSdcfC5TZoVfbril9npP_YPQnRFUh3FWCtx6Nfr_VFx16pJEBw/viewform?usp=sf_link">Feedback</a></button>
+            </div>
+            <div class="block inline-block mt-0 mr-4 pt-3 lg:pt-0">
+              <button class="bg-green hover:bg-cyan text-background hover:text-background px-5 py-2 rounded-full hover:bg-[#87acec]"><a href="https://bmc.link/kyle.kent321">Buy me a coffee</a></button>
+            </div>
+          </div>
+        </div>
+    </header>
+    <script>
+      dropdown_menu = document.getElementById('nav-bar')
+      hamburger_icon = document.getElementById('hamburger-icon')
+      function toggle_dropdown_menu(e){
+        if (dropdown_menu.classList.contains('hidden')){
+          dropdown_menu.classList.remove('hidden')
+          hamburger_icon.name = 'close'
+        } else {
+          dropdown_menu.classList.add('hidden')
+          hamburger_icon.name = 'menu'
+        }
+      }
+    </script>
     {% block body %} {% endblock %}
   </body>
   {% block scripts%}{% endblock %}
