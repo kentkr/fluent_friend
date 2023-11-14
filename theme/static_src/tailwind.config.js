@@ -65,7 +65,7 @@ module.exports = {
                 'orange': '#e39400',
                 'magenta': '#ce6f8f',
                 'red': '#e33400',
-                'foreground': '#ecf0c1',
+                'foreground': '#e6e8cc',
                 'white': '#ffffff',
             },
             animation: {
