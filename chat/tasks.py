@@ -28,14 +28,14 @@ async def get_gpt_response(message_history):
         model = 'gpt-3.5-turbo-0613',
         messages = messages,
         n = 1,
-        max_tokens = 100,
+        max_tokens = 200,
         temperature = 1,
         presence_penalty = 1
     )
 
     message_response = response_json['choices'][0]['message']['content']
     # if response is 100 tokenns add an mark to indicate the message was cut off.
-    if response_json['usage']['completion_tokens'] >= 100:
+    if response_json['usage']['completion_tokens'] >= 200:
         message_response += ' –'
 
     #message_response = 'Response!'
