@@ -1,6 +1,7 @@
 from asgiref.sync import async_to_sync
 from celery import shared_task
 from channels.layers import get_channel_layer
+import re
 
 channel_layer = get_channel_layer()
 
@@ -42,24 +43,40 @@ async def get_gpt_response(message_history):
     return message_response
 
 def remedy_corrections(original_message, corrected_message):
-    # define correction spans
+    # split text - retain spaces, ignore '-'
+    split_orig = re.findall(r'\b\w+(?:-\w+)*|[^\w\s]|\s', original_message)
+    split_corrected = re.findall(r'\b\w+(?:-\w+)*|[^\w\s]|\s', corrected_message)
+
     replace_delete_span = '<span class="correction-delete">'
     insert_span = '<span class="correction-insert">'
 
     # get seq of separated words
-    seq = difflib.SequenceMatcher(None, original_message, corrected_message)
-
+    seq = difflib.SequenceMatcher(None, split_orig, split_corrected)
     corrections = ''
     for ops in seq.get_opcodes():
         if ops[0] == 'equal':
-            corrections += corrected_message[ops[3]:ops[4]]
+            corrections += ''.join(split_corrected[ops[3]:ops[4]])
         if ops[0] == 'replace':
-            corrections += insert_span + corrected_message[ops[3]:ops[4]] + '</span>'
-            corrections += replace_delete_span + original_message[ops[1]:ops[2]] + '</span>'
+            len_orig = len(split_orig[ops[1]:ops[2]])
+            len_corrected = len(split_corrected[ops[3]:ops[4]])
+            # iteratre through each word 
+            for i in range(min(len_orig, len_corrected)):
+                # if orig out of bounds - take rest of corrected and break
+                if i == len_orig:
+                    corrections += insert_span + ''.join(split_corrected[ops[3]:ops[4]][i:]) + '</span>'
+                    break
+                # if corrected out of bounds - test rest of orig and break
+                if i == len_corrected:
+                    corrections += replace_delete_span + ''.join(split_orig[ops[1]:ops[2]][i:]) + '</span>'
+                    break
+
+                # otherwise append each word to corrections
+                corrections += replace_delete_span + split_orig[ops[1]:ops[2]][i] + '</span>' + ' ' # space to improve readbility
+                corrections += insert_span + split_corrected[ops[3]:ops[4]][i] + '</span>'
         if ops[0] == 'insert':
-            corrections += insert_span + corrected_message[ops[3]:ops[4]] + '</span>'
+            corrections += insert_span + ''.join(split_corrected[ops[3]:ops[4]]) + '</span>'
         if ops[0] == 'delete':
-            corrections += replace_delete_span + original_message[ops[1]:ops[2]] + '</span>'
+            corrections += replace_delete_span + ''.join(split_orig[ops[1]:ops[2]]) + '</span>'
 
     return corrections
 
@@ -92,7 +109,5 @@ async def get_gpt_correction(message):
 
     #corrected_message = 'Corrected message'
     corrections = remedy_corrections(message, message_response)
-    print(message_response)
-    print(corrections)
 
     return corrections
