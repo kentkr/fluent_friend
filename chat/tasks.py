@@ -43,9 +43,11 @@ async def get_gpt_response(message_history):
     return message_response
 
 def remedy_corrections(original_message, corrected_message):
+    print(original_message)
+    print(corrected_message)
     # split text - retain spaces, ignore '-'
-    split_orig = re.findall(r'\b\w+(?:-\w+)*|[^\w\s]|\s', original_message)
-    split_corrected = re.findall(r'\b\w+(?:-\w+)*|[^\w\s]|\s', corrected_message)
+    split_orig = re.findall(r'\s?\w+(?:-\w+)*\s?|[^\w\s]', original_message)
+    split_corrected = re.findall(r'\s?\w+(?:-\w+)*\s?|[^\w\s]', corrected_message)
 
     replace_delete_span = '<span class="correction-delete">'
     insert_span = '<span class="correction-insert">'
@@ -54,28 +56,20 @@ def remedy_corrections(original_message, corrected_message):
     seq = difflib.SequenceMatcher(None, split_orig, split_corrected)
     corrections = ''
     for ops in seq.get_opcodes():
+        print(ops)
         if ops[0] == 'equal':
+            print('Equal:', split_corrected[ops[3]:ops[4]])
             corrections += ''.join(split_corrected[ops[3]:ops[4]])
         if ops[0] == 'replace':
-            len_orig = len(split_orig[ops[1]:ops[2]])
-            len_corrected = len(split_corrected[ops[3]:ops[4]])
-            # iteratre through each word 
-            for i in range(min(len_orig, len_corrected)):
-                # if orig out of bounds - take rest of corrected and break
-                if i == len_orig:
-                    corrections += insert_span + ''.join(split_corrected[ops[3]:ops[4]][i:]) + '</span>'
-                    break
-                # if corrected out of bounds - test rest of orig and break
-                if i == len_corrected:
-                    corrections += replace_delete_span + ''.join(split_orig[ops[1]:ops[2]][i:]) + '</span>'
-                    break
-
-                # otherwise append each word to corrections
-                corrections += replace_delete_span + split_orig[ops[1]:ops[2]][i] + '</span>' + ' ' # space to improve readbility
-                corrections += insert_span + split_corrected[ops[3]:ops[4]][i] + '</span>'
+            print('Replace:', split_orig[ops[1]:ops[2]], split_corrected[ops[3]:ops[4]])
+            # otherwise append each word to corrections
+            corrections += replace_delete_span + ''.join(split_orig[ops[1]:ops[2]]) + '</span>' + ' ' # space to improve readbility
+            corrections += insert_span + ''.join(split_corrected[ops[3]:ops[4]]) + '</span>'
         if ops[0] == 'insert':
+            print('Insert:', split_corrected[ops[3]:ops[4]])
             corrections += insert_span + ''.join(split_corrected[ops[3]:ops[4]]) + '</span>'
         if ops[0] == 'delete':
+            print('Delete:', split_orig[ops[1]:ops[2]])
             corrections += replace_delete_span + ''.join(split_orig[ops[1]:ops[2]]) + '</span>'
 
     return corrections
