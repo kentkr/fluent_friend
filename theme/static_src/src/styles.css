@@ -25,5 +25,6 @@
 }
 
 .correction-delete {
-    @apply bg-red bg-opacity-30
+    @apply bg-red bg-opacity-30;
+    text-decoration: line-through;
 }
