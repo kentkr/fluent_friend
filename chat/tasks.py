@@ -46,8 +46,8 @@ def remedy_corrections(original_message, corrected_message):
     print(original_message)
     print(corrected_message)
     # split text - retain spaces, ignore '-'
-    split_orig = re.findall(r'\s?\w+(?:-\w+)*\s?|[^\w\s]', original_message)
-    split_corrected = re.findall(r'\s?\w+(?:-\w+)*\s?|[^\w\s]', corrected_message)
+    split_orig = re.findall(r'\s?\w+(?:-\w+)*|\s?[^\w\s]', original_message)
+    split_corrected = re.findall(r'\s?\w+(?:-\w+)*|\s?[^\w\s]', corrected_message)
 
     replace_delete_span = '<span class="correction-delete">'
     insert_span = '<span class="correction-insert">'
