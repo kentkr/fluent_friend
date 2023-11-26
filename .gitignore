@@ -136,3 +136,6 @@ staticfiles/
 
 # tmp file
 tmp.py
+
+# ds store
+.DS_Store
