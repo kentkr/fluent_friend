@@ -10,8 +10,6 @@ import difflib
 import openai
 from decouple import config
 
-import asyncio
-import time
 from asgiref.sync import sync_to_async
 
 async def get_gpt_response(message_history):
