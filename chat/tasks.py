@@ -43,8 +43,6 @@ async def get_gpt_response(message_history):
     return message_response
 
 def remedy_corrections(original_message, corrected_message):
-    print(original_message)
-    print(corrected_message)
     # split text - retain spaces, ignore '-'
     split_orig = re.findall(r'\s?\w+(?:-\w+)*|\s?[^\w\s]', original_message)
     split_corrected = re.findall(r'\s?\w+(?:-\w+)*|\s?[^\w\s]', corrected_message)
@@ -56,20 +54,15 @@ def remedy_corrections(original_message, corrected_message):
     seq = difflib.SequenceMatcher(None, split_orig, split_corrected)
     corrections = ''
     for ops in seq.get_opcodes():
-        print(ops)
         if ops[0] == 'equal':
-            print('Equal:', split_corrected[ops[3]:ops[4]])
             corrections += ''.join(split_corrected[ops[3]:ops[4]])
         if ops[0] == 'replace':
-            print('Replace:', split_orig[ops[1]:ops[2]], split_corrected[ops[3]:ops[4]])
             # otherwise append each word to corrections
             corrections += replace_delete_span + ''.join(split_orig[ops[1]:ops[2]]) + '</span>' + ' ' # space to improve readbility
             corrections += insert_span + ''.join(split_corrected[ops[3]:ops[4]]) + '</span>'
         if ops[0] == 'insert':
-            print('Insert:', split_corrected[ops[3]:ops[4]])
             corrections += insert_span + ''.join(split_corrected[ops[3]:ops[4]]) + '</span>'
         if ops[0] == 'delete':
-            print('Delete:', split_orig[ops[1]:ops[2]])
             corrections += replace_delete_span + ''.join(split_orig[ops[1]:ops[2]]) + '</span>'
 
     return corrections
