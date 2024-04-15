@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "chat",
     "theme",
     'django_extensions',
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -54,7 +55,9 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            BASE_DIR / "templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -151,3 +154,6 @@ CHATTERBOT = {
 
 # Tailwind
 TAILWIND_APP_NAME = "theme"
+
+# Login page
+LOGIN_REDIRECT_URL = "/"
