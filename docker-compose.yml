@@ -3,7 +3,7 @@ version: "3.11"
 services:
   web:
     build: .
-    entrypoint: ["/code/entrypoint.sh"]
+    entrypoint: "/code/entrypoint.sh"
     command: 
       - python3 manage.py tailwind start
       - python manage.py runserver 0.0.0.0:8000
