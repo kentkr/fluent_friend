@@ -12,6 +12,7 @@ RUN apt-get update -y && \
     apt-get install -y netcat-openbsd && \
     apt-get install -y nodejs && \
     apt-get install -y npm && \
+    npm install && \
     pip install --upgrade pip && \
     pip install -r requirements.txt
 
