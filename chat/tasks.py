@@ -1,5 +1,4 @@
 from asgiref.sync import async_to_sync
-from celery import shared_task
 from channels.layers import get_channel_layer
 import re
 
@@ -24,7 +23,7 @@ async def get_gpt_response(message_history):
     messages += message_history
 
     response_json = await async_chat_creation(
-        model = 'gpt-3.5-turbo-0613',
+        model = 'gpt-3.5-turbo',
         messages = messages,
         n = 1,
         max_tokens = 200,
@@ -80,7 +79,7 @@ async def get_gpt_correction(message):
     """
 
     response_json = await async_chat_creation(
-        model = 'gpt-3.5-turbo-0613',
+        model = 'gpt-3.5-turbo',
         messages = [
             {'role': 'system', 'content': system_prompt},
             {'role': 'user', 'content': message}
