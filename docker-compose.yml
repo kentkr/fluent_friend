@@ -17,6 +17,8 @@ services:
     depends_on:
       - redis
       - db
+    environment:
+      - DB_HOSTNAME=db
   db:
     image: postgres:16
     restart: unless-stopped

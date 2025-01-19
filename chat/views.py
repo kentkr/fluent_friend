@@ -6,3 +6,6 @@ class ChatView(TemplateView):
 
 class AboutView(TemplateView):
     template_name: str = "chat/about.html"
+
+class JournalEntryView(TemplateView):
+    template_name: str = "chat/journal_entry.html"

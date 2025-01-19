@@ -48,3 +48,4 @@ whitenoise==6.5.0
 wrapt==1.17.0
 yarl==1.18.3
 zope.interface==7.2
+python-dotenv==1.0.1
