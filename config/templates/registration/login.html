@@ -1,7 +1,15 @@
+{% extends 'base.html' %} {% block body %}
 
-<h2>Log In</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form }}
-  <button type="submit">Log In</button>
-</form>
+<div class="h-screen bg-foreground">
+    <h2>Log In</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form }}
+      <button type="submit">Log In</button>
+    </form>
+    
+    <p>Not signed up? <a class="text-green" href="/accounts/signup">Click here</a></p>
+    <p>Can't remember your password? <a class="text-green" href="/accounts/password_reset">Reset it here</a></p>
+</div>
+
+{% endblock %}

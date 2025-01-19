@@ -121,10 +121,6 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Celery
-CELERY_BROKER_URL = config("REDIS_BACKEND")
-CELERY_RESULT_BACKEND = config("REDIS_BACKEND")
-
 # Redis Cache
 CACHES = {
     "default": {
@@ -143,16 +139,9 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Chatterbot
-CHATTERBOT = {
-    "name": "User Support Bot",
-    "logic_adapters": [
-        "chatterbot.logic.BestMatch",
-    ],
-}
-
 # Tailwind
 TAILWIND_APP_NAME = "theme"
 
 # Login page
 LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
