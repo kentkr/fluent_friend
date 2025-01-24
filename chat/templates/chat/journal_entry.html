@@ -1,7 +1,20 @@
+
 {% extends 'base.html' %} {% block body %}
+<style>
+.entry-list {
+    @apply bg-red bg-opacity-30;
+    text-decoration: line-through;
+}
+</style>
 
 <div class="p-6 flex flex-col w-full h-screen bg-foreground">
-    <p>Hi</p>
+    <div>
+        <div class="bg-red text-cyan">
+            {% for entry in entries %}
+                <p>{{ entry.entry_name }}</p>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 
 {% endblock %}
