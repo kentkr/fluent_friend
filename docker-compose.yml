@@ -18,6 +18,7 @@ services:
       - db
     environment:
       - DB_HOSTNAME=db
+      - DEBUG=False
   db:
     image: postgres:16
     restart: unless-stopped
