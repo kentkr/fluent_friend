@@ -28,3 +28,19 @@
     @apply bg-red bg-opacity-30;
     text-decoration: line-through;
 }
+
+.journal-list {
+    @apply text-background; 
+    @apply border border-background;
+    @apply min-w-48;
+    @apply p-2;
+    @apply m-2;
+}
+
+.journal-entry {
+    @apply text-background;
+    @apply border border-background rounded-sm;
+    @apply p-2;
+    @apply m-2;
+    @apply flex-1;
+}

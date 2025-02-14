@@ -7,14 +7,26 @@
 }
 </style>
 
-<div class="p-6 flex flex-col w-full h-screen bg-foreground">
-    <div>
-        <div class="bg-green text-red">
-            {% for entry in entries %}
-                <p>{{ entry.entry_name }}</p>
-            {% endfor %}
-        </div>
-    </div>
+<div class="p-6 flex w-full h-screen bg-foreground">
+  <div class="journal-list">
+      {% for entry in entries %}
+        <form action="{% url 'chat:journal_entry_view' %}" method="post" class="inline">
+          {% csrf_token %}
+          <input type="hidden" name="entry_id" value="{{ entry.id }}">
+          <button type="submit" class="text-left w-full p-2 hover:bg-gray-100">
+            <p>{{ entry.entry_name }}</p>
+          </button>
+        </form>
+      {% endfor %}
+  </div>
+  <div class="journal-entry">
+    {% if selected_entry %}
+      <div class="mt-4 p-4 border rounded">
+        <h2 class="text-xl font-bold">{{ selected_entry.entry_name }}</h2>
+        <p class="mt-2">{{ selected_entry.text }}</p>  
+      </div>
+    {% endif %}
+  </div>
 </div>
 
 {% endblock %}
