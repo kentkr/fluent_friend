@@ -10,23 +10,56 @@
 <div class="p-6 flex w-full h-screen bg-foreground">
   <div class="journal-list">
       {% for entry in entries %}
-        <form action="{% url 'chat:journal_entry_view' %}" method="post" class="inline">
           {% csrf_token %}
           <input type="hidden" name="entry_id" value="{{ entry.id }}">
           <button type="submit" class="text-left w-full p-2 hover:bg-gray-100">
             <p>{{ entry.entry_name }}</p>
           </button>
-        </form>
       {% endfor %}
   </div>
   <div class="journal-entry">
-    {% if selected_entry %}
       <div class="mt-4 p-4 border rounded">
-        <h2 class="text-xl font-bold">{{ selected_entry.entry_name }}</h2>
-        <p class="mt-2">{{ selected_entry.text }}</p>  
+        <h2 class="text-xl font-bold">asdf</h2>
+        <p class="mt-2">asdf</p>  
       </div>
-    {% endif %}
   </div>
 </div>
+
+<script>
+  function fetchJournalTitles() {
+    console.log('hi')
+    fetch("{% url 'chat:get_journal_titles' %}", {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+      },
+      credentials: 'include',  // Include cookies for authentication
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);  // Handle errors
+        } else {
+          const entryList = document.getElementById('journal-list');  // Container for the list of titles
+          entryList.innerHTML = '';  // Clear existing content
+
+          // Loop through the entries and create HTML elements for each title
+          data.entries.forEach(entry => {
+            const entryElement = document.createElement('div');
+            entryElement.className = 'text-left w-full p-2 hover:bg-gray-100 cursor-pointer';
+            entryElement.innerHTML = `<p>${entry.entry_name}</p>`;
+
+            // Add a click event listener to fetch the full entry when clicked
+            entryElement.addEventListener('click', () => fetchJournalEntry(entry.id));
+
+            entryList.appendChild(entryElement);  // Add the entry to the list
+          });
+        }
+      })
+      .catch(error => console.error('Error fetching journal titles:', error));
+  }
+
+</script>
 
 {% endblock %}
