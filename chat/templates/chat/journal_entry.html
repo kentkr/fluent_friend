@@ -8,16 +8,9 @@
 </style>
 
 <div class="p-6 flex w-full h-screen bg-foreground">
-  <div class="journal-list">
-      {% for entry in entries %}
-          {% csrf_token %}
-          <input type="hidden" name="entry_id" value="{{ entry.id }}">
-          <button type="submit" class="text-left w-full p-2 hover:bg-gray-100">
-            <p>{{ entry.entry_name }}</p>
-          </button>
-      {% endfor %}
-  </div>
-  <div class="journal-entry">
+  <ol class="journal-list" id="journal-list">
+  </ol>
+  <div class="journal-entry" id="journal-entry">
       <div class="mt-4 p-4 border rounded">
         <h2 class="text-xl font-bold">asdf</h2>
         <p class="mt-2">asdf</p>  
@@ -26,39 +19,75 @@
 </div>
 
 <script>
-  function fetchJournalTitles() {
-    console.log('hi')
-    fetch("{% url 'chat:get_journal_titles' %}", {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
-      },
-      credentials: 'include',  // Include cookies for authentication
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.error) {
-          alert(data.error);  // Handle errors
-        } else {
-          const entryList = document.getElementById('journal-list');  // Container for the list of titles
-          entryList.innerHTML = '';  // Clear existing content
-
-          // Loop through the entries and create HTML elements for each title
-          data.entries.forEach(entry => {
-            const entryElement = document.createElement('div');
-            entryElement.className = 'text-left w-full p-2 hover:bg-gray-100 cursor-pointer';
-            entryElement.innerHTML = `<p>${entry.entry_name}</p>`;
-
-            // Add a click event listener to fetch the full entry when clicked
-            entryElement.addEventListener('click', () => fetchJournalEntry(entry.id));
-
-            entryList.appendChild(entryElement);  // Add the entry to the list
-          });
-        }
-      })
-      .catch(error => console.error('Error fetching journal titles:', error));
+  function create_entry_list_html(entry_id, entry_name) {
+    // update the list of titles
+    const html = `
+      <li class="text-left w-full p-2 hover:bg-gray-100" onclick="update_entry(${entry_id})">
+        <button type="submit">
+          <p>${entry_name}</p>
+        </button>
+      </li>
+    `;
+    const ol = document.getElementById('journal-list');
+    ol.insertAdjacentHTML('beforeend', html);
   }
+
+  async function fetch_journal_titles() {
+    // get request to list of journals api
+    const url = "{% url 'chat:get_journal_titles' %}";
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const json = await response.json();
+      return json;
+    } catch (error) {
+      console.error(error.message);
+    }
+    console.log('hi')
+  }
+
+  async function update_titles() {
+    // get titles then update list of entries
+    // do we need to clear <ol> just in case?
+    const titles = await fetch_journal_titles();
+    for (const title of titles.entries) {
+      create_entry_list_html(title.id, title.entry_name);
+    }
+  }
+
+  async function fetch_journal_entry(entry_id) {
+    // get request to list of journals api
+    const url = `{% url 'chat:get_journal_entry' %}?entry_id=${entry_id}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const json = await response.json();
+      return json;
+    } catch (error) {
+      console.error(error.message);
+    }
+    console.log('hi')
+  }
+
+  async function update_entry(entry_id) {
+    const entry = await fetch_journal_entry(entry_id);
+    const html = `
+      <div class="mt-4 p-4 border rounded">
+        <h2 class="text-xl font-bold">${entry.entry_name}</h2>
+        <p class="mt-2">${entry.text}</p>  
+      </div>
+    `;
+    const div = document.getElementById('journal-entry');
+    div.innerHTML = html;
+  }
+
+  // main
+  update_titles();
+
 
 </script>
 

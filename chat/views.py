@@ -31,7 +31,7 @@ def get_journal_titles(request: HttpRequest) -> JsonResponse:
     user_id = request.user.id
     entries = JournalEntry.objects.filter(user_id = user_id).values('id', 'entry_name')
     response = JsonResponse({
-        'tmp': list(entries),
+        'entries': list(entries),
     })
     return response
     #return JsonResponse({'error': 'entry id not provided'})
@@ -43,6 +43,7 @@ def get_journal_entry(request: HttpRequest) -> JsonResponse:
     if entry_id:
         entry = get_object_or_404(JournalEntry, id=entry_id, user_id=request.user.id)
         response = JsonResponse({
+            'id': entry.id,
             'entry_name': entry.entry_name,
             'text': entry.text
         })
