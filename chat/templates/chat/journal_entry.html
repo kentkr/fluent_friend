@@ -11,13 +11,20 @@
   <ol class="journal-list" id="journal-list">
   </ol>
   <div class="journal-entry" id="journal-entry">
-      <div class="mt-4 p-4 border rounded">
-        <h2 class="text-xl font-bold">asdf</h2>
-        <p class="mt-2">asdf</p>  
+      <div class="p-4 border rounded">
+        <h2 class="p-2 text-xl font-bold" contenteditable="true">Thassles and thives</h2>
+        <div id="editor"></div>
       </div>
   </div>
 </div>
 
+<!-- 
+  this is where quill comes from 
+  might be useful to install with npm
+  for offline dev
+-->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 <script>
   function create_entry_list_html(entry_id, entry_name) {
     // update the list of titles
@@ -76,7 +83,7 @@
   async function update_entry(entry_id) {
     const entry = await fetch_journal_entry(entry_id);
     const html = `
-      <div class="mt-4 p-4 border rounded">
+      <div class="p-4 border rounded">
         <h2 class="text-xl font-bold">${entry.entry_name}</h2>
         <p class="mt-2">${entry.text}</p>  
       </div>
@@ -88,6 +95,69 @@
   // main
   update_titles();
 
+  const quill = new Quill('#editor', {
+    modules: {
+      toolbar: [
+        [{header: [1, 2, false]}],
+        ['bold', 'italic', 'underline'],
+      ]
+    },
+    placeholder: 'Write here',
+    theme: 'snow',
+  });
+
+  let log = []; // Array to store deltas
+  let deltaBuffer = []; // Temporary buffer to accumulate deltas
+  
+  // Function to handle text changes
+  function handleTextChange(delta) {
+    if (delta) {
+      deltaBuffer.push(delta); // Accumulate deltas in the buffer
+    }
+  }
+  
+  // Attach the handler to the text-change event
+  quill.on(Quill.events.TEXT_CHANGE, handleTextChange);
+  
+  // Function to log deltas every 100ms
+  setInterval(() => {
+    if (deltaBuffer.length > 0) {
+      // Combine all deltas in the buffer into a single delta
+      const combinedDelta = deltaBuffer.reduce((acc, curr) => acc.compose(curr));
+      log.push(combinedDelta); // Add the combined delta to the log
+      console.log('Logged Delta:', combinedDelta); // Log the combined delta
+      deltaBuffer = []; // Clear the buffer
+    }
+  }, 1000); // Run every 100ms
+
+  const Inline = Quill.import('blots/inline');
+
+  class TailwindStyledBlot extends Inline {
+    static create(value) {
+      const node = super.create();
+      node.classList.add(...value.split(' ')); // Add Tailwind classes
+      return node;
+    }
+
+    static formats(node) {
+      return node.className; // Return the class name for serialization
+    }
+  }
+
+  TailwindStyledBlot.blotName = 'tailwind-styled';
+  TailwindStyledBlot.tagName = 'span'; // Use a span for inline styling
+  Quill.register(TailwindStyledBlot);
+
+  var delta = {
+    ops: [
+      {
+        insert: "asdf",
+        attributes: {
+          "tailwind-styled": "underline decoration-red decoration-wavy"
+        }
+      }
+    ]
+  };
 
 </script>
 
