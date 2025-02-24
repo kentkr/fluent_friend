@@ -44,3 +44,53 @@
     @apply m-2;
     @apply flex-1;
 }
+
+.ql-error-tooltip {
+  display: none;
+  position: absolute;
+  background: #333;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ql-error {
+    @apply text-background;
+    @apply bg-red bg-opacity-30;
+    @apply relative;
+}
+
+.ql-error-tooltip {
+    display: none;
+    @apply bg-green bg-opacity-30; 
+    @apply text-background;
+    @apply absolute;
+}
+
+.ql-error:hover .ql-error-tooltip {
+  display: block;
+}
+
+.ql-error-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%; /* Position the arrow at the bottom of the tooltip */
+    left: 50%; /* Center the arrow */
+    transform: translateX(-50%); /* Adjust for centering */
+    border-width: 5px; /* Arrow size */
+    border-style: solid;
+    border-color: #ffebee transparent transparent transparent; /* Arrow color */
+}
+
+.ql-toolbar {
+  @apply z-20; /* Ensure it's in front */
+}
+
+.ql-container {
+  @apply z-10; /* Keep the editor behind */
+}

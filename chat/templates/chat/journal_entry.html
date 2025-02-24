@@ -131,33 +131,33 @@
   }, 1000); // Run every 100ms
 
   const Inline = Quill.import('blots/inline');
-
-  class TailwindStyledBlot extends Inline {
-    static create(value) {
+  
+  class ErrorBlot extends Inline {
+    static create(message) {
       const node = super.create();
-      node.classList.add(...value.split(' ')); // Add Tailwind classes
+      node.classList.add('ql-error');
+  
+      const tooltip = document.createElement('span');
+      //tooltip.classList.add('ql-error-tooltip');
+      tooltip.classList.add('ql-error-tooltip');
+      tooltip.textContent = message;
+  
+      node.appendChild(tooltip);
       return node;
     }
-
+  
     static formats(node) {
-      return node.className; // Return the class name for serialization
+      const tooltip = node.querySelector('.ql-error-tooltip');
+      return tooltip ? tooltip.textContent : '';
     }
   }
-
-  TailwindStyledBlot.blotName = 'tailwind-styled';
-  TailwindStyledBlot.tagName = 'span'; // Use a span for inline styling
-  Quill.register(TailwindStyledBlot);
-
-  var delta = {
-    ops: [
-      {
-        insert: "asdf",
-        attributes: {
-          "tailwind-styled": "underline decoration-red decoration-wavy"
-        }
-      }
-    ]
-  };
+  
+  ErrorBlot.blotName = 'error';
+  ErrorBlot.tagName = 'span';
+  Quill.register(ErrorBlot);
+  
+  quill.setText('This is some text.');
+  quill.formatText(0, 4, 'error', 'This is an error message');
 
 </script>
 
