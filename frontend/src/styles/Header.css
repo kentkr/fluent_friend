@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+
+.x {
+    @apply bg-black;
+}
