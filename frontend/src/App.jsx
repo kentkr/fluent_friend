@@ -20,7 +20,7 @@ function RegisterAndLogout() {
 function App() {
   return (
     <>
-    <Header/>
+      <Header/>
         <BrowserRouter>
           <Routes>
             <Route
