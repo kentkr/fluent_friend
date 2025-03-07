@@ -22,6 +22,7 @@ const MenuBar = () => {
 
   return (
     <div className="control-group">
+        <div className='bg-foreground'>asdf</div>
       <div className="button-group">
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
