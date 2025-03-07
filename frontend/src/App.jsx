@@ -6,6 +6,7 @@ import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Header from "./components/Header"
 import Journal from "./pages/Journal"
+import Game from "./pages/tutorial"
 
 function Logout() {
   localStorage.clear()
@@ -20,7 +21,7 @@ function RegisterAndLogout() {
 function App() {
   return (
     <>
-      <Header/>
+      {/*<Header/>*/}
         <BrowserRouter>
           <Routes>
             <Route
@@ -35,6 +36,7 @@ function App() {
             <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<RegisterAndLogout />} />
             <Route path="/journal" element={<Journal />} />
+            <Route path="/tutorial" element={<Game />} />
             <Route path="*" element={<NotFound />}></Route>
           </Routes>
         </BrowserRouter>
