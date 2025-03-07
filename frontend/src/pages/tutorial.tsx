@@ -1,7 +1,12 @@
 import '../styles/tutorial.css'
 import { useState } from 'react';
 
-function Square({ value, onSquareClick }) {
+interface SquareProps {
+    value: string;
+    onSquareClick: () => void;
+}
+
+function Square({value, onSquareClick}: SquareProps) {
   return (
     <button className="square" onClick={onSquareClick}>
       {value}
@@ -9,12 +14,18 @@ function Square({ value, onSquareClick }) {
   );
 }
 
-function Board({ xIsNext, squares, onPlay }) {
-  function handleClick(i) {
+interface BoardProps {
+    xIsNext: boolean, 
+    squares: Array<string>, 
+    onPlay: (value: Array<string>) => void
+}
+
+function Board({xIsNext, squares, onPlay}: BoardProps) {
+  function handleClick(i: number) {
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
-    const nextSquares = squares.slice();
+    const nextSquares: Array<string> = squares.slice();
     if (xIsNext) {
       nextSquares[i] = 'X';
     } else {
@@ -59,13 +70,13 @@ export default function Game() {
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
-  function handlePlay(nextSquares) {
+  function handlePlay(nextSquares: Array<string>) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
 
-  function jumpTo(nextMove) {
+  function jumpTo(nextMove: number) {
     setCurrentMove(nextMove);
   }
 
@@ -95,7 +106,7 @@ export default function Game() {
   );
 }
 
-function calculateWinner(squares) {
+function calculateWinner(squares: Array<string>) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
