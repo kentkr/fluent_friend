@@ -22,7 +22,12 @@
 }
 
 /* overwrite default body to fill screen */
-body {
-    margin: 0;
-    height: 100%;
+html, body {
+  @apply h-full w-full;
+  @apply m-0;
+}
+
+#root {
+    @apply h-full w-full;
+    @apply flex flex-col;
 }

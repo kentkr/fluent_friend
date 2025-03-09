@@ -22,7 +22,7 @@ function RegisterAndLogout() {
 
 function App() {
   return (
-    <div className='fill-window y'>
+    <>
       <Header/>
         <BrowserRouter>
           <Routes>
@@ -42,7 +42,7 @@ function App() {
             <Route path="*" element={<NotFound />}></Route>
           </Routes>
         </BrowserRouter>
-    </div>
+    </>
   )
 }
 
