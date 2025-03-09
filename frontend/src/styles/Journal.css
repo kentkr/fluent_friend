@@ -16,3 +16,8 @@
     @apply flex-1;
     @apply p-2;
 }
+
+.suggestion-text {
+    @apply text-red;
+    @apply bg-cyan;
+}
