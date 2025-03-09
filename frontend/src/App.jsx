@@ -1,3 +1,5 @@
+import './styles/theme.css'
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
@@ -20,8 +22,8 @@ function RegisterAndLogout() {
 
 function App() {
   return (
-    <>
-      {/*<Header/>*/}
+    <div className='fill-window y'>
+      <Header/>
         <BrowserRouter>
           <Routes>
             <Route
@@ -40,7 +42,7 @@ function App() {
             <Route path="*" element={<NotFound />}></Route>
           </Routes>
         </BrowserRouter>
-    </>
+    </div>
   )
 }
 

@@ -1,6 +1,7 @@
 
 @import 'tailwindcss';
 
+/* set tailwind theme */
 @theme {
     --color-black: #000000;
     --color-background: #16172d;
@@ -18,4 +19,10 @@
     --color-red: #e33400;
     --color-foreground: #e6e8cc;
     --color-white: #ffffff;
+}
+
+/* overwrite default body to fill screen */
+body {
+    margin: 0;
+    height: 100%;
 }
