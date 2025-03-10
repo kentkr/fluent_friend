@@ -17,7 +17,7 @@ function Journal() {
     }, []);
     const getNotes = () => {
         api
-            .get("/api/notes/")
+            .get("/api/journal_entries/")
             .then((res) => res.data)
             .then((data) => {
                 setNotes(data);
