@@ -1,17 +1,22 @@
 
-function Journal() {
-  return (
-      <Editor/>
-  )
-}
-
 import StarterKit from '@tiptap/starter-kit'
 import { CommandManager, CommandProps, Mark, mergeAttributes } from '@tiptap/core'
 import { EditorContent, useEditor } from '@tiptap/react'
 import Underline from '@tiptap/extension-underline'
+import JournalList from '../components/JournalList'
 import '../styles/Journal.css'
 
-import { RawCommands } from "@tiptap/react";
+function Journal() {
+  return (
+      <>
+        <div className='page-container'>
+            <JournalList/>
+            <Editor/>
+        </div>
+      </>
+  )
+}
+
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
