@@ -6,7 +6,20 @@ import Underline from '@tiptap/extension-underline'
 import JournalList from '../components/JournalList'
 import '../styles/Journal.css'
 
+// api
+import api from "../api";
+
 function Journal() {
+    const getNotes = () => {
+        api
+            .get("/api/notes/")
+            .then((res) => res.data)
+            .then((data) => {
+                setNotes(data);
+                console.log(data);
+            })
+            .catch((err) => alert(err));
+    };
   return (
       <>
         <div className='page-container'>
