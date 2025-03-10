@@ -1,6 +1,6 @@
 import '../styles/theme.css'
 
-function JournalList({ entry }): JSX.Element {
+function JournalList(): JSX.Element {
     return ( 
         <>
             <div className="p-2 w-1/4 border boder-background bg-foreground flex flex-col">

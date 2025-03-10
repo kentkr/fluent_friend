@@ -8,8 +8,13 @@ import '../styles/Journal.css'
 
 // api
 import api from "../api";
+import { useState, useEffect } from 'react'
 
 function Journal() {
+    const [notes, setNotes] = useState([]);
+    useEffect(() => {
+        getNotes();
+    }, []);
     const getNotes = () => {
         api
             .get("/api/notes/")
@@ -20,6 +25,7 @@ function Journal() {
             })
             .catch((err) => alert(err));
     };
+    window.tmp = notes;
   return (
       <>
         <div className='page-container'>
@@ -82,6 +88,7 @@ const SuggestionMark = Mark.create({
 declare global {
   interface Window {
     editor: any; // Replace 'any' with a more specific type if possible
+    tmp: any;
   }
 }
 
