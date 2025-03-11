@@ -16,8 +16,8 @@ class Note(models.Model):
 class JournalEntries(models.Model):
     # by default PK id will be created
     user = models.ForeignKey(User, on_delete=models.CASCADE) # id gets appended here
-    title = models.CharField(max_length=255)
-    text = models.TextField()
+    title = models.CharField(max_length=255, null = True)
+    text = models.TextField(null = True)
 
     class Meta:
         db_table = 'journal_entries'  # Custom table name

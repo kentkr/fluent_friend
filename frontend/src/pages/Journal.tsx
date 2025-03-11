@@ -10,8 +10,19 @@ import '../styles/Journal.css'
 import api from "../api";
 import { useState, useEffect } from 'react'
 
+export interface EntryObj {
+    id: number;
+    user: number;
+    title: string | null;
+    text: string | null;
+} 
+
+interface Entries {
+    entries: Array<EntryObj | null>
+}
+
 function Journal() {
-    const [entries, setEntries] = useState([]);
+    const [entries, setEntries] = useState<EntryObj[]>([]);
     useEffect(() => {
         getEntries();
     }, []);
@@ -27,10 +38,27 @@ function Journal() {
             .catch((err) => alert(err));
     };
     window.tmp = entries;
+
+    function newEntry() {
+        console.log('adding new entry')
+        api 
+            .post("/api/journal_entries/", {})
+            .then((res) => res.data)
+            .then((data) => {
+                const newObj: EntryObj = {
+                    id: 5,
+                    user: 1,
+                    title: null,
+                    text: null
+                }
+                setEntries(entries => [...entries, newObj])
+            })
+    }
+
   return (
       <>
         <div className='page-container'>
-            <JournalList entries={entries}/>
+            <JournalList entries={entries} newEntry={newEntry}/>
             <Editor/>
         </div>
       </>

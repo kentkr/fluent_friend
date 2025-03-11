@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics
+from rest_framework.views import Request
 from .serializers import JournalSerializer, UserSerializer, NoteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import JournalEntries, Note
@@ -42,10 +43,16 @@ class JournalListCreate(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return JournalEntries.objects.filter(user_id=user)
+        return JournalEntries.objects.filter(user=user)
 
     def perform_create(self, serializer):
         if serializer.is_valid():
-            serializer.save(author=self.request.user)
+            serializer.save(user=self.request.user)
         else:
             print(serializer.errors)
+
+
+class JournalEntryInit(generics.CreateAPIView):
+    serializer_class = JournalSerializer
+    permission_classes = [IsAuthenticated]
+
