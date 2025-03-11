@@ -26,3 +26,4 @@ class JournalSerializer(serializers.ModelSerializer):
     class Meta:
         model = JournalEntries
         fields = JournalEntries.get_field_names()
+        extra_kwargs = {"user": {"read_only": True}}

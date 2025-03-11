@@ -1,7 +1,9 @@
 import '../styles/theme.css'
+import { EntryObj } from '../pages/Journal'
 
 interface JournalListProps {
-    entries: Array<Entry>;
+    entries: EntryObj[];
+    newEntry: CallableFunction;
 }
 
 function onDelete() {
@@ -12,7 +14,8 @@ function onEdit() {
     console.log('edit');
 }
 
-function JournalList({ entries }: JournalListProps): JSX.Element {
+function JournalList({ entries, newEntry }: JournalListProps): JSX.Element {
+
     return ( 
         <>
             <div className="p-2 w-1/4 border boder-background bg-foreground flex flex-col">
@@ -21,38 +24,31 @@ function JournalList({ entries }: JournalListProps): JSX.Element {
                     <ol>
                     {
                         entries.map((entry) => (
-                            <Tmp entry={entry} onDelete={onDelete} onEdit={onEdit} key={entry.id}/>
+                            <Entry entry={entry} onDelete={onDelete} onEdit={onEdit} key={entry.id}/>
                         ))
                     }
                     </ol>
-                    <button>+</button>
+                    <button onClick={() => newEntry()}>+</button>
                 </div>
             </div>
         </>
     )
 }
 
-interface Entry {
-    id: number;
-    user: number;
-    title: string;
-    text: string
-} 
-
-interface TmpProps {
-    entry: Entry;
+interface EntryProps {
+    entry: EntryObj;
     onDelete: CallableFunction;
     onEdit: CallableFunction;
 }
 
-function Tmp({ entry, onDelete, onEdit }: TmpProps): JSX.Element {
+function Entry({ entry, onDelete, onEdit }: EntryProps): JSX.Element {
     return (
         <>
             <li className='flex justify-between m-1' id={entry.id.toString()}>
                 <p>{entry.title}</p>
                 <div>
-                <button onClick={() => onDelete(entry.id)}>e</button>
-                <button onClick={() => onEdit(entry.id)}>-</button>
+                <button onClick={() => onEdit(entry.id)}>e</button>
+                <button onClick={() => onDelete(entry.id)}>-</button>
                 </div>
             </li>
         </>
