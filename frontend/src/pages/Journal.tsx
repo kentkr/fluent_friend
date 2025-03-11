@@ -45,20 +45,26 @@ function Journal() {
             .post("/api/journal_entries/", {})
             .then((res) => res.data)
             .then((data) => {
-                const newObj: EntryObj = {
-                    id: 5,
-                    user: 1,
-                    title: null,
-                    text: null
-                }
-                setEntries(entries => [...entries, newObj])
+                setEntries(entries => [...entries, data])
             })
+    }
+
+    function deleteEntry({ id }: { id: number }) {
+        console.log('deleting entry', id)
+        console.log(`/api/journal_entries/delete/${id}/`)
+        api 
+            .delete(`/api/journal_entries/delete/${id}/`, {})
+            .then((res) => res.data)
+            .then((data) => {
+                setEntries(prevEntries => prevEntries.filter(entry => entry.id !== id))
+            })
+
     }
 
   return (
       <>
         <div className='page-container'>
-            <JournalList entries={entries} newEntry={newEntry}/>
+            <JournalList entries={entries} newEntry={newEntry} deleteEntry={deleteEntry}/>
             <Editor/>
         </div>
       </>

@@ -52,7 +52,12 @@ class JournalListCreate(generics.ListCreateAPIView):
             print(serializer.errors)
 
 
-class JournalEntryInit(generics.CreateAPIView):
+class JournalEntryDelete(generics.DestroyAPIView):
     serializer_class = JournalSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return JournalEntries.objects.filter(user=user)
+
 

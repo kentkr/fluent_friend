@@ -4,6 +4,7 @@ import { EntryObj } from '../pages/Journal'
 interface JournalListProps {
     entries: EntryObj[];
     newEntry: CallableFunction;
+    deleteEntry: CallableFunction;
 }
 
 function onDelete() {
@@ -14,7 +15,7 @@ function onEdit() {
     console.log('edit');
 }
 
-function JournalList({ entries, newEntry }: JournalListProps): JSX.Element {
+function JournalList({ entries, newEntry, deleteEntry }: JournalListProps): JSX.Element {
 
     return ( 
         <>
@@ -24,7 +25,7 @@ function JournalList({ entries, newEntry }: JournalListProps): JSX.Element {
                     <ol>
                     {
                         entries.map((entry) => (
-                            <Entry entry={entry} onDelete={onDelete} onEdit={onEdit} key={entry.id}/>
+                            <Entry entry={entry} onDelete={onDelete} onEdit={onEdit} key={entry.id} deleteEntry={deleteEntry}/>
                         ))
                     }
                     </ol>
@@ -39,16 +40,18 @@ interface EntryProps {
     entry: EntryObj;
     onDelete: CallableFunction;
     onEdit: CallableFunction;
+    deleteEntry: CallableFunction;
 }
 
-function Entry({ entry, onDelete, onEdit }: EntryProps): JSX.Element {
+function Entry({ entry, onDelete, onEdit, deleteEntry }: EntryProps): JSX.Element {
+    console.log(entry.id)
     return (
         <>
             <li className='flex justify-between m-1' id={entry.id.toString()}>
                 <p>{entry.title}</p>
                 <div>
                 <button onClick={() => onEdit(entry.id)}>e</button>
-                <button onClick={() => onDelete(entry.id)}>-</button>
+                <button onClick={() => deleteEntry({id: entry.id})}>-</button>
                 </div>
             </li>
         </>
