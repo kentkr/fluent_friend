@@ -11,25 +11,26 @@ import api from "../api";
 import { useState, useEffect } from 'react'
 
 function Journal() {
-    const [notes, setNotes] = useState([]);
+    const [entries, setEntries] = useState([]);
     useEffect(() => {
-        getNotes();
+        getEntries();
     }, []);
-    const getNotes = () => {
+
+    const getEntries = () => {
         api
             .get("/api/journal_entries/")
             .then((res) => res.data)
             .then((data) => {
-                setNotes(data);
+                setEntries(data);
                 console.log(data);
             })
             .catch((err) => alert(err));
     };
-    window.tmp = notes;
+    window.tmp = entries;
   return (
       <>
         <div className='page-container'>
-            <JournalList/>
+            <JournalList entries={entries}/>
             <Editor/>
         </div>
       </>
@@ -121,6 +122,8 @@ function Editor() {
 
     return (
         <div className='editor-container-0'>
+            <h2 className='title'>Title</h2>
+            <hr></hr>
             <EditorContent editor={editor} className='editor-container-1'/>
         </div>
     )

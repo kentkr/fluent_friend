@@ -25,3 +25,7 @@
 .page-container {
     @apply flex flex-1;
 }
+
+.title {
+    @apply p-2;
+}
