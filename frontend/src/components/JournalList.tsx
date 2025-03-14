@@ -1,21 +1,31 @@
 import '../styles/theme.css'
 import { EntryObj } from '../pages/Journal'
+import { SetStateAction, Dispatch } from 'react';
 
 interface JournalListProps {
     entries: EntryObj[];
     newEntry: CallableFunction;
     deleteEntry: CallableFunction;
+    setCurrEntry: Dispatch<SetStateAction<EntryObj>>;
 }
 
 function onDelete() {
     console.log('delete');
 }
 
-function onEdit() {
-    console.log('edit');
-}
 
-function JournalList({ entries, newEntry, deleteEntry }: JournalListProps): JSX.Element {
+function JournalList({ entries, newEntry, deleteEntry, setCurrEntry }: JournalListProps): JSX.Element {
+    const onEdit = (entry_id: number) => {
+        console.log(entry_id);
+        console.log('editing');
+        for (let i = 0; i < entries.length; i++) {
+            if (entries[i].id === entry_id) {
+                console.log(entries[i])
+                //setCurrEntry(entries[i]);
+                return
+            }
+        }
+    }
 
     return ( 
         <>
