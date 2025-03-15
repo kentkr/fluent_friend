@@ -150,7 +150,7 @@ function Journal() {
 function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, updateTitle: CallableFunction, updateText: CallableFunction }) {
     // debounce on update so we wait to change currEntry
     const onUpdate = useDebouncedOnUpdate(({ editor  }) => {
-          updateText({ text: editor.getText()  });
+          updateText({ text: editor.getHTML()  });
     }, 500);
 
     // init body editor
@@ -176,7 +176,7 @@ function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, 
 
     // when currentry changes, dont update the editor if the change came from the editor
     useEffect(() => {
-        if (editor.getText() === currEntry.text) {
+        if (editor.getHTML() === currEntry.text) {
             return 
         }
         editor.commands.setContent(currEntry.text)
