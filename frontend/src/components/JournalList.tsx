@@ -6,7 +6,7 @@ interface JournalListProps {
     entries: EntryObj[];
     newEntry: CallableFunction;
     deleteEntry: CallableFunction;
-    setCurrEntry: Dispatch<SetStateAction<EntryObj>>;
+    selectEntry: CallableFunction;
 }
 
 function onDelete() {
@@ -14,19 +14,7 @@ function onDelete() {
 }
 
 
-function JournalList({ entries, newEntry, deleteEntry, setCurrEntry }: JournalListProps): JSX.Element {
-    const onEdit = (entry_id: number) => {
-        console.log(entry_id);
-        console.log('editing');
-        for (let i = 0; i < entries.length; i++) {
-            if (entries[i].id === entry_id) {
-                console.log(entries[i])
-                //setCurrEntry(entries[i]);
-                return
-            }
-        }
-    }
-
+function JournalList({ entries, newEntry, deleteEntry, selectEntry }: JournalListProps): JSX.Element {
     return ( 
         <>
             <div className="p-2 w-1/4 border boder-background bg-foreground flex flex-col">
@@ -35,7 +23,7 @@ function JournalList({ entries, newEntry, deleteEntry, setCurrEntry }: JournalLi
                     <ol>
                     {
                         entries.map((entry) => (
-                            <Entry entry={entry} onDelete={onDelete} onEdit={onEdit} key={entry.id} deleteEntry={deleteEntry}/>
+                            <Entry key={entry.id} entry={entry} deleteEntry={deleteEntry} selectEntry={selectEntry}/>
                         ))
                     }
                     </ol>
@@ -48,20 +36,19 @@ function JournalList({ entries, newEntry, deleteEntry, setCurrEntry }: JournalLi
 
 interface EntryProps {
     entry: EntryObj;
-    onDelete: CallableFunction;
-    onEdit: CallableFunction;
     deleteEntry: CallableFunction;
+    selectEntry: CallableFunction;
 }
 
-function Entry({ entry, onDelete, onEdit, deleteEntry }: EntryProps): JSX.Element {
+function Entry({ entry, deleteEntry, selectEntry }: EntryProps): JSX.Element {
     console.log(entry.id)
     return (
         <>
             <li className='flex justify-between m-1' id={entry.id.toString()}>
                 <p>{entry.title}</p>
                 <div>
-                <button onClick={() => onEdit(entry.id)}>e</button>
-                <button onClick={() => deleteEntry({id: entry.id})}>-</button>
+                <button onClick={() => selectEntry({ entry: entry })}>e</button>
+                <button onClick={() => deleteEntry({ id: entry.id} )}>-</button>
                 </div>
             </li>
         </>
