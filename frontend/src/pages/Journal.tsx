@@ -8,20 +8,21 @@ import '../styles/Journal.css'
 import { Dispatch, SetStateAction, useRef, useCallback } from 'react'
 import { Editor as E  } from "@tiptap/react";
 
+// debounce update for editor to avoid overwriting text as its typed
 function useDebouncedOnUpdate(
-  callback: (params: { editor: E; transaction: any }) => void,
-  delay: number
+    callback: (params: { editor: E; transaction: any }) => void,
+    delay: number
 ) {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  return useCallback(({ editor, transaction }: { editor: E; transaction: any }) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = setTimeout(() => {
-      callback({ editor, transaction });
-    }, delay);
-  }, [callback, delay]);
+    return useCallback(({ editor, transaction }: { editor: E; transaction: any }) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+            callback({ editor, transaction });
+        }, delay);
+    }, [callback, delay]);
 }
 
 // api
@@ -39,10 +40,13 @@ interface Entries {
     entries: Array<EntryObj | null>
 }
 
+// actual journal page
 function Journal() {
     const [entries, setEntries] = useState<EntryObj[]>([]);
+    // TODO: update default entry
     const [currEntry, setCurrEntry] = useState<EntryObj>({id: -1, user: -1, title: 'w', text: 'w'});
 
+    // on startup fetch entries
     function getEntries() {
         api
             .get("/api/journal_entries/")
@@ -58,6 +62,7 @@ function Journal() {
         }
     }
 
+    // create new entry
     function newEntry() {
         api 
             .post("/api/journal_entries/", {})
@@ -69,6 +74,7 @@ function Journal() {
         // TODO: make new entry have a default value
     }
 
+    // delete entry 
     function deleteEntry({ id }: { id: number }) {
         api 
             .delete(`/api/journal_entries/delete/${id}/`, {})
@@ -78,12 +84,14 @@ function Journal() {
             })
     }
 
+    // grab en entry to set as curr
     function selectEntry({ entry }: { entry: EntryObj }) {
         setCurrEntry(entry)
         console.log(entry)
     }
 
-    function updateTitle({ title }: { title: string }) {
+    // set title for currEntry, entries, and the db
+    function updateTitle({ title }: { entry_id: number, title: string }) {
         setCurrEntry(prevCurrEntry => ({
             ...prevCurrEntry, title: title
         })) 
@@ -93,10 +101,15 @@ function Journal() {
                 entry.id === currEntry.id ? { ...entry, title: title } : entry
             )
         );
-        api 
-            .put('/api/journal_entries/update/')
+
+        let updatedEntry = currEntry
+        updatedEntry.title = title
+        api
+            .put(`/api/journal_entries/update/${currEntry.id}/`, updatedEntry)
+            .catch((err) => alert(err));
     }
 
+    // set body text for currEntry, entries, and the db
     function updateText({ text }: { text: string }) {
         setCurrEntry(prevCurrEntry => ({
             ...prevCurrEntry, text: text
@@ -107,6 +120,12 @@ function Journal() {
                 entry.id === currEntry.id ? { ...entry, text: text } : entry
             )
         );
+
+        let updatedEntry = currEntry
+        updatedEntry.text = text
+        api
+            .put(`/api/journal_entries/update/${currEntry.id}/`, updatedEntry)
+            .catch((err) => alert(err));
     }
 
     // initially load entries
@@ -134,6 +153,7 @@ function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, 
           updateText({ text: editor.getText()  });
     }, 500);
 
+    // init body editor
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -154,9 +174,7 @@ function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, 
         return null;
     }
 
-    window.editor = editor;
-
-    // this makes sure when we select a new entry it is replaced
+    // when currentry changes, dont update the editor if the change came from the editor
     useEffect(() => {
         if (editor.getText() === currEntry.text) {
             return 
@@ -174,6 +192,7 @@ function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, 
 }
 
 function Title({ currEntry, updateTitle }: { currEntry: EntryObj, updateTitle: CallableFunction }) {
+    // see Editor for notes
     const onUpdate = useDebouncedOnUpdate(({ editor }) => {
         updateTitle({ title: editor.getText()  });
     }, 500);
