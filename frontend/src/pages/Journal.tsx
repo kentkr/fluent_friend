@@ -5,7 +5,24 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import Underline from '@tiptap/extension-underline'
 import JournalList from '../components/JournalList'
 import '../styles/Journal.css'
-import { Dispatch, SetStateAction, useRef } from 'react'
+import { Dispatch, SetStateAction, useRef, useCallback } from 'react'
+import { Editor as E  } from "@tiptap/react";
+
+function useDebouncedOnUpdate(
+  callback: (params: { editor: E; transaction: any }) => void,
+  delay: number
+) {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  return useCallback(({ editor, transaction }: { editor: E; transaction: any }) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      callback({ editor, transaction });
+    }, delay);
+  }, [callback, delay]);
+}
 
 // api
 import api from "../api";
@@ -24,65 +41,35 @@ interface Entries {
 
 function Journal() {
     const [entries, setEntries] = useState<EntryObj[]>([]);
-    const [currEntry, setCurrEntry] = useState<EntryObj>({id: -1, user: -1, title: null, text: null});
+    const [currEntry, setCurrEntry] = useState<EntryObj>({id: -1, user: -1, title: 'w', text: 'w'});
 
-    useEffect(() => {
-        getEntries();
-    }, []);
-
-    // update title or text of current entry if it changes
-    const prevTitle = useRef(currEntry.title);
-    useEffect(() => {
-        if (currEntry.title !== prevTitle.current) {
-            setEntries(prevEntries => {
-                const updatedEntries = [...prevEntries]
-                for (let i = 0; i < updatedEntries.length; i++) {
-                    let entry = updatedEntries[i]
-                    if (entry.id == currEntry.id) {
-                        updatedEntries[i] = { ...updatedEntries[i], title: currEntry.title  }
-                    }
-                }
-                return updatedEntries;
-            });
-        }
-        // update entry
-        if (currEntry.id !== -1) {
-            console.log(`updating ${currEntry.id}, ${currEntry.title} ${currEntry.text}`)
-            api
-                .put(`/api/journal_entries/update/${currEntry.id}/`, currEntry)
-                .catch((err) => alert(err));
-        }
-
-    }, [currEntry])
-
-    const getEntries = () => {
+    function getEntries() {
         api
             .get("/api/journal_entries/")
             .then((res) => res.data)
             .then((data) => {
                 setEntries(data);
-                setCurrEntry(data[0])
                 console.log(data);
             })
             .catch((err) => alert(err));
-    };
-    window.tmp = currEntry;
+        // if no entries create a new one
+        if (!entries) {
+            newEntry()
+        }
+    }
 
     function newEntry() {
-        console.log('adding new entry')
         api 
             .post("/api/journal_entries/", {})
             .then((res) => res.data)
             .then((data) => {
                 setEntries(entries => [...entries, data]);
-                console.log(data)
                 setCurrEntry(data);
             })
+        // TODO: make new entry have a default value
     }
 
     function deleteEntry({ id }: { id: number }) {
-        console.log('deleting entry', id)
-        console.log(`/api/journal_entries/delete/${id}/`)
         api 
             .delete(`/api/journal_entries/delete/${id}/`, {})
             .then((res) => res.data)
@@ -91,19 +78,62 @@ function Journal() {
             })
     }
 
+    function selectEntry({ entry }: { entry: EntryObj }) {
+        setCurrEntry(entry)
+        console.log(entry)
+    }
+
+    function updateTitle({ title }: { title: string }) {
+        setCurrEntry(prevCurrEntry => ({
+            ...prevCurrEntry, title: title
+        })) 
+
+        setEntries(prevEntries =>
+            prevEntries.map(entry =>
+                entry.id === currEntry.id ? { ...entry, title: title } : entry
+            )
+        );
+        api 
+            .put('/api/journal_entries/update/')
+    }
+
+    function updateText({ text }: { text: string }) {
+        setCurrEntry(prevCurrEntry => ({
+            ...prevCurrEntry, text: text
+        })) 
+
+        setEntries(prevEntries =>
+            prevEntries.map(entry =>
+                entry.id === currEntry.id ? { ...entry, text: text } : entry
+            )
+        );
+    }
+
+    // initially load entries
+    useEffect(() => {
+        getEntries();
+        console.log('init')
+    }, []);
+
+    window.tmp = currEntry
+
   return (
       <>
         <div className='page-container'>
-            <JournalList entries={entries} newEntry={newEntry} deleteEntry={deleteEntry} setCurrEntry={setCurrEntry}/>
-            <Editor currEntry={currEntry} setCurrEntry={setCurrEntry}/>
+            <JournalList entries={entries} newEntry={newEntry} deleteEntry={deleteEntry} selectEntry={selectEntry}/>
+            <Editor currEntry={currEntry} updateTitle={updateTitle} updateText={updateText}/>
         </div>
       </>
   )
 }
 
 
-function Editor({ currEntry, setCurrEntry } : { currEntry: EntryObj; setCurrEntry: Dispatch<SetStateAction<EntryObj>> }) {
-    const prevEditorContent = useRef(currEntry.text);
+function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, updateTitle: CallableFunction, updateText: CallableFunction }) {
+    // debounce on update so we wait to change currEntry
+    const onUpdate = useDebouncedOnUpdate(({ editor  }) => {
+          updateText({ text: editor.getText()  });
+    }, 500);
+
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -116,12 +146,7 @@ function Editor({ currEntry, setCurrEntry } : { currEntry: EntryObj; setCurrEntr
             }
         },
         content: `<p>${currEntry.text}</p>`,
-        onUpdate({ editor, transaction }) {
-            setCurrEntry(prevCurrEntry => ({
-                ...prevCurrEntry, text: editor.getText()
-            }))
-            prevEditorContent.current = editor.getText()
-        },
+        onUpdate: onUpdate
     })
 
 
@@ -129,38 +154,36 @@ function Editor({ currEntry, setCurrEntry } : { currEntry: EntryObj; setCurrEntr
         return null;
     }
 
-    // on currentry change then set content of editor
-    useEffect(() => {
-        if (prevEditorContent.current != currEntry.text) {
-            editor.commands.setContent(currEntry.text)
-            prevEditorContent.current = currEntry.text
-        }
-    }, [currEntry])
-
     window.editor = editor;
+
+    // this makes sure when we select a new entry it is replaced
+    useEffect(() => {
+        if (editor.getText() === currEntry.text) {
+            return 
+        }
+        editor.commands.setContent(currEntry.text)
+    }, [currEntry])
 
     return (
         <div className='editor-container-0'>
-            <Title currEntry={currEntry} setCurrEntry={setCurrEntry}/>
+            <Title currEntry={currEntry} updateTitle={updateTitle}/>
             <hr></hr>
             <EditorContent editor={editor} className='editor-container-1'/>
         </div>
     )
 }
 
-function Title({ currEntry, setCurrEntry } : { currEntry: EntryObj; setCurrEntry: Dispatch<SetStateAction<EntryObj>> }) {
-    const prevEditorContent = useRef(currEntry.title);
+function Title({ currEntry, updateTitle }: { currEntry: EntryObj, updateTitle: CallableFunction }) {
+    const onUpdate = useDebouncedOnUpdate(({ editor }) => {
+        updateTitle({ title: editor.getText()  });
+    }, 500);
+
     const title = useEditor({
         extensions: [
             StarterKit,
         ],
         content: currEntry.title,
-        onUpdate({ editor, transaction }) {
-            setCurrEntry(prevCurrEntry => ({
-                ...prevCurrEntry, title: editor.getText()
-            }))
-            prevEditorContent.current = editor.getText();
-        },
+        onUpdate: onUpdate,
     })
 
     if (!title) {
@@ -168,11 +191,12 @@ function Title({ currEntry, setCurrEntry } : { currEntry: EntryObj; setCurrEntry
     }
 
     useEffect(() => {
-        if (prevEditorContent.current !== currEntry.title) {
-            title.commands.setContent(currEntry.title);
-            prevEditorContent.current = currEntry.title;
+        if (title.getText() === currEntry.title) {
+            return 
         }
+        title.commands.setContent(currEntry.title)
     }, [currEntry])
+
     return <EditorContent editor={title}/>
 }
 
