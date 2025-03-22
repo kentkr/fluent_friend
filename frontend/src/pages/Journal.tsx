@@ -155,13 +155,13 @@ function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, 
         extensions: [
             StarterKit,
             Underline,
-            Suggestion
+            Suggestion,
             //SuggestionMark,
             //Highlight.configure({
             //    multicolor: true,
             //    HTMLAttributes: {class: 'x'}
             //}),
-            //SelectionTooltipExtension
+            //SelectionTooltipExtension,
         ],
         editorProps: {
             attributes: {
@@ -469,7 +469,6 @@ const Suggestion = Extension.create({
                             if (node.isText) {
                                 decos.push(
                                     Decoration.inline(pos, pos+1, {class: 'suggestion', key: String(i)}),
-                                    Decoration.widget(pos, randomDiv({parentKey: String(i)}))
                                 )
                                 i += 1
                             }
@@ -487,37 +486,36 @@ const Suggestion = Extension.create({
                 handleClickOn(view, pos, node, nodePos, event, direct) {
                     const clickedElement = event.target as HTMLElement
                     if (clickedElement && clickedElement.className.includes('suggestion')) {
-                        let key = clickedElement.getAttribute('key')
-                        let rect = clickedElement.getBoundingClientRect()
-                        console.log(rect)
-                        if (key) {
-                            let el = document.querySelector(`[parentKey="${key}"]`) as HTMLElement
-                            if (el) {
-                                console.log(el.getBoundingClientRect())
-                                el.style.display = el.style.display === 'none' ? 'block' : 'none'
-
-                                // Get coordinates and positions
-                                let relCoords = view.coordsAtPos(pos);
-                                let viewportHeight = window.innerHeight;
-                                let tooltipHeight = el.offsetHeight;
-                                
-                                // Determine if there's enough space below
-                                let spaceBelow = viewportHeight - rect.bottom;
-                                let spaceNeeded = tooltipHeight + 10; // 10px buffer
-                                
-                                if (spaceBelow >= spaceNeeded) {
-                                    // Position below
-                                    el.style.top = (rect.bottom + 5) + 'px';
-                                    el.classList.remove('tooltip-above');
-                                    el.classList.add('tooltip-below');
-                                } else {
-                                    // Position above
-                                    el.style.top = (rect.top - tooltipHeight - 5) + 'px';
-                                    el.classList.remove('tooltip-below');
-                                    el.classList.add('tooltip-above');
-                                }
+                        let currTooltip = document.querySelector('#tooltip') as HTMLElement
+                        if (!currTooltip) {
+                            currTooltip = document.createElement('div')
+                            currTooltip.className = 'tooltip'
+                            currTooltip.style.display = 'none'
+                            currTooltip.id = 'tooltip'
+                            if (view.dom.parentNode) {
+                                console.log('appending')
+                                view.dom.parentNode.appendChild(currTooltip)
                             }
+                            console.log('display')
+                            currTooltip.innerText = 'balalala'
+
                         }
+
+                        currTooltip.style.display = currTooltip.style.display === 'none' ? 'block' : 'none'
+
+                        const state = this.getState(view.state)
+                        const found = state?.find(pos, pos)
+                        let start = view.coordsAtPos(found![0].from)
+                        let end = view.coordsAtPos(found![0].to)
+                        let curr = currTooltip.getBoundingClientRect() 
+                        // half of text box - mid point of dec
+                        let midOffset = (curr.right - curr.left) / 2 - (end.right - start.left) + 3
+                        console.log(midOffset, curr)
+                        currTooltip.style.left = start.left - midOffset + 'px'
+                        currTooltip.style.top = (end.bottom + 5) + 'px'
+
+                        console.log(start, end)
+
                     }
                     // handleClick
                     // this is useful for adding our own floating window
