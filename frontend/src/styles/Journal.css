@@ -30,19 +30,22 @@
     @apply p-2;
 }
 
-.tooltip {
-  position: absolute;
-  background-color: #333;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  pointer-events: none;
-  z-index: 100;
+.correction {
+    @apply bg-red/50;
+    @apply text-background;
 }
 
-.suggestion {
-    @apply bg-red;
+.correction-div {
+    @apply absolute;
+    @apply z-100;
+    @apply p-1;
+    @apply bg-foreground;
+    @apply border border-background;
+}
+
+.correction-dec {
+    @apply bg-red/30;
+    @apply underline decoration-red decoration-wavy;
 }
 
 .icon {
