@@ -7,4 +7,5 @@ urlpatterns = [
     path("journal_entries/", views.JournalListCreate.as_view(), name="journal-entries"),
     path("journal_entries/delete/<int:pk>/", views.JournalEntryDelete.as_view(), name="delete-journal-entry"),
     path("journal_entries/update/<int:id>/", views.JournalEntryUpdate.as_view(), name="update-journal-entry"),
+    path("get_corrections/", views.GetCorrections.as_view(), name="get-corrections"),
 ]
