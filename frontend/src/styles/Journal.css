@@ -31,7 +31,7 @@
 }
 
 .correction {
-    @apply bg-red/50;
+    @apply bg-green/50;
     @apply text-background;
 }
 

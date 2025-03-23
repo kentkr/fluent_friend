@@ -2,8 +2,10 @@
 import { Decoration, DecorationSet, EditorView } from 'prosemirror-view'
 import { Extension } from '@tiptap/core'
 import { Plugin,  PluginKey } from 'prosemirror-state'
+import api from '../api'
 
 function initTooltip(currTooltip: HTMLElement, view: EditorView): HTMLElement {
+    // initiate tooltip html element
     currTooltip = document.createElement('div')
     currTooltip.className = 'correction-div'
     currTooltip.style.display = 'none'
@@ -24,9 +26,8 @@ function updateTooltip(
     pos: number, 
     view: EditorView
 ): HTMLElement {
+    // update position and text of tooltip
     currTooltip.style.display = currTooltip.style.display === 'none' ? 'block' : 'none'
-
-
 
     const found = decorationSet.find(pos, pos)
 
@@ -43,12 +44,23 @@ function updateTooltip(
     return currTooltip
 }
 
-function getTooltipDiv(innerText: string) {
-    let div = `
-        <div class="correction-div">
-            <div>${innerText}</div>
-        </div>
-    `
+interface CorrectionResponse {
+    changes_made: boolean;
+    changes?: Array<any>;
+}
+
+function getCorrections(start: number, text: string): Promise<CorrectionResponse> {
+    return api
+        .post("/api/get_corrections/", {start: start, text: text})
+        .then((res) => res.data as CorrectionResponse)
+        .catch((err) => {
+            alert(err);
+            return { changes_made: false };
+        });
+}
+
+function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 const Suggestion = Extension.create({
@@ -69,15 +81,59 @@ const Suggestion = Extension.create({
                     let decos: any = []
                     let i = 0
                     if (tr.docChanged) {
-                        tr.doc.descendants((node, pos, parent) => {
-                            if (node.isText) {
-                                decos.push(
-                                    Decoration.inline(pos, pos+1, {class: 'correction-dec', key: String(i), correction: String(i)}),
-                                )
-                                i += 1
-                            }
-                        })
+                        console.log(tr)
+                        console.log(tr.steps)
+                        for (var step of tr.steps) {
+                            step.getMap().forEach((oldStart, oldEnd, newStart, newEnd) => {
+                                let start = Math.max(0, newStart)
+                                let end = Math.min(newEnd, tr.doc.content.size)
+                                let updated_text = tr.doc.textBetween(start, end, '\n', '\t')
+
+                                getCorrections(start, updated_text).then(data => {
+                                    console.log(data)
+                                    let changes = data.changes
+                                    if (changes) {
+                                        for (var change of changes) {
+                                            console.log(change)
+                                            console.log(change[0])
+                                            decos.push(
+                                                Decoration.inline(
+                                                    0, 4,
+                                                    {
+                                                        class: 'correction-dec',
+                                                        correction: change[2]
+                                                    }
+                                                )
+                                            )
+                                        }
+                                    }
+                                })
+                            })
+
+                        }
+                        console.log('========')
+                        console.log(decos.length)
+                        decorationSet.add(tr.doc, decos)
+                                            decos.push(
+                                                Decoration.inline(
+                                                    0, 4,
+                                                    {
+                                                        class: 'correction-dec',
+                                                        correction: 'Dont be saying asdf'
+                                                    }
+                                                )
+                                            )
                         return DecorationSet.create(tr.doc, decos)
+
+                        //tr.doc.descendants((node, pos, parent) => {
+                        //    if (node.isText) {
+                        //        decos.push(
+                        //            Decoration.inline(pos, pos+3, {class: 'correction-dec', key: String(i), correction: String(i)}),
+                        //        )
+                        //        i += 1
+                        //    }
+                        //})
+                        //return DecorationSet.create(tr.doc, decos)
                     }
                     return decorationSet.map(tr.mapping, tr.doc)
                 }

@@ -1,10 +1,15 @@
+import re
+from typing import Dict, List
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics
-from rest_framework.views import Request, Response
+from rest_framework.views import APIView, Request, Response
 from .serializers import JournalSerializer, UserSerializer, NoteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import JournalEntries, Note
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpRequest
 
 
 class NoteListCreate(generics.ListCreateAPIView):
@@ -70,4 +75,27 @@ class JournalEntryUpdate(generics.UpdateAPIView):
         user = self.request.user
         return JournalEntries.objects.filter(user=user)
 
+from dataclasses import dataclass
+
+@dataclass
+class CorrectionResponse:
+    changes_made: bool
+    changes: List[Dict[int, str]]
+
+
+class GetCorrections(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def post(self, request: HttpRequest) -> Response:
+        is_asdf = re.compile(r'asdf')
+        changes = []
+        print(request.data)
+        for match in is_asdf.finditer(request.data['text']):
+            start, end = match.span()
+            changes.append([start, end, 'Dont be saying asdf'])
+        print(changes)
+        if changes:
+            return Response({'changes_made': True, 'changes': changes})
+        return Response({'changes_made': False})
 

@@ -9,10 +9,6 @@ interface JournalListProps {
     selectEntry: CallableFunction;
 }
 
-function onDelete() {
-    console.log('delete');
-}
-
 
 function JournalList({ entries, newEntry, deleteEntry, selectEntry }: JournalListProps): JSX.Element {
     return ( 
@@ -41,7 +37,6 @@ interface EntryProps {
 }
 
 function Entry({ entry, deleteEntry, selectEntry }: EntryProps): JSX.Element {
-    console.log(entry.id)
     return (
         <>
             <li className='flex justify-between m-1' id={entry.id.toString()}>
