@@ -91,9 +91,17 @@ class GetCorrections(APIView):
         is_asdf = re.compile(r'asdf')
         changes = []
         print(request.data)
-        for match in is_asdf.finditer(request.data['text']):
-            start, end = match.span()
-            changes.append([start, end, 'Dont be saying asdf'])
+        lines = request.data['text'].split('\n')
+        offset = 0
+
+        for line in lines:
+            offset += 1
+            for match in is_asdf.finditer(line):
+                start, end = match.span()
+                start += offset
+                end += offset
+                changes.append([start, end, 'Dont be saying asdf'])
+            offset += len(line) + 1
         print(changes)
         if changes:
             return Response({'changes_made': True, 'changes': changes})
