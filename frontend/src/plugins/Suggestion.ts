@@ -1,8 +1,10 @@
 
 import { Decoration, DecorationSet, EditorView } from 'prosemirror-view'
 import { Extension } from '@tiptap/core'
-import { Plugin,  PluginKey } from 'prosemirror-state'
+import { Plugin,  PluginKey, Transaction, EditorState } from 'prosemirror-state'
 import api from '../api'
+
+let EditorViewVar: EditorView;
 
 function initTooltip(currTooltip: HTMLElement, view: EditorView): HTMLElement {
     // initiate tooltip html element
@@ -31,8 +33,9 @@ function updateTooltip(
 
     const found = decorationSet.find(pos, pos)
 
-    let correction = found[0].type.attrs.correction
-    currTooltip.children[0].innerText = correction
+    let correction = found[0].spec.correction
+    let child = currTooltip.children[0] as HTMLElement
+    child.innerText = correction
 
     let start = view.coordsAtPos(found![0].from)
     let end = view.coordsAtPos(found![0].to)
@@ -46,7 +49,7 @@ function updateTooltip(
 
 interface CorrectionResponse {
     changes_made: boolean;
-    changes?: Array<any>;
+    changes: any[];
 }
 
 function getCorrections(start: number, text: string): Promise<CorrectionResponse> {
@@ -59,9 +62,107 @@ function getCorrections(start: number, text: string): Promise<CorrectionResponse
         });
 }
 
-function sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+async function decorateNodes(start: number, text: string): Promise<void> {
+    let corrections: CorrectionResponse
+    try {
+        let res = await api.post("/api/get_corrections/", {start: start, text: text})
+        corrections = res.data
+    } catch (err) {
+        alert(err)
+        corrections = { changes_made: false , changes: []}
+    }
+
+    let decos: Decoration[] = []
+    if (corrections.changes) {
+        for (var correction of corrections.changes) {
+            let d = Decoration.inline(
+                correction[0], 
+                correction[1], 
+                { class: 'correction-dec' },
+                { correction: correction[2] }
+
+            )
+            decos.push(d)
+        }
+    }
+    EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', decos))
 }
+
+function debounceDecorateNodes(
+    callback: (params: {start: number; text: string}) => void,
+    delay: number
+) {
+    let timeoutId: NodeJS.Timeout | null = null;
+    let state = {
+        start: Number.POSITIVE_INFINITY,
+        text: ''
+    };
+
+    return ({ start, text }: { start: number; text: string }) => {
+        // Update state with the new values
+        state.start = Math.min(state.start, start);
+        state.text += text;
+
+        // Clear any pending timeout
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+
+        // Set new timeout
+        timeoutId = setTimeout(() => {
+            // Pass the accumulated state to callback
+            callback({ 
+                start: state.start, 
+                text: state.text 
+            });
+            
+            // Reset state after callback
+            state = {
+                start: Number.POSITIVE_INFINITY,
+                text: ''
+            };
+        }, delay);
+    };
+}
+
+class TrHandler {
+    trBuf: Transaction[];
+    constructor() {
+        this.trBuf = []
+    }
+
+    addDecorations(state: EditorState) {
+        let map = new Map()
+        state.doc.content.forEach((child, position) => {
+            map.set(child, position)
+        })
+        let textMap = new Map()
+        let content = ''
+        map.forEach((pos, child) => {
+            textMap.set(child.textContent, pos)
+            content += child.textContent + '\n'
+        })
+        console.log(content)
+        console.log(textMap)
+        decorateNodes(0, content)
+    }
+
+    registerTr(tr: Transaction) {
+
+    }
+
+    aggTrs() {
+
+    }
+
+    flushTrs() {
+        
+    }
+
+}
+
+let trHandler = new TrHandler()
+
 
 const Suggestion = Extension.create({
     name: 'suggestion',
@@ -78,62 +179,12 @@ const Suggestion = Extension.create({
 
                 apply(tr, decorationSet, oldState, newState) {
                     // placeholder logic
-                    let decos: any = []
-                    let i = 0
                     if (tr.docChanged) {
-                        console.log(tr)
-                        console.log(tr.steps)
-                        for (var step of tr.steps) {
-                            step.getMap().forEach((oldStart, oldEnd, newStart, newEnd) => {
-                                let start = Math.max(0, newStart)
-                                let end = Math.min(newEnd, tr.doc.content.size)
-                                let updated_text = tr.doc.textBetween(start, end, '\n', '\t')
-
-                                getCorrections(start, updated_text).then(data => {
-                                    console.log(data)
-                                    let changes = data.changes
-                                    if (changes) {
-                                        for (var change of changes) {
-                                            console.log(change)
-                                            console.log(change[0])
-                                            decos.push(
-                                                Decoration.inline(
-                                                    0, 4,
-                                                    {
-                                                        class: 'correction-dec',
-                                                        correction: change[2]
-                                                    }
-                                                )
-                                            )
-                                        }
-                                    }
-                                })
-                            })
-
-                        }
-                        console.log('========')
-                        console.log(decos.length)
-                        decorationSet.add(tr.doc, decos)
-                                            decos.push(
-                                                Decoration.inline(
-                                                    0, 4,
-                                                    {
-                                                        class: 'correction-dec',
-                                                        correction: 'Dont be saying asdf'
-                                                    }
-                                                )
-                                            )
-                        return DecorationSet.create(tr.doc, decos)
-
-                        //tr.doc.descendants((node, pos, parent) => {
-                        //    if (node.isText) {
-                        //        decos.push(
-                        //            Decoration.inline(pos, pos+3, {class: 'correction-dec', key: String(i), correction: String(i)}),
-                        //        )
-                        //        i += 1
-                        //    }
-                        //})
-                        //return DecorationSet.create(tr.doc, decos)
+                        trHandler.addDecorations(newState)
+                    }
+                    const asyncDecs = tr.getMeta('asyncDecorations')
+                    if (asyncDecs) {
+                        return decorationSet.add(tr.doc, asyncDecs)
                     }
                     return decorationSet.map(tr.mapping, tr.doc)
                 }
@@ -151,7 +202,6 @@ const Suggestion = Extension.create({
                         if (!currTooltip) {
                             currTooltip = initTooltip(currTooltip, view)
                         }
-                        console.log(node)
 
                         let decorationSet = this.getState(view.state)
                         if (decorationSet) {
@@ -159,7 +209,14 @@ const Suggestion = Extension.create({
                         }
                     }
                 },
-            }
+            },
+            view: function(view) {
+                return {
+                    update(view, prevState) {
+                        EditorViewVar = view;
+                    }
+                }
+            },
         })
 
         return [suggestionPlugin]
