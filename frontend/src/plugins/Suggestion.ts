@@ -2,6 +2,7 @@
 import { Decoration, DecorationSet, EditorView } from 'prosemirror-view'
 import { Extension } from '@tiptap/core'
 import { Plugin,  PluginKey, Transaction, EditorState } from 'prosemirror-state'
+import { Node } from 'prosemirror-model'
 import api from '../api'
 
 let EditorViewVar: EditorView;
@@ -58,34 +59,8 @@ function getCorrections(start: number, text: string): Promise<CorrectionResponse
         .then((res) => res.data as CorrectionResponse)
         .catch((err) => {
             alert(err);
-            return { changes_made: false };
+            return { changes_made: false, changes: [] };
         });
-}
-
-async function decorateNodes(start: number, text: string): Promise<void> {
-    let corrections: CorrectionResponse
-    try {
-        let res = await api.post("/api/get_corrections/", {start: start, text: text})
-        corrections = res.data
-    } catch (err) {
-        alert(err)
-        corrections = { changes_made: false , changes: []}
-    }
-
-    let decos: Decoration[] = []
-    if (corrections.changes) {
-        for (var correction of corrections.changes) {
-            let d = Decoration.inline(
-                correction[0], 
-                correction[1], 
-                { class: 'correction-dec' },
-                { correction: correction[2] }
-
-            )
-            decos.push(d)
-        }
-    }
-    EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', decos))
 }
 
 function debounceDecorateNodes(
@@ -125,44 +100,59 @@ function debounceDecorateNodes(
     };
 }
 
-class TrHandler {
-    trBuf: Transaction[];
+class DecHandler {
+    decList: Decoration[];
+
     constructor() {
-        this.trBuf = []
+        this.decList = []
     }
 
-    addDecorations(state: EditorState) {
-        let map = new Map()
-        state.doc.content.forEach((child, position) => {
-            map.set(child, position)
+    trToDec(tr: Transaction) {
+        tr.mapping.maps.forEach((stepMap, index, array) => {
+            stepMap.forEach((from, to) => {
+                let resolved = tr.doc.resolve(from)
+                let parent = resolved.parent
+                let parentStart = resolved.pos-resolved.parentOffset
+                this.decorateNodes(parentStart, parent.textContent)
+            })
         })
-        let textMap = new Map()
-        let content = ''
-        map.forEach((pos, child) => {
-            textMap.set(child.textContent, pos)
-            content += child.textContent + '\n'
-        })
-        console.log(content)
-        console.log(textMap)
-        decorateNodes(0, content)
     }
 
-    registerTr(tr: Transaction) {
-
+    flushDecs() {
+        this.decList = []
+        EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', this.decList))
     }
 
-    aggTrs() {
-
+    async decorateNodes(start: number, text: string): Promise<void> {
+        let corrections: CorrectionResponse
+        try {
+            let res = await api.post("/api/get_corrections/", {start: start, text: text})
+            corrections = res.data
+        } catch (err) {
+            alert(err)
+            corrections = { changes_made: false , changes: []}
+        }
+    
+        let decos: Decoration[] = []
+        if (corrections.changes) {
+            for (var correction of corrections.changes) {
+                let d = Decoration.inline(
+                    correction[0], 
+                    correction[1], 
+                    { class: 'correction-dec' },
+                    { correction: correction[2] }
+    
+                )
+                decos.push(d)
+            }
+        }
+        this.decList = [...this.decList, ...decos]
+        console.log(this.decList)
+        EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', this.decList))
     }
-
-    flushTrs() {
-        
-    }
-
 }
 
-let trHandler = new TrHandler()
-
+let decHandler = new DecHandler()
 
 const Suggestion = Extension.create({
     name: 'suggestion',
@@ -172,15 +162,15 @@ const Suggestion = Extension.create({
             key: new PluginKey('suggestion'),
             state: {
                 init(_, { doc }) {
+                    console.log('init')
                     // init doesnt work with how we update so ignore
-                    let decorations: any = []
-                    return DecorationSet.create(doc, decorations)
+                    return DecorationSet.create(doc, [])
                 },
 
                 apply(tr, decorationSet, oldState, newState) {
                     // placeholder logic
                     if (tr.docChanged) {
-                        trHandler.addDecorations(newState)
+                        decHandler.trToDec(tr)
                     }
                     const asyncDecs = tr.getMeta('asyncDecorations')
                     if (asyncDecs) {
