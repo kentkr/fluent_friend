@@ -28,6 +28,7 @@ function useDebouncedOnUpdate(
 // api
 import api from "../api";
 import { useState, useEffect } from 'react'
+import {Transaction} from '@tiptap/pm/state'
 
 export interface EntryObj {
     id: number;
@@ -165,6 +166,10 @@ function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, 
         content: `<p>${currEntry.text}</p>`,
         onUpdate: onUpdate,
         shouldRerenderOnTransaction: false,
+        onCreate: ({ editor }) => {
+            let tr = editor.state.tr.setMeta('entryId', currEntry.id)
+            editor.state.apply(tr)
+        }
     })
 
     window.editor = editor;
@@ -178,6 +183,8 @@ function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, 
         if (editor.getHTML() === currEntry.text) {
             return 
         }
+        let tr = editor.state.tr.setMeta('entryId', currEntry.id)
+        editor.state.apply(tr)
         editor.commands.setContent(currEntry.text)
     }, [currEntry])
 
