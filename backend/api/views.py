@@ -11,8 +11,11 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
 
-
+# asdf
 class NoteListCreate(generics.ListCreateAPIView):
+    """
+    This is a string doc
+    """
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
 

@@ -101,10 +101,12 @@ function debounceDecorateNodes(
 }
 
 class DecHandler {
-    decList: Decoration[];
+    decSet: Set<Decoration>;
+    entryId: number;
 
     constructor() {
-        this.decList = []
+        this.decSet = new Set()
+        this.entryId = -1
     }
 
     trToDec(tr: Transaction) {
@@ -118,9 +120,10 @@ class DecHandler {
         })
     }
 
-    flushDecs() {
-        this.decList = []
-        EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', this.decList))
+    flush() {
+        this.decSet.clear()
+        console.log('setting ', this.decSet)
+        EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', this.decSet))
     }
 
     async decorateNodes(start: number, text: string): Promise<void> {
@@ -143,12 +146,14 @@ class DecHandler {
                     { correction: correction[2] }
     
                 )
+                this.decSet.add(d)
                 decos.push(d)
             }
         }
-        this.decList = [...this.decList, ...decos]
-        console.log(this.decList)
-        EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', this.decList))
+        //console.log(decos)
+        //console.log(this.decSet)
+        let tmp = [...this.decSet]
+        EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', tmp))
     }
 }
 
@@ -162,7 +167,6 @@ const Suggestion = Extension.create({
             key: new PluginKey('suggestion'),
             state: {
                 init(_, { doc }) {
-                    console.log('init')
                     // init doesnt work with how we update so ignore
                     return DecorationSet.create(doc, [])
                 },
@@ -172,12 +176,22 @@ const Suggestion = Extension.create({
                     if (tr.docChanged) {
                         decHandler.trToDec(tr)
                     }
+
+                    let entryId = tr.getMeta('entryId')
+                    if (entryId && entryId != decHandler.entryId) {
+                        console.log('flushing')
+                        let newDecorationSet = decorationSet.remove([...decHandler.decSet])
+                        decHandler.flush()
+                        console.log(decHandler)
+                        return newDecorationSet
+                    }
                     const asyncDecs = tr.getMeta('asyncDecorations')
                     if (asyncDecs) {
                         return decorationSet.add(tr.doc, asyncDecs)
                     }
+                    console.log(decorationSet)
                     return decorationSet.map(tr.mapping, tr.doc)
-                }
+                },
             },
             
             props: {
@@ -204,13 +218,37 @@ const Suggestion = Extension.create({
                 return {
                     update(view, prevState) {
                         EditorViewVar = view;
-                    }
+                    },
                 }
             },
         })
 
-        return [suggestionPlugin]
+        const FUCK = new Plugin({
+            key: new PluginKey('FUCK'),
+            state: {
+                    init(_, { doc }) {
+                        let fuck: Fuck = {fuck: {}, decorationSet: DecorationSet.create(doc, [])}
+                        return fuck
+                    },
+                    apply(tr, fuck, oldState, newState) {
+                        return fuck
+                    }
+                }
+        })
+
+        return [suggestionPlugin, FUCK]
     }
 })
 
 export default Suggestion
+
+interface Fuck {
+    fuck: {},
+    decorationSet: DecorationSet
+}
+
+interface Fuck {
+    fuck: {},
+    decorationSet: DecorationSet
+}
+
