@@ -137,6 +137,9 @@ class DecHandler {
         }
     
         let decos: Decoration[] = []
+        if (corrections.changes && corrections.changes.length === 1) {
+            console.log(corrections)
+        }
         if (corrections.changes) {
             for (var correction of corrections.changes) {
                 let d = Decoration.inline(
@@ -146,13 +149,16 @@ class DecHandler {
                     { correction: correction[2] }
     
                 )
-                this.decSet.add(d)
+                if (d) {
+                    this.decSet.add(d)
+                }
                 decos.push(d)
             }
         }
         //console.log(decos)
         //console.log(this.decSet)
         let tmp = [...this.decSet]
+        console.log('new decs:', tmp)
         EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', tmp))
     }
 }
@@ -180,16 +186,15 @@ const Suggestion = Extension.create({
                     let entryId = tr.getMeta('entryId')
                     if (entryId && entryId != decHandler.entryId) {
                         console.log('flushing')
-                        let newDecorationSet = decorationSet.remove([...decHandler.decSet])
+                        let newDecorationSet = decorationSet.remove(decorationSet.find())
+                        console.log(newDecorationSet)
                         decHandler.flush()
-                        console.log(decHandler)
                         return newDecorationSet
                     }
                     const asyncDecs = tr.getMeta('asyncDecorations')
                     if (asyncDecs) {
                         return decorationSet.add(tr.doc, asyncDecs)
                     }
-                    console.log(decorationSet)
                     return decorationSet.map(tr.mapping, tr.doc)
                 },
             },
