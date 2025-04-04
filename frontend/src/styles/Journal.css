@@ -2,7 +2,6 @@
 @import './theme.css';
 
 .editor-container-0 {
-    @apply bg-foreground;
     @apply flex flex-1 flex-col;
     @apply p-2;
 }
@@ -12,7 +11,6 @@
 }
 
 .editor {
-    @apply bg-foreground;
     @apply flex-1;
     @apply p-2;
 }
@@ -39,7 +37,6 @@
     @apply absolute;
     @apply z-100;
     @apply p-1;
-    @apply bg-foreground;
     @apply border border-background;
 }
 

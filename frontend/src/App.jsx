@@ -20,6 +20,10 @@ function RegisterAndLogout() {
   return <Register />
 }
 
+function Tmp() {
+    return <div>hiii</div>
+}
+
 function App() {
   return (
     <>
@@ -34,6 +38,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/tmp" element={<Tmp />} />
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<RegisterAndLogout />} />

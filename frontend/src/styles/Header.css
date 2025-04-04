@@ -5,3 +5,29 @@
     @apply bg-background;
     @apply text-foreground;
 }
+
+.logo {
+    width: 60px;
+    height: auto;
+    @apply shadow-md shadow-purple hover:shadow-cyan;
+}
+
+.nav-bar {
+    @apply flex m-2 px-16 items-center;
+}
+
+.nav-content {
+    @apply px-4;
+    @apply text-2xl;
+    @apply hover:text-cyan;
+}
+
+.center-right {
+    @apply flex grow justify-between;
+    @apply px-8;
+}
+
+.big-button {
+    @apply bg-green;
+    @apply text-background;
+}
