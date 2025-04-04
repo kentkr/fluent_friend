@@ -1,4 +1,4 @@
-
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
 @import 'tailwindcss';
 
 /* set tailwind theme */
@@ -17,17 +17,25 @@
     --color-orange: #e39400;
     --color-magenta: #ce6f8f;
     --color-red: #e33400;
-    --color-foreground: #e6e8cc;
+    --color-foreground: #FAFBEF;
     --color-white: #ffffff;
 }
 
+
 /* overwrite default body to fill screen */
 html, body {
-  @apply h-full w-full;
-  @apply m-0;
+    @apply h-full w-full;
+    @apply m-0;
+    font-family: DotGothic16, sans-serif;
+    @apply bg-foreground;
 }
 
 #root {
     @apply h-full w-full;
     @apply flex flex-col;
 }
+
+h1 {
+   font-size: 40px; 
+}
+

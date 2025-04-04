@@ -13,7 +13,7 @@ interface JournalListProps {
 function JournalList({ entries, newEntry, deleteEntry, selectEntry }: JournalListProps): JSX.Element {
     return ( 
         <>
-            <div className="p-2 w-1/4 border boder-background bg-foreground flex flex-col">
+            <div className="p-2 w-1/4 border boder-background flex flex-col">
                 <h1>Journal entries</h1>
                 <div className='border border-background p-2 flex-1'>
                     <ol>
