@@ -5,8 +5,8 @@ import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
 import { useState, useEffect } from "react";
 
 
-function ProtectedRoute({ children }) {
-    const [isAuthorized, setIsAuthorized] = useState(null);
+function ProtectedRoute({ children }: { children: any }) {
+    const [isAuthorized, setIsAuthorized] = useState<null | boolean>(null);
 
     useEffect(() => {
         auth().catch(() => setIsAuthorized(false))
@@ -40,7 +40,7 @@ function ProtectedRoute({ children }) {
         const tokenExpiration = decoded.exp;
         const now = Date.now() / 1000;
 
-        if (tokenExpiration < now) {
+        if (tokenExpiration && tokenExpiration < now) {
             await refreshToken();
         } else {
             setIsAuthorized(true);
