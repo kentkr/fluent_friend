@@ -8,7 +8,6 @@ import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Header from "./components/Header"
 import Journal from "./pages/Journal"
-import Game from "./pages/tutorial"
 
 function Logout() {
   localStorage.clear()
@@ -29,9 +28,7 @@ function App() {
             <Route
               path="/"
               element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
+                <Home />
               }
             />
             <Route path="/login" element={<Login />} />
@@ -45,7 +42,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/tutorial" element={<Game />} />
             <Route path="*" element={<NotFound />}></Route>
           </Routes>
         </BrowserRouter>
