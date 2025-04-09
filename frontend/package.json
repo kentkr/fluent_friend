@@ -7,7 +7,9 @@
     "dev": "tsc && vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tmp": "tsc tmp.tsx"
+
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.15",

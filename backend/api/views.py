@@ -94,7 +94,7 @@ class GetCorrections(APIView):
         is_asdf = re.compile(r'asdf')
         changes = []
         print(request.data)
-        offset = request.data['start']
+        offset = request.data['start']+1
 
         for match in is_asdf.finditer(request.data['text']):
             start, end = match.span()
