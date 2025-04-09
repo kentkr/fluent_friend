@@ -4,6 +4,7 @@ import { Extension } from '@tiptap/core'
 import { Plugin,  PluginKey, Transaction, EditorState } from 'prosemirror-state'
 import { Node } from 'prosemirror-model'
 import api from '../api'
+import DecHandler from '../pm/dec_handler'
 
 let EditorViewVar: EditorView;
 
@@ -100,7 +101,7 @@ function debounceDecorateNodes(
   };
 }
 
-class DecHandler {
+class _DecHandler {
   decSet: Set<Decoration>;
   entryId: number;
 
@@ -122,7 +123,7 @@ class DecHandler {
 
   flush() {
     this.decSet.clear()
-    console.log('setting ', this.decSet)
+    //console.log('setting ', this.decSet)
     EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', this.decSet))
   }
 
@@ -138,7 +139,7 @@ class DecHandler {
 
     let decos: Decoration[] = []
     if (corrections.changes && corrections.changes.length === 1) {
-      console.log(corrections)
+      //console.log(corrections)
     }
     if (corrections.changes) {
       for (var correction of corrections.changes) {
@@ -158,17 +159,26 @@ class DecHandler {
     for (var d of decos) {
       this.decSet.add(d)
     }
-    //console.log(decos)
-    //console.log(this.decSet)
-    console.log('new decs:', decos)
-    console.log('curr decs:', this.decSet)
     EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', decos))
+    EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('bla', decos))
   }
 }
 
-let decHandler = new DecHandler()
+let decHandler = new _DecHandler()
 
 //import { Change, ChangeSet } from 'prosemirror-changeset'
+
+
+class SuggestionState {
+  decHandler: DecHandler
+  decorationSet: DecorationSet
+
+  constructor(decorationSet: DecorationSet, editorView: EditorView) {
+    this.decHandler = new DecHandler(decorationSet, editorView)
+    this.decorationSet = decorationSet
+  }
+
+}
 
 
 const Suggestion = Extension.create({
@@ -179,42 +189,42 @@ const Suggestion = Extension.create({
       key: new PluginKey('suggestion'),
       state: {
         init(_, { doc }) {
-          // init doesnt work with how we update so ignore
-          return DecorationSet.create(doc, [])
+          let decorationSet = DecorationSet.create(doc, [])
+          console.log('init view:' ,EditorViewVar)
+          return new SuggestionState(decorationSet, EditorViewVar)
         },
 
-        apply(tr, decorationSet, oldState, newState) {
+        apply(tr, suggState, oldState, newState) {
           let changes; 
           // placeholder logic
           if (tr.docChanged) {
-            // changes
-            //if (changes === undefined) {
-            //    changes = ChangeSet.create(oldState.doc)
-            //}
-            //changes = changes.addSteps(newState.doc, tr.mapping.maps, tr.steps)
-            //console.log(changes);
-            decHandler.trToDec(tr)
+            // TODO find a way to not set this constantly
+            //decHandler.trToDec(tr)
+            suggState.decHandler.editorView = EditorViewVar
+            suggState.decHandler.update(tr)
           }
 
           let entryId = tr.getMeta('entryId')
           if (entryId && entryId != decHandler.entryId) {
-            console.log('flushing')
-            let newDecorationSet = decorationSet.remove(decorationSet.find())
-            console.log(newDecorationSet)
+            suggState.decorationSet = suggState.decorationSet.remove(suggState.decorationSet.find())
             decHandler.flush()
-            return newDecorationSet
+            return suggState
           }
+
           const asyncDecs = tr.getMeta('asyncDecorations')
           if (asyncDecs) {
-            return decorationSet.add(tr.doc, asyncDecs)
+            suggState.decorationSet = suggState.decorationSet.add(tr.doc, asyncDecs)
+            return suggState
           }
-          return decorationSet.map(tr.mapping, tr.doc)
+          suggState.decorationSet = suggState.decorationSet.map(tr.mapping, tr.doc)
+          return suggState
         },
       },
 
       props: {
         decorations(state) {
-          return this.getState(state)
+          let suggState = this.getState(state)
+          return suggState?.decorationSet
         },
 
         handleClickOn(view, pos, node, nodePos, event, direct) {
@@ -225,7 +235,8 @@ const Suggestion = Extension.create({
               currTooltip = initTooltip(currTooltip, view)
             }
 
-            let decorationSet = this.getState(view.state)
+            let suggState = this.getState(view.state)
+            let decorationSet = suggState?.decorationSet
             if (decorationSet) {
               updateTooltip(currTooltip, decorationSet, pos, view)
             }
