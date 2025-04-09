@@ -34,7 +34,6 @@ async function getDecorations(start: number, text: string): Promise<Decoration[]
 
   let decos: Decoration[] = []
 
-  console.log(corrections)
   if (corrections.changes) {
     for (var correction of corrections.changes) {
       let d = Decoration.inline(
@@ -50,7 +49,6 @@ async function getDecorations(start: number, text: string): Promise<Decoration[]
       }
     }
   }
-  console.log('first decs: ' ,decos)
   return decos
 }
 
@@ -73,7 +71,6 @@ class DecHandler {
 
   update(tr: Transaction): void {
     this.trBuf.push(tr);
-    console.log('Buffered transactions:', this.trBuf.length);
     this.debouncedAddDecs();
   }
 
@@ -103,7 +100,6 @@ class DecHandler {
       return true;
     });
 
-    console.log('Flushing transaction buffer');
     this.trBuf = [];
     return nodes;
   }
@@ -116,8 +112,11 @@ class DecHandler {
       decs = decs.concat(newDecs)
     }
     //this.decSet.add(this.editorView.state.doc, newDecs)
-    console.log('dispatching decs: ', decs)
     this.editorView.dispatch(this.editorView.state.tr.setMeta('asyncDecorations', decs))
+  }
+
+  flush() {
+    this.trBuf = []
   }
 
   resetDecs(entryId: number) {
