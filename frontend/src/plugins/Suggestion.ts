@@ -1,11 +1,10 @@
 
-import { Decoration, DecorationSet, EditorView } from 'prosemirror-view'
+import { DecorationSet, EditorView } from 'prosemirror-view'
 import { Extension } from '@tiptap/core'
-import { Plugin,  PluginKey, Transaction, EditorState } from 'prosemirror-state'
-import { Node } from 'prosemirror-model'
-import api from '../api'
+import { Plugin,  PluginKey } from 'prosemirror-state'
 import DecHandler from '../pm/dec_handler'
 
+// TODO: get a more robust way to make this part of the class state
 let EditorViewVar: EditorView;
 
 function initTooltip(currTooltip: HTMLElement, view: EditorView): HTMLElement {
@@ -49,126 +48,6 @@ function updateTooltip(
   return currTooltip
 }
 
-interface CorrectionResponse {
-  changes_made: boolean;
-  changes: any[];
-}
-
-function getCorrections(start: number, text: string): Promise<CorrectionResponse> {
-  return api
-    .post("/api/get_corrections/", {start: start, text: text})
-    .then((res) => res.data as CorrectionResponse)
-    .catch((err) => {
-      alert(err);
-      return { changes_made: false, changes: [] };
-    });
-}
-
-function debounceDecorateNodes(
-  callback: (params: {start: number; text: string}) => void,
-  delay: number
-) {
-  let timeoutId: NodeJS.Timeout | null = null;
-  let state = {
-    start: Number.POSITIVE_INFINITY,
-    text: ''
-  };
-
-  return ({ start, text }: { start: number; text: string }) => {
-    // Update state with the new values
-    state.start = Math.min(state.start, start);
-    state.text += text;
-
-    // Clear any pending timeout
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-
-    // Set new timeout
-    timeoutId = setTimeout(() => {
-      // Pass the accumulated state to callback
-      callback({ 
-        start: state.start, 
-        text: state.text 
-      });
-
-      // Reset state after callback
-      state = {
-        start: Number.POSITIVE_INFINITY,
-        text: ''
-      };
-    }, delay);
-  };
-}
-
-class _DecHandler {
-  decSet: Set<Decoration>;
-  entryId: number;
-
-  constructor() {
-    this.decSet = new Set()
-    this.entryId = -1
-  }
-
-  trToDec(tr: Transaction) {
-    tr.mapping.maps.forEach((stepMap, index, array) => {
-      stepMap.forEach((from, to) => {
-        let resolved = tr.doc.resolve(from)
-        let parent = resolved.parent
-        let parentStart = resolved.pos-resolved.parentOffset
-        this.decorateNodes(parentStart, parent.textContent)
-      })
-    })
-  }
-
-  flush() {
-    this.decSet.clear()
-    //console.log('setting ', this.decSet)
-    EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', this.decSet))
-  }
-
-  async decorateNodes(start: number, text: string): Promise<void> {
-    let corrections: CorrectionResponse
-    try {
-      let res = await api.post("/api/get_corrections/", {start: start, text: text})
-      corrections = res.data
-    } catch (err) {
-      alert(err)
-      corrections = { changes_made: false , changes: []}
-    }
-
-    let decos: Decoration[] = []
-    if (corrections.changes && corrections.changes.length === 1) {
-      //console.log(corrections)
-    }
-    if (corrections.changes) {
-      for (var correction of corrections.changes) {
-        let d = Decoration.inline(
-          correction[0], 
-          correction[1], 
-          { class: 'correction-dec' },
-          { correction: correction[2] }
-
-        )
-        if (d) {
-          decos.push(d)
-        }
-      }
-    }
-
-    for (var d of decos) {
-      this.decSet.add(d)
-    }
-    EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('asyncDecorations', decos))
-    EditorViewVar.dispatch(EditorViewVar.state.tr.setMeta('bla', decos))
-  }
-}
-
-let decHandler = new _DecHandler()
-
-//import { Change, ChangeSet } from 'prosemirror-changeset'
-
-
 class SuggestionState {
   decHandler: DecHandler
   decorationSet: DecorationSet
@@ -180,7 +59,6 @@ class SuggestionState {
 
 }
 
-
 const Suggestion = Extension.create({
   name: 'suggestion',
 
@@ -190,7 +68,6 @@ const Suggestion = Extension.create({
       state: {
         init(_, { doc }) {
           let decorationSet = DecorationSet.create(doc, [])
-          console.log('init view:' ,EditorViewVar)
           return new SuggestionState(decorationSet, EditorViewVar)
         },
 
@@ -205,9 +82,9 @@ const Suggestion = Extension.create({
           }
 
           let entryId = tr.getMeta('entryId')
-          if (entryId && entryId != decHandler.entryId) {
+          if (entryId && entryId != suggState.decHandler.entryId) {
             suggState.decorationSet = suggState.decorationSet.remove(suggState.decorationSet.find())
-            decHandler.flush()
+            suggState.decHandler.flush()
             return suggState
           }
 
@@ -243,6 +120,7 @@ const Suggestion = Extension.create({
           }
         },
       },
+
       view: function(view) {
         return {
           update(view, prevState) {
@@ -252,32 +130,8 @@ const Suggestion = Extension.create({
       },
     })
 
-    const FUCK = new Plugin({
-      key: new PluginKey('FUCK'),
-      state: {
-        init(_, { doc }) {
-          let fuck: Fuck = {fuck: {}, decorationSet: DecorationSet.create(doc, [])}
-          return fuck
-        },
-        apply(tr, fuck, oldState, newState) {
-          return fuck
-        }
-      }
-    })
-
-    return [suggestionPlugin, FUCK]
+    return [suggestionPlugin]
   }
 })
 
 export default Suggestion
-
-interface Fuck {
-  fuck: {},
-  decorationSet: DecorationSet
-}
-
-interface Fuck {
-  fuck: {},
-  decorationSet: DecorationSet
-}
-
