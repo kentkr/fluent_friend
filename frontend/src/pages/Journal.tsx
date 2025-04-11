@@ -7,6 +7,10 @@ import '../styles/Journal.css'
 import { useRef, useCallback } from 'react'
 import { Editor as E  } from "@tiptap/react";
 import Suggestion from '../plugins/Suggestion'
+import api from "../api";
+import { useState, useEffect } from 'react'
+import { SerialDecoration } from '../pm/types'
+
 
 // debounce update for editor to avoid overwriting text as its typed
 function useDebouncedOnUpdate(
@@ -24,11 +28,6 @@ function useDebouncedOnUpdate(
         }, delay);
     }, [callback, delay]);
 }
-
-// api
-import api from "../api";
-import { useState, useEffect } from 'react'
-import {Transaction} from '@tiptap/pm/state'
 
 export interface EntryObj {
     id: number;
@@ -109,10 +108,12 @@ function Journal() {
     }
 
     // set body text for currEntry, entries, and the db
-    function updateText({ text }: { text: string }) {
+    function updateText({ text, decs }: { text: string, decs: SerialDecoration[] }) {
         setCurrEntry(prevCurrEntry => ({
             ...prevCurrEntry, text: text
         })) 
+
+      console.log('serial decs: ', decs)
 
         setEntries(prevEntries =>
             prevEntries.map(entry =>
@@ -144,11 +145,23 @@ function Journal() {
   )
 }
 
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    Suggestion: {
+      /**
+       * Comments will be added to the autocomplete.
+       */
+      writeSerialDecs: () => ReturnType
+    }
+  }
+}
 
 function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, updateTitle: CallableFunction, updateText: CallableFunction }) {
     // debounce on update so we wait to change currEntry
-    const onUpdate = useDebouncedOnUpdate(({ editor  }) => {
-          updateText({ text: editor.getHTML()  });
+    const onUpdate = useDebouncedOnUpdate(({ editor }) => {
+      let text = editor.getHTML()
+      let decs = editor.commands.writeSerialDecs()
+          updateText({ text: text, decs: decs });
     }, 500);
 
     // init body editor
@@ -171,7 +184,6 @@ function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, 
             editor.state.apply(tr)
         }
     })
-
     window.editor = editor;
 
     if (!editor) {

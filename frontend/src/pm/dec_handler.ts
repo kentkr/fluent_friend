@@ -1,8 +1,8 @@
 import { DecorationSet } from "@tiptap/pm/view";
-import { Transaction } from "@tiptap/pm/state";
+import { EditorState, Transaction } from "@tiptap/pm/state";
 import { Node } from "prosemirror-model";
-import { Decoration, EditorView } from "prosemirror-view";
-import { CorrectionResponse } from "./types";
+import { Decoration, DecorationAttrs, EditorView } from "prosemirror-view";
+import { CorrectionResponse, SerialDecoration } from "./types";
 import api from "../api";
 
 function debounceLag<F extends (...args: any[]) => any>(
@@ -36,11 +36,12 @@ async function getDecorations(start: number, text: string): Promise<Decoration[]
 
   if (corrections.changes) {
     for (var correction of corrections.changes) {
+      let attrs: DecorationAttrs = { class: 'correction-dec' }
       let d = Decoration.inline(
         correction[0], 
         correction[1], 
-        { class: 'correction-dec' },
-        { correction: correction[2] }
+        attrs,
+        { correction: correction[2], attrs: { class: 'correction-dec' } }
 
       )
       // TODO this may not be necessary any more
@@ -112,6 +113,7 @@ class DecHandler {
       decs = decs.concat(newDecs)
     }
     //this.decSet.add(this.editorView.state.doc, newDecs)
+    console.log(`dispatching ${decs.length} decs`)
     this.editorView.dispatch(this.editorView.state.tr.setMeta('asyncDecorations', decs))
   }
 
@@ -123,8 +125,27 @@ class DecHandler {
     this.trBuf = [];
     this.entryId = entryId;
   }
-}
 
+  serialize(): SerialDecoration[] {
+    let serialDecs: SerialDecoration[] = []
+    const decs = this.decSet.find(0, this.editorView.state.doc.content.size)
+    decs.forEach(dec => {
+      serialDecs.push({from: dec.from, to: dec.to, spec: dec.spec})
+    })
+    return serialDecs
+  } 
+
+  deserialize(decs: SerialDecoration[]): DecorationSet {
+    let decorations: Decoration[] = []
+    for (var dec of decs) {
+      let d = Decoration.inline(dec.from, dec.to, dec.spec.attrs, dec.spec)
+      decorations.push(d)
+    }
+    this.decSet = DecorationSet.empty
+    this.decSet = this.decSet.add(this.editorView.state.doc, decorations)
+    return this.decSet
+  }
+}
 
 // TODO make interface?
 class ParagraphNode {
