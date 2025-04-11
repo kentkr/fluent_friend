@@ -59,12 +59,14 @@ class SuggestionState {
 
 }
 
+const suggestionKey = new PluginKey('suggestion')
+
 const Suggestion = Extension.create({
   name: 'suggestion',
 
   addProseMirrorPlugins() {
     const suggestionPlugin = new Plugin({
-      key: new PluginKey('suggestion'),
+      key: suggestionKey,
       state: {
         init(_, { doc }) {
           let decorationSet = DecorationSet.create(doc, [])
@@ -79,21 +81,22 @@ const Suggestion = Extension.create({
             //decHandler.trToDec(tr)
             suggState.decHandler.editorView = EditorViewVar
             suggState.decHandler.update(tr)
+            suggState.decHandler.serialize()
           }
 
           let entryId = tr.getMeta('entryId')
           if (entryId && entryId != suggState.decHandler.entryId) {
-            suggState.decorationSet = suggState.decorationSet.remove(suggState.decorationSet.find())
+            suggState.decHandler.decSet = suggState.decHandler.decSet.remove(suggState.decHandler.decSet.find())
             suggState.decHandler.flush()
             return suggState
           }
 
           const asyncDecs = tr.getMeta('asyncDecorations')
           if (asyncDecs) {
-            suggState.decorationSet = suggState.decorationSet.add(tr.doc, asyncDecs)
+            suggState.decHandler.decSet = suggState.decHandler.decSet.add(tr.doc, asyncDecs)
             return suggState
           }
-          suggState.decorationSet = suggState.decorationSet.map(tr.mapping, tr.doc)
+          suggState.decHandler.decSet = suggState.decHandler.decSet.map(tr.mapping, tr.doc)
           return suggState
         },
       },
@@ -101,7 +104,7 @@ const Suggestion = Extension.create({
       props: {
         decorations(state) {
           let suggState = this.getState(state)
-          return suggState?.decorationSet
+          return suggState?.decHandler.decSet
         },
 
         handleClickOn(view, pos, node, nodePos, event, direct) {
@@ -128,9 +131,22 @@ const Suggestion = Extension.create({
           },
         }
       },
+
     })
 
     return [suggestionPlugin]
+  },
+
+  addCommands() {
+    return {
+      ...this.parent?.(),
+
+      writeSerialDecs: (options = {}) => ({ editor, state }: { editor: any, state: any }) => {
+        let suggState = suggestionKey.getState(state) as SuggestionState
+        let decs = suggState.decHandler.serialize()
+        return true
+      }
+    }
   }
 })
 
