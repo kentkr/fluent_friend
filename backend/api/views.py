@@ -1,5 +1,6 @@
 import re
 from typing import Dict, List
+from django.contrib.admin.utils import lookup_field
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics
@@ -10,6 +11,7 @@ from .models import JournalEntries, Note
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
+from dataclasses import dataclass
 
 # asdf
 class NoteListCreate(generics.ListCreateAPIView):
@@ -78,13 +80,26 @@ class JournalEntryUpdate(generics.UpdateAPIView):
         user = self.request.user
         return JournalEntries.objects.filter(user=user)
 
-from dataclasses import dataclass
+class JournalEntryUpdateDecs(APIView):
+    serializer_class = JournalSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: HttpRequest, id: int) -> Response:
+        user = request.user
+        print(id, request.data)
+        JournalEntries.objects.filter(user=user, id=id).update(decorations=request.data)
+        return Response({'message': 'hiii'})
+
+    def get(self, request: HttpRequest, id: int) -> Response:
+        user = request.user
+        decorations = JournalEntries.objects.filter(user=user, id=id).values('decorations')
+        return Response({'decorations': decorations[0]['decorations']})
+
 
 @dataclass
 class CorrectionResponse:
     changes_made: bool
     changes: List[Dict[int, str]]
-
 
 class GetCorrections(APIView):
     authentication_classes = []
@@ -93,7 +108,6 @@ class GetCorrections(APIView):
     def post(self, request: HttpRequest) -> Response:
         is_asdf = re.compile(r'asdf')
         changes = []
-        print(request.data)
         offset = request.data['start']+1
 
         for match in is_asdf.finditer(request.data['text']):
@@ -101,7 +115,6 @@ class GetCorrections(APIView):
             start += offset
             end += offset
             changes.append([start, end, 'Dont be saying asdf'])
-        print(changes)
         if changes:
             return Response({'changes_made': True, 'changes': changes})
         return Response({'changes_made': False})

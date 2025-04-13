@@ -108,12 +108,10 @@ function Journal() {
     }
 
     // set body text for currEntry, entries, and the db
-    function updateText({ text, decs }: { text: string, decs: SerialDecoration[] }) {
+    function updateText({ text }: { text: string }) {
         setCurrEntry(prevCurrEntry => ({
             ...prevCurrEntry, text: text
         })) 
-
-      console.log('serial decs: ', decs)
 
         setEntries(prevEntries =>
             prevEntries.map(entry =>
@@ -145,23 +143,23 @@ function Journal() {
   )
 }
 
-declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    Suggestion: {
-      /**
-       * Comments will be added to the autocomplete.
-       */
-      writeSerialDecs: () => ReturnType
-    }
-  }
-}
+//declare module '@tiptap/core' {
+//  interface Commands<ReturnType> {
+//    Suggestion: {
+//      /**
+//       * Comments will be added to the autocomplete.
+//       */
+//      writeSerialDecs: () => ReturnType
+//    }
+//  }
+//}
 
 function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, updateTitle: CallableFunction, updateText: CallableFunction }) {
     // debounce on update so we wait to change currEntry
     const onUpdate = useDebouncedOnUpdate(({ editor }) => {
       let text = editor.getHTML()
-      let decs = editor.commands.writeSerialDecs()
-          updateText({ text: text, decs: decs });
+      //let decs = editor.commands.writeSerialDecs()
+          updateText({ text: text });
     }, 500);
 
     // init body editor
@@ -180,7 +178,7 @@ function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, 
         onUpdate: onUpdate,
         shouldRerenderOnTransaction: false,
         onCreate: ({ editor }) => {
-            let tr = editor.state.tr.setMeta('entryId', currEntry.id)
+            let tr = editor.state.tr.setMeta('newEntryId', currEntry.id)
             editor.state.apply(tr)
         }
     })
@@ -195,7 +193,7 @@ function Editor({ currEntry, updateTitle, updateText } : { currEntry: EntryObj, 
         if (editor.getHTML() === currEntry.text) {
             return 
         }
-        let tr = editor.state.tr.setMeta('entryId', currEntry.id)
+        let tr = editor.state.tr.setMeta('newEntryId', currEntry.id)
         editor.state.apply(tr)
         editor.commands.setContent(currEntry.text)
     }, [currEntry])

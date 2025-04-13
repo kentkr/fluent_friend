@@ -84,16 +84,17 @@ const Suggestion = Extension.create({
             suggState.decHandler.serialize()
           }
 
-          let entryId = tr.getMeta('entryId')
-          if (entryId && entryId != suggState.decHandler.entryId) {
-            suggState.decHandler.decSet = suggState.decHandler.decSet.remove(suggState.decHandler.decSet.find())
-            suggState.decHandler.flush()
+          let newEntryId = tr.getMeta('newEntryId')
+          if (newEntryId && newEntryId != suggState.decHandler.entryId) {
+            //suggState.decHandler.decSet = suggState.decHandler.decSet.remove(suggState.decHandler.decSet.find())
+            suggState.decHandler.resetDecs(newEntryId)
             return suggState
           }
 
           const asyncDecs = tr.getMeta('asyncDecorations')
           if (asyncDecs) {
             suggState.decHandler.decSet = suggState.decHandler.decSet.add(tr.doc, asyncDecs)
+            suggState.decHandler.syncDb()
             return suggState
           }
           suggState.decHandler.decSet = suggState.decHandler.decSet.map(tr.mapping, tr.doc)
@@ -116,7 +117,7 @@ const Suggestion = Extension.create({
             }
 
             let suggState = this.getState(view.state)
-            let decorationSet = suggState?.decorationSet
+            let decorationSet = suggState?.decHandler.decSet
             if (decorationSet) {
               updateTooltip(currTooltip, decorationSet, pos, view)
             }
@@ -137,17 +138,17 @@ const Suggestion = Extension.create({
     return [suggestionPlugin]
   },
 
-  addCommands() {
-    return {
-      ...this.parent?.(),
+  //addCommands() {
+  //  return {
+  //    ...this.parent?.(),
 
-      writeSerialDecs: (options = {}) => ({ editor, state }: { editor: any, state: any }) => {
-        let suggState = suggestionKey.getState(state) as SuggestionState
-        let decs = suggState.decHandler.serialize()
-        return true
-      }
-    }
-  }
+  //    writeSerialDecs: (options = {}) => ({ editor, state }: { editor: any, state: any }) => {
+  //      let suggState = suggestionKey.getState(state) as SuggestionState
+  //      let decs = suggState.decHandler.serialize()
+  //      return true
+  //    }
+  //  }
+  //}
 })
 
 export default Suggestion
