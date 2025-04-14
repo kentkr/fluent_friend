@@ -116,6 +116,9 @@ class DecHandler {
   }
 
   syncDb() {
+    if (!this.entryId) {
+      return
+    }
     let decs = this.serialize()
     api
       .post(`/api/journal_entries/update/${this.entryId}/decs/`, decs)
@@ -124,6 +127,10 @@ class DecHandler {
 
   resetDecs(entryId: number) {
     // post current decs
+    if (!this.entryId) {
+      return
+    }
+    console.log(this.entryId, entryId)
     let decs = this.serialize()
     api
       .post(`/api/journal_entries/update/${this.entryId}/decs/`, decs)

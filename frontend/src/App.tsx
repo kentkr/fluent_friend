@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Header from "./components/Header"
 import Journal from "./pages/Journal"
+import Journal1 from "./pages/Journal1"
 
 function Logout() {
   localStorage.clear()
@@ -39,6 +40,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Journal />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/journal1"
+              element={
+                <ProtectedRoute>
+                  <Journal1 />
                 </ProtectedRoute>
               }
             />

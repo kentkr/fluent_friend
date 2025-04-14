@@ -31,7 +31,7 @@ html, body {
 }
 
 #root {
-    @apply h-full w-full;
+    @apply h-full w-full max-h-full;
     @apply flex flex-col;
 }
 
