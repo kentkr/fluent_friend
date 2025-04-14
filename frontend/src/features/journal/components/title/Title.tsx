@@ -27,7 +27,7 @@ export function Title({ currEntry, updateTitle }: { currEntry: EntryObj, updateT
     if (title.getText() === currEntry.title) {
       return 
     }
-    title.commands.setContent(currEntry.title)
+    title.commands.setContent(currEntry.title, false,  { preserveWhitespace: true })
   }, [currEntry])
 
   return <EditorContent editor={title}/>
