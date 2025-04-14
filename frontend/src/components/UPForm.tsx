@@ -5,7 +5,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/Form.css"
 import LoadingIndicator from "./LoadingIndicator";
 
-function Form({ route, method }: { route: any; method: any }) {
+function UPForm({ route, method }: { route: any; method: any }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -58,4 +58,4 @@ function Form({ route, method }: { route: any; method: any }) {
   );
 }
 
-export default Form
+export default UPForm
