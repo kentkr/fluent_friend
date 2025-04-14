@@ -1,0 +1,9 @@
+@import './theme.css';
+
+.list-title {
+    @apply text-2xl;
+}
+
+.entry-li {
+    @apply flex justify-between m-1;
+}

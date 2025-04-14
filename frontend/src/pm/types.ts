@@ -16,3 +16,10 @@ interface SuggSpec {
   // store attrs for later use
   attrs: DecorationAttrs
 }
+
+export interface EntryObj {
+    id: number;
+    user: number;
+    title: string | null;
+    text: string | null;
+} 

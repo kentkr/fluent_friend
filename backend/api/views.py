@@ -110,6 +110,8 @@ class GetCorrections(APIView):
         changes = []
         offset = request.data['start']+1
 
+        print(request.data)
+
         for match in is_asdf.finditer(request.data['text']):
             start, end = match.span()
             start += offset

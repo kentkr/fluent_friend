@@ -1,0 +1,55 @@
+@import './theme.css';
+
+.editor-container-0 {
+    @apply flex flex-1 flex-col;
+    @apply p-2;
+    @apply overflow-auto;
+    @apply max-h-screen;
+}
+
+.editor-container-1 {
+    @apply flex flex-1;
+    @apply overflow-auto;
+}
+
+.editor {
+    @apply flex-1;
+    @apply p-2;
+    @apply max-w-none;
+    @apply outline-none;
+    @apply overflow-auto;
+}
+
+.suggestion-text {
+    @apply text-red;
+    @apply bg-cyan;
+}
+
+.page-container {
+    @apply flex flex-1;
+}
+
+.title {
+    @apply p-2;
+}
+
+.correction {
+    @apply bg-green/50;
+    @apply text-background;
+}
+
+.correction-div {
+    @apply absolute;
+    @apply z-100;
+    @apply p-1;
+    @apply border border-background;
+}
+
+.correction-dec {
+    @apply bg-red/30;
+    @apply underline decoration-red decoration-wavy;
+}
+
+.icon {
+    @apply bg-cyan;
+}
