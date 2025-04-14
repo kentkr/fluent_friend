@@ -1,5 +1,4 @@
-
-@import './theme.css';
+@import '../../styles/theme.css';
 
 .header {
     @apply bg-background;

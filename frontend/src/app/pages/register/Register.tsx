@@ -1,4 +1,4 @@
-import UPForm from "../../../components/UPForm"
+import UPForm from "../../../components/upform/UPForm"
 
 function Register() {
     return <UPForm route="/api/user/register/" method="register" />

@@ -5,7 +5,7 @@ import Register from "./pages/register/Register"
 import Home from "./pages/home/Home"
 import NotFound from "./pages/notfound/NotFound"
 import ProtectedRoute from "../components/ProtectedRoute"
-import Header from "../components/Header"
+import Header from "../components/header/Header"
 import Journal from "./pages/journal/Journal"
 
 function Logout() {
