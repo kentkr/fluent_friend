@@ -1,9 +1,9 @@
 import '../styles/theme.css'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import Login from "../pages/Login"
-import Register from "../pages/Register"
-import Home from "../pages/Home"
-import NotFound from "../pages/NotFound"
+import Login from "./pages/login/Login"
+import Register from "./pages/register/Register"
+import Home from "./pages/home/Home"
+import NotFound from "./pages/notfound/NotFound"
 import ProtectedRoute from "../components/ProtectedRoute"
 import Header from "../components/Header"
 import Journal from "./pages/journal/Journal"
