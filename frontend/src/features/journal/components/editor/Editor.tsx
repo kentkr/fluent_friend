@@ -68,11 +68,13 @@ export function Editor({
     return
   }
 
+  window.editor = editor
+
   // if currEntry id changes reset content
   useEffect(() => {
     let tr = editor.state.tr.setMeta('newEntryId', currEntry.id)
     editor.state.apply(tr)
-    editor.commands.setContent(currEntry.text)
+    editor.commands.setContent(currEntry.text, false,  { preserveWhitespace: true } )
   }, [currEntry.id])
 
   return (
@@ -80,4 +82,10 @@ export function Editor({
       <EditorContent editor={editor} className='editor-container-1'/>
     </>
   )
+}
+
+declare global {
+    interface Window {
+        editor:any;
+    }
 }

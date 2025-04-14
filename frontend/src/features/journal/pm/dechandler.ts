@@ -96,14 +96,17 @@ class DecHandler {
       let newDecs = await getDecorations(node.pos, node.node.textContent)  
       decs = decs.concat(newDecs)
     }
+    console.log('adding decs')
     this.editorView.dispatch(this.editorView.state.tr.setMeta('asyncDecorations', decs))
   }
 
   syncDb() {
+    console.log(this.entryId)
     if (!this.entryId) {
       return
     }
     let decs = this.serialize()
+    console.log('syncing db')
     api
       .post(`/api/journal_entries/update/${this.entryId}/decs/`, decs)
       .catch((err) => alert(err))
@@ -111,14 +114,13 @@ class DecHandler {
 
   resetDecs(entryId: number) {
     // post current decs
-    if (!this.entryId) {
-      return
+    if (this.entryId) {
+      console.log(this.entryId, entryId)
+      let decs = this.serialize()
+      api
+        .post(`/api/journal_entries/update/${this.entryId}/decs/`, decs)
+        .catch((err) => alert(err))
     }
-    console.log(this.entryId, entryId)
-    let decs = this.serialize()
-    api
-      .post(`/api/journal_entries/update/${this.entryId}/decs/`, decs)
-      .catch((err) => alert(err))
     this.trBuf = [];
     this.decSet = DecorationSet.empty
     // get decs for new entryid

@@ -86,13 +86,14 @@ class JournalEntryUpdateDecs(APIView):
 
     def post(self, request: HttpRequest, id: int) -> Response:
         user = request.user
-        print(id, request.data)
+        print('=== post: ', id, request.data)
         JournalEntries.objects.filter(user=user, id=id).update(decorations=request.data)
         return Response({'message': 'hiii'})
 
     def get(self, request: HttpRequest, id: int) -> Response:
         user = request.user
         decorations = JournalEntries.objects.filter(user=user, id=id).values('decorations')
+        print('=== get: ', id, decorations)
         return Response({'decorations': decorations[0]['decorations']})
 
 
@@ -109,8 +110,6 @@ class GetCorrections(APIView):
         is_asdf = re.compile(r'asdf')
         changes = []
         offset = request.data['start']+1
-
-        print(request.data)
 
         for match in is_asdf.finditer(request.data['text']):
             start, end = match.span()
