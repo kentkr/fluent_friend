@@ -1,9 +1,9 @@
 import { useState } from "react";
-import api from "../api";
+import api from "../../api";
 import { useNavigate } from "react-router-dom";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
-import "../styles/Form.css"
-import LoadingIndicator from "./LoadingIndicator";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
+import "./UPForm.css"
+import LoadingIndicator from "../loadingindicator/LoadingIndicator";
 
 function UPForm({ route, method }: { route: any; method: any }) {
   const [username, setUsername] = useState("");
