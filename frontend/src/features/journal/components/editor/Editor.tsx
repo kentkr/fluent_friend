@@ -1,12 +1,12 @@
-import api from '../../../../api';
 import { useEffect } from 'react';
-import { EditorContent, useEditor } from '@tiptap/react'
+import { Editor as TiptapEditor, EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { EntryObj } from '../../types/Journal'
 import Underline from '@tiptap/extension-underline'
 import './Editor.css'
 import Suggestion from '../../pm/suggestion';
 import { useDebouncedOnUpdate } from '../../utils/debounce';
+import { putEntry } from '../../api/journal_entries';
 
 export function Editor({ 
   currEntry, 
@@ -34,9 +34,7 @@ export function Editor({
 
     let updatedEntry = currEntry
     updatedEntry.text = text
-    api
-      .put(`/api/journal_entries/update/${currEntry.id}/`, updatedEntry)
-      .catch((err) => alert(err));
+    putEntry(currEntry)
   }
 
   const onUpdate = useDebouncedOnUpdate(({ editor }) => {
@@ -50,7 +48,7 @@ export function Editor({
       Underline,
       Suggestion
     ],
-    content: `<p>${currEntry.text}</p>`,
+    content: currEntry.text,
     editorProps: {
       attributes: {
         class: 'editor'
@@ -61,8 +59,8 @@ export function Editor({
     onCreate: ({ editor }) => {
       let tr = editor.state.tr.setMeta('newEntryId', currEntry.id)
       editor.state.apply(tr)
-    }
-  })
+    },
+  }, [currEntry.id])
 
   if (!editor) {
     return
@@ -71,11 +69,11 @@ export function Editor({
   window.editor = editor
 
   // if currEntry id changes reset content
-  useEffect(() => {
-    let tr = editor.state.tr.setMeta('newEntryId', currEntry.id)
-    editor.state.apply(tr)
-    editor.commands.setContent(currEntry.text, false,  { preserveWhitespace: true } )
-  }, [currEntry.id])
+  //useEffect(() => {
+  //  let tr = editor.state.tr.setMeta('newEntryId', currEntry.id)
+  //  editor.state.apply(tr)
+  //  editor.commands.setContent(currEntry.text, false,  { preserveWhitespace: true },)
+  //}, [currEntry.id])
 
   return (
     <>

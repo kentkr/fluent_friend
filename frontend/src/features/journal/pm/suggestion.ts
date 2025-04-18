@@ -73,30 +73,30 @@ const Suggestion = Extension.create({
         },
 
         apply(tr, suggState, oldState, newState) {
-          let changes; 
+          suggState.decHandler.decSet = suggState.decHandler.decSet.map(tr.mapping, tr.doc)
+          suggState.decHandler.editorView = EditorViewVar
+          window.tmp1 = suggState
           // placeholder logic
           if (tr.docChanged) {
-            // TODO find a way to not set this constantly
-            //decHandler.trToDec(tr)
-            suggState.decHandler.editorView = EditorViewVar
             suggState.decHandler.update(tr)
-            suggState.decHandler.serialize()
           }
 
           let newEntryId = tr.getMeta('newEntryId')
           if (newEntryId && newEntryId != suggState.decHandler.entryId) {
+            console.count('newEntry')
             //suggState.decHandler.decSet = suggState.decHandler.decSet.remove(suggState.decHandler.decSet.find())
             suggState.decHandler.resetDecs(newEntryId)
             return suggState
           }
 
           const asyncDecs = tr.getMeta('asyncDecorations')
-          if (asyncDecs) {
+          if (asyncDecs && asyncDecs.length > 0) {
+            // TODO 
             suggState.decHandler.decSet = suggState.decHandler.decSet.add(tr.doc, asyncDecs)
             suggState.decHandler.syncDb()
             return suggState
           }
-          suggState.decHandler.decSet = suggState.decHandler.decSet.map(tr.mapping, tr.doc)
+          // mapping is requried
           return suggState
         },
       },
