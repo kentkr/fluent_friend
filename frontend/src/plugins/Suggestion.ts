@@ -87,7 +87,7 @@ const Suggestion = Extension.create({
           let newEntryId = tr.getMeta('newEntryId')
           if (newEntryId && newEntryId != suggState.decHandler.entryId) {
             //suggState.decHandler.decSet = suggState.decHandler.decSet.remove(suggState.decHandler.decSet.find())
-            suggState.decHandler.resetDecs(newEntryId)
+            //suggState.decHandler.resetDecs(newEntryId)
             return suggState
           }
 

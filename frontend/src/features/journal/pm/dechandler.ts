@@ -4,12 +4,12 @@ import { Node } from "prosemirror-model";
 import { Decoration, DecorationAttrs, EditorView } from "prosemirror-view";
 import { CorrectionResponse, SerialDecoration } from "./suggestion.d";
 import { debounceLag } from "../utils/debounce";
-import api from "../../../api";
+import { getDecs, postCorrections, postDecs } from "../api/journal_entries";
 
 async function getDecorations(start: number, text: string): Promise<Decoration[]> {
   let corrections: CorrectionResponse    
   try {
-    let res = await api.post("/api/get_corrections/", {start: start, text: text})
+    let res = await postCorrections(start, text)
     corrections = res.data
   } catch (err) {
     alert(err)
@@ -66,6 +66,7 @@ class DecHandler {
     let min = Number.POSITIVE_INFINITY;
     let max = Number.NEGATIVE_INFINITY;
 
+    // get min/max changed for these steps
     this.trBuf.forEach(tr => {
       tr.mapping.maps.forEach((stepMap) => {
         stepMap.forEach((from, to) => {
@@ -76,6 +77,7 @@ class DecHandler {
       });
     });
 
+    // get all paragraphs impacted by changes
     const nodes: ParagraphNode[] = [];
     max = Math.min(max, lastTr.doc.nodeSize-2)
     lastTr.doc.nodesBetween(min, max, (node, pos, parent, index) => {
@@ -90,48 +92,45 @@ class DecHandler {
   }
   
   async addDecs(): Promise<void> {
+    console.count('add decs')
     const nodes = this.getParagraphNodes();
     let decs: Decoration[] = []
     for (var node of nodes) {
       let newDecs = await getDecorations(node.pos, node.node.textContent)  
       decs = decs.concat(newDecs)
     }
-    console.log('adding decs')
     this.editorView.dispatch(this.editorView.state.tr.setMeta('asyncDecorations', decs))
   }
 
   syncDb() {
-    console.log(this.entryId)
     if (!this.entryId) {
       return
     }
     let decs = this.serialize()
-    console.log('syncing db')
-    api
-      .post(`/api/journal_entries/update/${this.entryId}/decs/`, decs)
-      .catch((err) => alert(err))
+    console.log('syncing: ', decs)
+    postDecs(this.entryId, decs)
   }
 
-  resetDecs(entryId: number) {
+  async resetDecs(entryId: number) {
     // post current decs
     if (this.entryId) {
-      console.log(this.entryId, entryId)
       let decs = this.serialize()
-      api
-        .post(`/api/journal_entries/update/${this.entryId}/decs/`, decs)
-        .catch((err) => alert(err))
+      postDecs(this.entryId, decs)
     }
     this.trBuf = [];
     this.decSet = DecorationSet.empty
     // get decs for new entryid
     this.entryId = entryId;
-    api
-      .get(`/api/journal_entries/update/${this.entryId}/decs/`)
-      .then((res) => res.data)
-      .then((data) => {
-        let decs = this.deserialize(data.decorations)
-      })
-      .catch((err) => alert(err))
+    let decs = await getDecs(this.entryId)
+    console.log(decs)
+    if (decs) {
+      let d = this.deserialize(decs)
+      console.log('decs from db: ', d)
+      console.log('decs from set: ', this.decSet)
+      this.editorView.dispatch(this.editorView.state.tr.setMeta('asyncDecorations', d))
+    } else {
+      //this.addDecs()
+    }
   }
 
   serialize(): SerialDecoration[] {
@@ -143,15 +142,13 @@ class DecHandler {
     return serialDecs
   } 
 
-  deserialize(decs: SerialDecoration[]): DecorationSet {
+  deserialize(decs: SerialDecoration[]): Decoration[] {
     let decorations: Decoration[] = []
     for (var dec of decs) {
       let d = Decoration.inline(dec.from, dec.to, dec.spec.attrs, dec.spec)
       decorations.push(d)
     }
-    this.decSet = DecorationSet.empty
-    this.decSet = this.decSet.add(this.editorView.state.doc, decorations)
-    return this.decSet
+    return decorations
   }
 }
 
