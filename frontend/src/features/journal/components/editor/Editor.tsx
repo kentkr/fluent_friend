@@ -39,6 +39,7 @@ export function Editor({
 
   const onUpdate = useDebouncedOnUpdate(({ editor }) => {
     let text = editor.getHTML()
+    //editor.view.dispatch(editor.state.tr.setMeta('asyncDecorations', 'x'))
     updateEditor({ text: text });
   }, 500);
 
