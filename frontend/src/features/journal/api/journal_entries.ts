@@ -29,5 +29,3 @@ export async function getDecs(entryId: number): Promise<SerialDecoration[]> {
   return response.data.decorations
 }
 
-window.tmp = getDecs
-

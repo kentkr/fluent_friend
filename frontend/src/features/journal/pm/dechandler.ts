@@ -1,10 +1,11 @@
 import { DecorationSet } from "@tiptap/pm/view";
-import { Transaction } from "@tiptap/pm/state";
+import { EditorState, Transaction } from "@tiptap/pm/state";
 import { Node } from "prosemirror-model";
 import { Decoration, DecorationAttrs, EditorView } from "prosemirror-view";
 import { CorrectionResponse, SerialDecoration } from "./suggestion.d";
 import { debounceLag } from "../utils/debounce";
 import { getDecs, postCorrections, postDecs } from "../api/journal_entries";
+
 
 async function getDecorations(start: number, text: string): Promise<Decoration[]> {
   let corrections: CorrectionResponse    
@@ -41,22 +42,53 @@ class DecHandler {
   decSet: DecorationSet;
   trBuf: Transaction[];
   entryId: number | null;
+  state: Node
   editorView: EditorView
   private debouncedAddDecs: () => void;
 
-  constructor(decSet: DecorationSet, editorView: EditorView) {
+  constructor(decSet: DecorationSet, state: Node, editorView: EditorView) {
     this.decSet = decSet;
     this.trBuf = [];
     this.entryId = null;
+    this.state = state
     this.editorView = editorView
     
     // Bind the context and create debounced function once
     this.debouncedAddDecs = debounceLag(() => this.addDecs(), 500);
   }
 
-  update(tr: Transaction): void {
+  tmp() {
+    this.editorView.dispatch(this.editorView.state.tr.setMeta('refresh', true))
+  }
+
+  update(tr: Transaction, view: EditorView): void {
+    // map decset forward/backward
+    this.editorView = view
+    this.decSet = this.decSet.map(tr.mapping, tr.doc)
+    this.handleDeletions(tr)
     this.trBuf.push(tr);
     this.debouncedAddDecs();
+  }
+
+  handleDeletions(tr: Transaction): void {
+    tr.mapping.maps.forEach((stepMap) => {
+      stepMap.forEach((oldStart, oldEnd, newStart, newEnd) => {
+        console.log('Mapping:', oldStart, oldEnd, 'to', newStart, newEnd);
+        // True deletion occurs when old range is larger than new range
+        if (oldEnd - oldStart > newEnd - newStart) {
+          // Calculate the deleted region more precisely
+          let deletedFrom = oldStart;
+          let deletedTo = oldStart + ((oldEnd - oldStart) - (newEnd - newStart));
+
+          console.log(deletedFrom, deletedTo)
+          let decs = this.decSet.find(deletedFrom, deletedTo);
+          if (decs.length > 0) {
+            console.log('Removing decorations:', decs);
+            this.decSet = this.decSet.remove(decs);
+          }
+        }
+      })
+    })
   }
 
   getParagraphNodes(): ParagraphNode[] {
@@ -87,19 +119,38 @@ class DecHandler {
       return true;
     });
 
+    // TODO: this shouldnt handle tr buf
     this.trBuf = [];
     return nodes;
   }
   
   async addDecs(): Promise<void> {
-    console.count('add decs')
+    // get impacted nodes
     const nodes = this.getParagraphNodes();
+    // receive decorations
     let decs: Decoration[] = []
     for (var node of nodes) {
       let newDecs = await getDecorations(node.pos, node.node.textContent)  
       decs = decs.concat(newDecs)
     }
-    this.editorView.dispatch(this.editorView.state.tr.setMeta('asyncDecorations', decs))
+    // clear old decorations if there's overlap
+
+    for (var dec of decs) {
+      let oldDecs = this.decSet.find(dec.from, dec.to)
+      // TODO: oldDecs can have null values so passing them as a list 
+      // creates erroneous deletions
+      if (oldDecs.length > 0) {
+        for (var d of oldDecs) {
+          console.log('deleting', d)
+          this.decSet = this.decSet.remove([d])
+        }
+      }
+    }
+    // add to decset
+    this.decSet = this.decSet.add(this.state, decs)
+    // sync with editor and db
+    this.syncDb()
+    this.editorView.dispatch(this.editorView.state.tr.setMeta('refresh', true))
   }
 
   syncDb() {
@@ -107,7 +158,6 @@ class DecHandler {
       return
     }
     let decs = this.serialize()
-    console.log('syncing: ', decs)
     postDecs(this.entryId, decs)
   }
 
@@ -122,11 +172,8 @@ class DecHandler {
     // get decs for new entryid
     this.entryId = entryId;
     let decs = await getDecs(this.entryId)
-    console.log(decs)
     if (decs) {
       let d = this.deserialize(decs)
-      console.log('decs from db: ', d)
-      console.log('decs from set: ', this.decSet)
       this.editorView.dispatch(this.editorView.state.tr.setMeta('asyncDecorations', d))
     } else {
       //this.addDecs()

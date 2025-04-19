@@ -47,18 +47,8 @@ function updateTooltip(
   return currTooltip
 }
 
-class SuggestionState {
-  decHandler: DecHandler
-  decorationSet: DecorationSet
-
-  constructor(decorationSet: DecorationSet, editorView: EditorView) {
-    this.decHandler = new DecHandler(decorationSet, editorView)
-    this.decorationSet = decorationSet
-  }
-
-}
-
 const suggestionKey = new PluginKey('suggestion')
+
 
 const Suggestion = Extension.create({
   name: 'suggestion',
@@ -69,42 +59,44 @@ const Suggestion = Extension.create({
       state: {
         init(_, { doc }) {
           let decorationSet = DecorationSet.create(doc, [])
-          return new SuggestionState(decorationSet, EditorViewVar)
+          return new DecHandler(decorationSet, doc, EditorViewVar)
         },
 
-        apply(tr, suggState, oldState, newState) {
-          suggState.decHandler.decSet = suggState.decHandler.decSet.map(tr.mapping, tr.doc)
-          suggState.decHandler.editorView = EditorViewVar
-          window.tmp1 = suggState
+        apply(tr, decHandler, oldState, newState) {
           // placeholder logic
           if (tr.docChanged) {
-            suggState.decHandler.update(tr)
+            decHandler.update(tr, EditorViewVar)
           }
 
+          let refresh = tr.getMeta('refresh')
+          if (refresh) {
+            return decHandler
+          }
+
+          // TODO remove this section
           let newEntryId = tr.getMeta('newEntryId')
-          if (newEntryId && newEntryId != suggState.decHandler.entryId) {
-            console.count('newEntry')
-            //suggState.decHandler.decSet = suggState.decHandler.decSet.remove(suggState.decHandler.decSet.find())
-            suggState.decHandler.resetDecs(newEntryId)
-            return suggState
+          if (newEntryId && newEntryId != decHandler.entryId) {
+            //decHandler.decSet = decHandler.decSet.remove(decHandler.decSet.find())
+            decHandler.resetDecs(newEntryId)
+            return decHandler
           }
 
           const asyncDecs = tr.getMeta('asyncDecorations')
           if (asyncDecs && asyncDecs.length > 0) {
             // TODO 
-            suggState.decHandler.decSet = suggState.decHandler.decSet.add(tr.doc, asyncDecs)
-            suggState.decHandler.syncDb()
-            return suggState
+            decHandler.decSet = decHandler.decSet.add(tr.doc, asyncDecs)
+            decHandler.syncDb()
+            return decHandler
           }
           // mapping is requried
-          return suggState
+          return decHandler
         },
       },
 
       props: {
         decorations(state) {
-          let suggState = this.getState(state)
-          return suggState?.decHandler.decSet
+          let decHandler = this.getState(state)
+          return decHandler?.decSet
         },
 
         handleClickOn(view, pos, node, nodePos, event, direct) {
@@ -115,8 +107,8 @@ const Suggestion = Extension.create({
               currTooltip = initTooltip(currTooltip, view)
             }
 
-            let suggState = this.getState(view.state)
-            let decorationSet = suggState?.decHandler.decSet
+            let decHandler = this.getState(view.state)
+            let decorationSet = decHandler?.decSet
             if (decorationSet) {
               updateTooltip(currTooltip, decorationSet, pos, view)
             }
