@@ -64,7 +64,7 @@ const Suggestion = Extension.create({
         apply(tr, decHandler, oldState, newState) {
           // placeholder logic
           if (tr.docChanged) {
-            decHandler.update(tr, EditorViewVar)
+            decHandler.update(tr, EditorViewVar, newState.doc)
           }
 
           let refresh = tr.getMeta('refresh')
@@ -85,8 +85,8 @@ const Suggestion = Extension.create({
           const asyncDecs = tr.getMeta('asyncDecorations')
           if (asyncDecs && asyncDecs.length > 0) {
             // TODO 
-            decHandler.decSet = decHandler.decSet.add(tr.doc, asyncDecs)
-            decHandler.syncDb()
+            //decHandler.decSet = decHandler.decSet.add(tr.doc, asyncDecs)
+            //decHandler.syncDb()
             return decHandler
           }
           // mapping is requried
@@ -99,6 +99,7 @@ const Suggestion = Extension.create({
           let decHandler = this.getState(state)
           if (decHandler !== undefined) {
             let d = decHandler.decSet
+            console.log('_ref in decs', d.find())
             return d
           }
         },
