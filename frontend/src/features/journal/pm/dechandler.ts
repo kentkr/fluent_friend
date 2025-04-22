@@ -29,7 +29,7 @@ async function getDecorations(start: number, text: string): Promise<Decoration[]
         { correction: correction[2], attrs: { class: 'correction-dec' } }
 
       )
-      // TODO this may not be necessary any more
+      // TODO this if may not be necessary any more
       if (d) {
         decos.push(d)
       }
@@ -61,9 +61,10 @@ class DecHandler {
     this.editorView.dispatch(this.editorView.state.tr.setMeta('refresh', true))
   }
 
-  update(tr: Transaction, view: EditorView): void {
+  update(tr: Transaction, view: EditorView, state: Node): void {
     // map decset forward/backward
     this.editorView = view
+    this.state = state
     this.mapDecs(tr)
     this.trBuf.push(tr);
     this.debouncedAddDecs();
@@ -133,7 +134,7 @@ class DecHandler {
 
     // TODO: this shouldnt handle tr buf
     this.trBuf = [];
-    return nodes;
+    return nodes
   }
   
   async addDecs(): Promise<void> {
@@ -166,7 +167,6 @@ class DecHandler {
 
     // add to decset
     this.decSet = this.decSet.add(this.state, decs)
-    console.log('_ref', this.decSet.find())
     // sync with editor and db
     this.syncDb()
     this.editorView.dispatch(this.editorView.state.tr.setMeta('refresh', true))
