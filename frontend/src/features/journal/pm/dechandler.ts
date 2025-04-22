@@ -64,27 +64,39 @@ class DecHandler {
   update(tr: Transaction, view: EditorView): void {
     // map decset forward/backward
     this.editorView = view
-    this.decSet = this.decSet.map(tr.mapping, tr.doc)
-    this.handleDeletions(tr)
+    this.mapDecs(tr)
     this.trBuf.push(tr);
     this.debouncedAddDecs();
   }
 
+  mapDecs(tr: Transaction): void {
+    // mapping must happen after deletions: deletions have weird boundaries, we need to know deletions before decs mapped
+    this.handleDeletions(tr)
+    // map forward/backward
+    this.decSet = this.decSet.map(tr.mapping, tr.doc)
+  }
+
   handleDeletions(tr: Transaction): void {
+    // get range of mapping and delete decs
     tr.mapping.maps.forEach((stepMap) => {
       stepMap.forEach((oldStart, oldEnd, newStart, newEnd) => {
-        console.log('Mapping:', oldStart, oldEnd, 'to', newStart, newEnd);
-        // True deletion occurs when old range is larger than new range
-        if (oldEnd - oldStart > newEnd - newStart) {
-          // Calculate the deleted region more precisely
+        // true deletion occurs when old range is larger than new range
+        const isDeletion = oldEnd - oldStart > newEnd - newStart
+        if (isDeletion) {
           let deletedFrom = oldStart;
+          // end of deletions = prevous start + (old range - new range) 
           let deletedTo = oldStart + ((oldEnd - oldStart) - (newEnd - newStart));
-
-          console.log(deletedFrom, deletedTo)
-          let decs = this.decSet.find(deletedFrom, deletedTo);
-          if (decs.length > 0) {
-            console.log('Removing decorations:', decs);
-            this.decSet = this.decSet.remove(decs);
+          // decs near deltion, but this includes deletedFrom-1 and deletedTo+1 - not what we want
+          let inRangedecs = this.decSet.find(deletedFrom, deletedTo);
+          if (inRangedecs.length > 0) {
+            const deleteDecs: Decoration[] = []
+            for (var dec of inRangedecs) {
+              // if deletion is inbounds of dec, add to deletion array
+              if (deletedFrom < dec.to && deletedTo > dec.from) {
+                deleteDecs.push(dec) 
+              }
+            }
+            this.decSet = this.decSet.remove(deleteDecs);
           }
         }
       })
@@ -135,19 +147,26 @@ class DecHandler {
     }
     // clear old decorations if there's overlap
 
+    let deleteDecs: Decoration [] = []
     for (var dec of decs) {
       let oldDecs = this.decSet.find(dec.from, dec.to)
+      debugger
       // TODO: oldDecs can have null values so passing them as a list 
-      // creates erroneous deletions
       if (oldDecs.length > 0) {
         for (var d of oldDecs) {
           console.log('deleting', d)
-          this.decSet = this.decSet.remove([d])
+          deleteDecs.push(d)
         }
       }
     }
+
+    if (deleteDecs.length > 0) {
+      this.decSet = this.decSet.remove(deleteDecs)
+    }
+
     // add to decset
     this.decSet = this.decSet.add(this.state, decs)
+    console.log('_ref', this.decSet.find())
     // sync with editor and db
     this.syncDb()
     this.editorView.dispatch(this.editorView.state.tr.setMeta('refresh', true))

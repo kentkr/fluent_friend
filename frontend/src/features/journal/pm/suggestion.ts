@@ -49,7 +49,6 @@ function updateTooltip(
 
 const suggestionKey = new PluginKey('suggestion')
 
-
 const Suggestion = Extension.create({
   name: 'suggestion',
 
@@ -70,6 +69,8 @@ const Suggestion = Extension.create({
 
           let refresh = tr.getMeta('refresh')
           if (refresh) {
+            console.log('_ref in apply', decHandler.decSet.find())
+            debugger
             return decHandler
           }
 
@@ -96,7 +97,10 @@ const Suggestion = Extension.create({
       props: {
         decorations(state) {
           let decHandler = this.getState(state)
-          return decHandler?.decSet
+          if (decHandler !== undefined) {
+            let d = decHandler.decSet
+            return d
+          }
         },
 
         handleClickOn(view, pos, node, nodePos, event, direct) {
