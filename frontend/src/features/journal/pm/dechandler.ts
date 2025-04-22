@@ -27,12 +27,8 @@ async function getDecorations(start: number, text: string): Promise<Decoration[]
         correction[1], 
         attrs,
         { correction: correction[2], attrs: { class: 'correction-dec' } }
-
       )
-      // TODO this if may not be necessary any more
-      if (d) {
-        decos.push(d)
-      }
+      decos.push(d)
     }
   }
   return decos
@@ -52,13 +48,8 @@ class DecHandler {
     this.entryId = null;
     this.state = state
     this.editorView = editorView
-    
     // Bind the context and create debounced function once
     this.debouncedAddDecs = debounceLag(() => this.addDecs(), 500);
-  }
-
-  tmp() {
-    this.editorView.dispatch(this.editorView.state.tr.setMeta('refresh', true))
   }
 
   update(tr: Transaction, view: EditorView, state: Node): void {
@@ -127,12 +118,12 @@ class DecHandler {
     max = Math.min(max, lastTr.doc.nodeSize-2)
     lastTr.doc.nodesBetween(min, max, (node, pos, parent, index) => {
       if (node.isBlock) {
+        // TODO: make this a type
         nodes.push(new ParagraphNode(node, pos, parent, index));
       } 
       return true;
     });
 
-    // TODO: this shouldnt handle tr buf
     this.trBuf = [];
     return nodes
   }
@@ -140,32 +131,21 @@ class DecHandler {
   async addDecs(): Promise<void> {
     // get impacted nodes
     const nodes = this.getParagraphNodes();
-    // receive decorations
+    // receive decorations from api
     let decs: Decoration[] = []
     for (var node of nodes) {
       let newDecs = await getDecorations(node.pos, node.node.textContent)  
       decs = decs.concat(newDecs)
     }
     // clear old decorations if there's overlap
-
     let deleteDecs: Decoration [] = []
     for (var dec of decs) {
       let oldDecs = this.decSet.find(dec.from, dec.to)
-      debugger
       // TODO: oldDecs can have null values so passing them as a list 
-      if (oldDecs.length > 0) {
-        for (var d of oldDecs) {
-          console.log('deleting', d)
-          deleteDecs.push(d)
-        }
-      }
+      deleteDecs = deleteDecs.concat(oldDecs)
     }
-
-    if (deleteDecs.length > 0) {
-      this.decSet = this.decSet.remove(deleteDecs)
-    }
-
-    // add to decset
+    this.decSet = this.decSet.remove(deleteDecs)
+    // add to new/replacement decorations
     this.decSet = this.decSet.add(this.state, decs)
     // sync with editor and db
     this.syncDb()
@@ -201,7 +181,7 @@ class DecHandler {
 
   serialize(): SerialDecoration[] {
     let serialDecs: SerialDecoration[] = []
-    const decs = this.decSet.find(0, this.editorView.state.doc.content.size)
+    const decs = this.decSet.find()
     decs.forEach(dec => {
       serialDecs.push({from: dec.from, to: dec.to, spec: dec.spec})
     })
