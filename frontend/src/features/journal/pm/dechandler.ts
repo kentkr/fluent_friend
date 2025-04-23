@@ -1,5 +1,5 @@
 import { DecorationSet } from "@tiptap/pm/view";
-import { EditorState, Transaction } from "@tiptap/pm/state";
+import { Transaction } from "@tiptap/pm/state";
 import { Node } from "prosemirror-model";
 import { Decoration, DecorationAttrs, EditorView } from "prosemirror-view";
 import { CorrectionResponse, SerialDecoration } from "./suggestion.d";
@@ -132,6 +132,7 @@ class DecHandler {
     // receive decorations from api
     let decs: Decoration[] = []
     for (var node of nodes) {
+      // TODO: merge nodes to send one api call, to reduce requests. Cost will stay the same 
       let newDecs = await getDecorations(node.pos, node.node.textContent)  
       decs = decs.concat(newDecs)
     }
