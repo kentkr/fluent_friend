@@ -16,16 +16,15 @@ export async function postCorrections(start: number, text: string): Promise<any>
 }
 
 export function postDecs(entryId: number, decs: SerialDecoration[]): void {
-  console.count(`post decs ${entryId}`)
-  console.log(decs)
+  console.log(`post decs ${entryId}`, decs)
   api
     .post(`/api/journal_entries/update/${entryId}/decs/`, decs)
     .catch((err) => alert(err))
 }
 
 export async function getDecs(entryId: number): Promise<SerialDecoration[]> {
-  console.count(`get decs ${entryId}`)
   const response = await api.get(`/api/journal_entries/update/${entryId}/decs/`)
+  console.log(`get decs ${entryId}`, response.data.decorations)
   return response.data.decorations
 }
 

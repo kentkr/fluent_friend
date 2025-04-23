@@ -86,8 +86,11 @@ class JournalEntryUpdateDecs(APIView):
 
     def post(self, request: HttpRequest, id: int) -> Response:
         user = request.user
-        JournalEntries.objects.filter(user=user, id=id).update(decorations=request.data)
-        return Response({'message': 'hiii'})
+        # DO NOT use .update(), there might be a bug, only .save() works 
+        journal_entry = JournalEntries.objects.get(user=user, id=id)
+        journal_entry.decorations = request.data
+        journal_entry.save()
+        return Response({'message': f'Updated decs'})
 
     def get(self, request: HttpRequest, id: int) -> Response:
         user = request.user
