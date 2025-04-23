@@ -9,22 +9,39 @@ let EditorViewVar: EditorView;
 
 const suggestionKey = new PluginKey('suggestion')
 
-const Suggestion = Extension.create({
+interface SuggestionOptions {
+  entryId: number
+}
+
+const Suggestion = Extension.create<SuggestionOptions>({
   name: 'suggestion',
+  addOptions() {
+    return {
+      entryId: -1
+    }
+  },
 
   addProseMirrorPlugins() {
+    const entryId = this.options.entryId
+
     const suggestionPlugin = new Plugin({
       key: suggestionKey,
       state: {
         init(_, { doc }) {
-          let decorationSet = DecorationSet.create(doc, [])
-          return new DecHandler(decorationSet, doc, EditorViewVar)
+          return new DecHandler(doc, EditorViewVar, entryId)
         },
 
         apply(tr, decHandler, _, newState) {
           // if doc changed trigger updates to decs
           if (tr.docChanged) {
             decHandler.update(tr, EditorViewVar, newState.doc)
+          }
+          // listen for dispatches from onCreate
+          let onCreate = tr.getMeta('onCreate')
+          if (onCreate) {
+            // TODO: handle editor view var better on startup
+            decHandler.view = EditorViewVar
+            decHandler.getDbDecs()
           }
           // listen for dispatches from decHandler
           let refresh = tr.getMeta('refresh')

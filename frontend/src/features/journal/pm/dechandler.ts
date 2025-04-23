@@ -16,9 +16,7 @@ async function getDecorations(start: number, text: string): Promise<Decoration[]
     alert(err)
     corrections = { changes_made: false , changes: []}
   }
-
   let decos: Decoration[] = []
-
   if (corrections.changes) {
     for (var correction of corrections.changes) {
       let attrs: DecorationAttrs = { class: 'correction-dec' }
@@ -37,24 +35,24 @@ async function getDecorations(start: number, text: string): Promise<Decoration[]
 class DecHandler {
   decSet: DecorationSet;
   trBuf: Transaction[];
-  entryId: number | null;
+  entryId: number;
   state: Node
-  editorView: EditorView
+  view: EditorView
   private debouncedAddDecs: () => void;
 
-  constructor(decSet: DecorationSet, state: Node, editorView: EditorView) {
-    this.decSet = decSet;
+  constructor(state: Node, view: EditorView, entryId: number) {
+    this.decSet = DecorationSet.create(state, []);
     this.trBuf = [];
-    this.entryId = null;
+    this.entryId = entryId;
     this.state = state
-    this.editorView = editorView
+    this.view = view
     // Bind the context and create debounced function once
     this.debouncedAddDecs = debounceLag(() => this.addDecs(), 500);
   }
 
   update(tr: Transaction, view: EditorView, state: Node): void {
     // map decset forward/backward
-    this.editorView = view
+    this.view = view
     this.state = state
     this.mapDecs(tr)
     this.trBuf.push(tr);
@@ -149,34 +147,19 @@ class DecHandler {
     this.decSet = this.decSet.add(this.state, decs)
     // sync with editor and db
     this.syncDb()
-    this.editorView.dispatch(this.editorView.state.tr.setMeta('refresh', true))
+    this.view.dispatch(this.view.state.tr.setMeta('refresh', true))
   }
 
   syncDb() {
-    if (!this.entryId) {
-      return
-    }
     let decs = this.serialize()
     postDecs(this.entryId, decs)
   }
 
-  async resetDecs(entryId: number) {
-    // post current decs
-    if (this.entryId) {
-      let decs = this.serialize()
-      postDecs(this.entryId, decs)
-    }
-    this.trBuf = [];
-    this.decSet = DecorationSet.empty
-    // get decs for new entryid
-    this.entryId = entryId;
-    let decs = await getDecs(this.entryId)
-    if (decs) {
-      let d = this.deserialize(decs)
-      this.editorView.dispatch(this.editorView.state.tr.setMeta('asyncDecorations', d))
-    } else {
-      //this.addDecs()
-    }
+  async getDbDecs() {
+    let serialDecs = await getDecs(this.entryId)
+    let decs = this.deserialize(serialDecs)
+    this.decSet = this.decSet.add(this.state, decs)
+    this.view.dispatch(this.view.state.tr.setMeta('refresh', true))
   }
 
   serialize(): SerialDecoration[] {

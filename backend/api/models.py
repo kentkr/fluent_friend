@@ -18,7 +18,7 @@ class JournalEntries(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # id gets appended here
     title = models.CharField(max_length=255, null = True)
     text = models.TextField(null = True)
-    decorations = models.JSONField(null=True)
+    decorations = models.JSONField(null=True, default=list)
 
     class Meta:
         db_table = 'journal_entries'  # Custom table name

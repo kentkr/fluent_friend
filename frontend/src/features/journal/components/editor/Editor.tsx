@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Editor as TiptapEditor, EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { EntryObj } from '../../types/Journal'
@@ -7,6 +7,7 @@ import './Editor.css'
 import Suggestion from '../../pm/suggestion';
 import { useDebouncedOnUpdate } from '../../utils/debounce';
 import { putEntry } from '../../api/journal_entries';
+import { InitObj } from '../../pm/suggestion.d';
 
 export function Editor({ 
   currEntry, 
@@ -39,7 +40,6 @@ export function Editor({
 
   const onUpdate = useDebouncedOnUpdate(({ editor }) => {
     let text = editor.getHTML()
-    //editor.view.dispatch(editor.state.tr.setMeta('asyncDecorations', 'x'))
     updateEditor({ text: text });
   }, 500);
 
@@ -47,7 +47,7 @@ export function Editor({
     extensions: [
       StarterKit,
       Underline,
-      Suggestion
+      Suggestion.configure({entryId: currEntry.id})
     ],
     content: currEntry.text,
     editorProps: {
@@ -55,26 +55,21 @@ export function Editor({
         class: 'editor'
       }
     },
-    shouldRerenderOnTransaction: false,
     onUpdate: onUpdate,
     onCreate: ({ editor }) => {
-      let tr = editor.state.tr.setMeta('newEntryId', currEntry.id)
+      let tr = editor.state.tr.setMeta('onCreate', currEntry.id)
       editor.state.apply(tr)
     },
+    shouldRerenderOnTransaction: false,
+    parseOptions: {
+      preserveWhitespace: 'full'
+    },
+    // when entry id changes recreate
   }, [currEntry.id])
 
   if (!editor) {
     return
   }
-
-  window.editor = editor
-
-  // if currEntry id changes reset content
-  //useEffect(() => {
-  //  let tr = editor.state.tr.setMeta('newEntryId', currEntry.id)
-  //  editor.state.apply(tr)
-  //  editor.commands.setContent(currEntry.text, false,  { preserveWhitespace: true },)
-  //}, [currEntry.id])
 
   return (
     <>
@@ -83,8 +78,10 @@ export function Editor({
   )
 }
 
+// TODO delete
 declare global {
     interface Window {
         editor:any;
     }
 }
+
