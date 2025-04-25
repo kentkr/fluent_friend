@@ -12,6 +12,7 @@ async function getDecorations(start: number, text: string): Promise<Decoration[]
   try {
     let res = await postCorrections(start, text)
     corrections = res.data
+    console.log('returned corrections', corrections)
   } catch (err) {
     alert(err)
     corrections = { changes_made: false , changes: []}
@@ -21,10 +22,10 @@ async function getDecorations(start: number, text: string): Promise<Decoration[]
     for (var correction of corrections.changes) {
       let attrs: DecorationAttrs = { class: 'correction-dec' }
       let d = Decoration.inline(
-        correction[0], 
-        correction[1], 
-        attrs,
-        { correction: correction[2], attrs: { class: 'correction-dec' } }
+        correction.from, 
+        correction.to, 
+        correction.spec.attrs,
+        correction.spec
       )
       decos.push(d)
     }
