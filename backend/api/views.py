@@ -12,7 +12,8 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
 from dataclasses import dataclass
-
+from .ai.corrections import get_correction, get_decorations
+from .ai.types import DecAttrs, DecSpec, Decoration
 # asdf
 class NoteListCreate(generics.ListCreateAPIView):
     """
@@ -108,17 +109,25 @@ class GetCorrections(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request: HttpRequest) -> Response:
-        is_asdf = re.compile(r'asdf')
-        changes = []
-        offset = request.data['start']+1
+        #is_asdf = re.compile(r'asdf')
+        #changes = []
+        #offset = request.data['start']+1
 
-        print(request.data)
-        for match in is_asdf.finditer(request.data['text']):
-            start, end = match.span()
-            start += offset
-            end += offset
-            changes.append([start, end, 'Dont be saying asdf'])
-        if changes:
-            return Response({'changes_made': True, 'changes': changes})
+        #print(request.data)
+        #for match in is_asdf.finditer(request.data['text']):
+        #    start, end = match.span()
+        #    start += offset
+        #    end += offset
+        #    changes.append([start, end, 'Dont be saying asdf'])
+        #if changes:
+        #    return Response({'changes_made': True, 'changes': changes})
+
+        corrected = get_correction(request.data['text'])
+        decs = get_decorations(request.data['text'], corrected)
+        #decs = [Decoration(1, 5, DecSpec('', DecAttrs('correction-dec')))]
+        print(decs)
+
+        if decs:
+            return Response({'changes_made': True, 'changes': [d.to_dict() for d in decs]})
         return Response({'changes_made': False})
 
