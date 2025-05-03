@@ -123,7 +123,8 @@ class GetCorrections(APIView):
         #    return Response({'changes_made': True, 'changes': changes})
 
         corrected = get_correction(request.data['text'])
-        decs = get_decorations(request.data['text'], corrected)
+        decs = get_decorations(request.data['text'], corrected, request.data['start'])
+        print('data: ', request.data)
         #decs = [Decoration(1, 5, DecSpec('', DecAttrs('correction-dec')))]
         print(decs)
 

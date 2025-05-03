@@ -9,7 +9,7 @@ from .tools import tools
 
 TOKENIZE_RE = re.compile(r'\s?\w+(?:-\w+)*|\s?[^\w\s]')
 
-def get_decorations(original_message: str, corrected_message: str) -> List[Decoration]:
+def get_decorations(original_message: str, corrected_message: str, offset: int) -> List[Decoration]:
     # split text - retain spaces, ignore '-'
     split_orig = TOKENIZE_RE.findall(original_message)
     split_corrected = TOKENIZE_RE.findall(corrected_message)
@@ -18,7 +18,6 @@ def get_decorations(original_message: str, corrected_message: str) -> List[Decor
     seq = difflib.SequenceMatcher(None, split_orig, split_corrected)
     decorations = []
     # offset starts at 1 for editor start token
-    offset = 1
     for ops in seq.get_opcodes():
         if ops[0] == 'replace':
             # otherwise append each word to corrections
