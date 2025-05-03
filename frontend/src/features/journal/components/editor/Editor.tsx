@@ -7,7 +7,6 @@ import './Editor.css'
 import Suggestion from '../../pm/suggestion';
 import { useDebouncedOnUpdate } from '../../utils/debounce';
 import { putEntry } from '../../api/journal_entries';
-import { InitObj } from '../../pm/suggestion.d';
 
 export function Editor({ 
   currEntry, 
