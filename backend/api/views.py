@@ -12,7 +12,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
 from dataclasses import dataclass
-from .ai.corrections import get_correction, get_decorations
+from .ai.corrections import get_correction, get_decorations1
 from .ai.types import DecAttrs, DecSpec, Decoration
 # asdf
 class NoteListCreate(generics.ListCreateAPIView):
@@ -121,9 +121,11 @@ class GetCorrections(APIView):
         #    changes.append([start, end, 'Dont be saying asdf'])
         #if changes:
         #    return Response({'changes_made': True, 'changes': changes})
+        if not request.data['text']:
+            return Response({'changes_made': False})
 
         corrected = get_correction(request.data['text'])
-        decs = get_decorations(request.data['text'], corrected, request.data['start'])
+        decs = get_decorations1(request.data['text'], corrected, request.data['start'])
         print('data: ', request.data)
         #decs = [Decoration(1, 5, DecSpec('', DecAttrs('correction-dec')))]
         print(decs)
