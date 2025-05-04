@@ -30,6 +30,7 @@ async function getDecorations(start: number, text: string): Promise<Decoration[]
       decos.push(d)
     }
   }
+  console.log('decos', decos)
   return decos
 }
 
@@ -134,7 +135,8 @@ class DecHandler {
     let decs: Decoration[] = []
     for (var node of nodes) {
       // TODO: merge nodes to send one api call, to reduce requests. Cost will stay the same 
-      let newDecs = await getDecorations(node.pos, node.node.textContent)  
+      // start at i+1 bc paragraph start token
+      let newDecs = await getDecorations(node.pos+1, node.node.textContent)  
       decs = decs.concat(newDecs)
     }
     // clear old decorations if there's overlap

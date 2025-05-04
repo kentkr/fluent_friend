@@ -5,7 +5,7 @@ import re
 import json
 from .types import Decoration, DecSpec, DecAttrs
 from .clients import client, MODEL
-from .tools import tools
+from .tools import create_decs_tool, tools
 
 TOKENIZE_RE = re.compile(r'\s?\w+(?:-\w+)*|\s?[^\w\s]')
 
@@ -64,8 +64,10 @@ def get_correction(message: str) -> str:
     if response.choices[0].message.content is None:
         raise Exception(f'Api call returned no content: {response}')
     # TODO not the way to do this lol
-    j = json.loads(response.choices[0].message.tool_calls[0].function.arguments)
-    return j['corrected_message']
+    if response.choices[0].message.tool_calls:
+        j = json.loads(response.choices[0].message.tool_calls[0].function.arguments)
+        return j['corrected_message']
+    return ''
 
 class ExplainCorrection:
     def __init__(
@@ -134,3 +136,91 @@ class ExplainCorrection:
             temperature=.1
         )
         return res.choices[0].message.content
+
+
+
+def get_decorations1(original_message: str, corrected_message: str, offset: int) -> List[Decoration]:
+    # split text - retain spaces, ignore '-'
+    split_orig = TOKENIZE_RE.findall(original_message)
+    split_corrected = TOKENIZE_RE.findall(corrected_message)
+
+    # get seq of separated words
+    seq = difflib.SequenceMatcher(None, split_orig, split_corrected)
+    # offset starts at 1 for editor start token
+    corrections = []
+    i = 0
+    for ops in seq.get_opcodes():
+        if ops[0] == 'equal':
+            offset += len(''.join(split_orig[ops[1]:ops[2]]))
+            continue
+        elif ops[0] == 'replace':
+            # otherwise append each word to corrections
+            deletion = ''.join(split_orig[ops[1]:ops[2]])
+            insertion = ''.join(split_corrected[ops[3]:ops[4]])
+            corrections.append({'index': i, 'from': offset, 'to': offset+len(deletion), 'original': deletion, 'corrected': insertion})
+        elif ops[0] == 'insert':
+            deletion = ''
+            insertion = ''.join(split_corrected[ops[3]:ops[4]])
+            corrections.append({'index': i, 'from': offset, 'to': offset+len(deletion), 'original': deletion, 'corrected': insertion})
+        elif ops[0] == 'delete':
+            deletion = ''.join(split_orig[ops[1]:ops[2]])
+            insertion = ''
+            corrections.append({'index': i, 'from': offset, 'to': offset+len(deletion), 'original': deletion, 'corrected': insertion})
+        i += 1
+        offset += len(''.join(split_orig[ops[1]:ops[2]]))
+
+    for corr in corrections:
+        corrections
+
+    m = f"""
+    Given:
+        - Original: {original_message!r}
+        - Corrected: {corrected_message!r}
+        - Corrections:
+            {corrections}
+    
+    For each correction call the create_decs function
+    """
+
+    system_prompt = """
+    You are an advanced spell checker that detects:
+    - Spelling errors
+    - Grammar mistakes
+    - Colloquialisms (informal language)
+    - Fluency issues (awkward phrasing)
+    - Semantic inconsistencies
+    
+    Return corrections in JSON format using the `create_decs` function for each error.
+    """
+
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": m},
+        ],
+        tools=[create_decs_tool],
+        stream=False,
+        n = 1,
+        temperature = .1,
+    )
+    # cost per 1000 queryes
+    cost = (response.usage.prompt_tokens*(0.07/1_000_000)) + (response.usage.completion_tokens*(1.10/1_000_000))*1000
+    print('cost per thousand: ', cost)
+    decorations: list[Decoration] = []
+    for i, correction in enumerate(corrections):
+        if response.choices[0].message.tool_calls:
+            tool_call = response.choices[0].message.tool_calls[i]
+        else:
+            print(i, correction['original'], correction['corrected'], 'No i')
+            continue
+        d = Decoration(
+            correction['from'], 
+            correction['to'],
+            DecSpec(
+                json.loads(tool_call.function.arguments)['correction_explanation'],
+                DecAttrs('correction-dec')
+            )
+        )
+        decorations.append(d)
+    return decorations
