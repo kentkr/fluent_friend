@@ -49,7 +49,7 @@ class DecHandler {
     this.state = state
     this.view = view
     // Bind the context and create debounced function once
-    this.debouncedAddDecs = debounceLag(() => this.addDecs(), 500);
+    this.debouncedAddDecs = debounceLag(() => this.addDecs(), 5000);
   }
 
   update(tr: Transaction, view: EditorView, state: Node): void {
