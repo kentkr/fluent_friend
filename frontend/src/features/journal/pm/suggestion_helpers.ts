@@ -10,6 +10,10 @@ export function initTooltip(currTooltip: HTMLElement, view: EditorView): HTMLEle
   innerDiv.innerText = 'balalala'
   innerDiv.className = 'correction'
   currTooltip.appendChild(innerDiv)
+  let correctionDiv = document.createElement('div')
+  correctionDiv.innerText = 'balalala'
+  correctionDiv.className = 'correction-explanation'
+  currTooltip.appendChild(correctionDiv)
   if (view.dom.parentNode) {
     view.dom.parentNode.appendChild(currTooltip)
   }
@@ -23,13 +27,16 @@ export function updateTooltip(
   view: EditorView
 ): HTMLElement {
   // update position and text of tooltip
+  // TODO: this is very rudementary
   currTooltip.style.display = currTooltip.style.display === 'none' ? 'block' : 'none'
 
   const found = decorationSet.find(pos, pos)
 
-  let correction = found[0].spec.correction
-  let child = currTooltip.children[0] as HTMLElement
+  let correction = found[0].spec.explanation
+  let child = currTooltip.children[1] as HTMLElement
   child.innerText = correction
+  let corr = currTooltip.children[0] as HTMLElement
+  corr.innerText = found[0].spec.correction
 
   let start = view.coordsAtPos(found![0].from)
   let end = view.coordsAtPos(found![0].to)

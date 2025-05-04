@@ -37,8 +37,13 @@
     @apply bg-green/50;
     @apply text-background;
 }
+.correction-explanation {
+    @apply bg-cyan/50;
+    @apply text-background;
+}
 
 .correction-div {
+    @apply bg-foreground;
     @apply absolute;
     @apply z-100;
     @apply p-1;

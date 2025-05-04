@@ -30,6 +30,7 @@ class DecAttrs(SerializableDataClass):
 @dataclass
 class DecSpec(SerializableDataClass):
     correction: str | None
+    explanation: str | None
     attrs: DecAttrs
 
 @dataclass

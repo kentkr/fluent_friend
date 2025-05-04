@@ -57,7 +57,7 @@ def get_correction(message: str) -> str:
         tools=tools,
         stream=False,
         n = 1,
-        max_tokens = 100,
+        #max_tokens = 100,
         temperature = .1,
     )
     
@@ -132,7 +132,7 @@ class ExplainCorrection:
             tools=tools,
             stream=False,
             n=1,
-            max_tokens=1000,
+            #max_tokens=1000,
             temperature=.1
         )
         return res.choices[0].message.content
@@ -218,6 +218,7 @@ def get_decorations1(original_message: str, corrected_message: str, offset: int)
             correction['from'], 
             correction['to'],
             DecSpec(
+                correction['corrected'],
                 json.loads(tool_call.function.arguments)['correction_explanation'],
                 DecAttrs('correction-dec')
             )
