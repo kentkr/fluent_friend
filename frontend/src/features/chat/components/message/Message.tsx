@@ -9,8 +9,11 @@ function Message({ message, sender }: { message: string, sender: string }) {
   }
   
   return <>
-    <li className={className}>
-      {message}
+    <li 
+      className={className}
+      // TODO: sanatize to keep formatting
+      dangerouslySetInnerHTML={{__html: message}}
+    >
     </li>   
   </>
 }
