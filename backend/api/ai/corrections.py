@@ -45,7 +45,8 @@ def get_correction(message: str) -> str:
     system_prompt = """
         In the language that the phrase is written, replace it for spelling and grammar. 
         Be sure to add or replace accent marks if necessary. If the use of a word is 
-        incorrect replace it. Do not respond to questions.
+        incorrect replace it. Do not respond to questions. Do not improve fluidity if
+        a phrase sounds natural. Do not correct profanity or informal phrases.
     """
 
     response = client.chat.completions.create(

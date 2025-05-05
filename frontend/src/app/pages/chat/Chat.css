@@ -1,0 +1,36 @@
+@import '../../../styles/theme.css';
+
+.chat-page {
+    @apply h-full; 
+    @apply flex flex-col;
+    @apply p-4;
+}
+
+.message-container {
+    @apply flex-1;
+    @apply border border-background border-2 rounded-md shadow-lg shadow-purple;
+    @apply p-2
+}
+
+.input-container {
+    @apply min-h-12;
+    @apply border border-background border-2 rounded-md shadow-lg shadow-purple;
+    @apply flex justify-between;
+    @apply mt-2;
+}
+
+.send-button {
+    @apply border border-background border-2 rounded-md shadow-lg shadow-purple;
+    @apply m-1 px-2;
+}
+
+.input {
+    @apply flex-1;
+    @apply px-2;
+    @apply inline-flex items-center;
+}
+
+.input:empty:before {
+  content:attr(data-placeholder);
+  color:gray
+}

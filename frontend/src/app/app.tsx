@@ -7,6 +7,7 @@ import NotFound from "./pages/notfound/NotFound"
 import ProtectedRoute from "../components/ProtectedRoute"
 import Header from "../components/header/Header"
 import Journal from "./pages/journal/Journal"
+import Chat from './pages/chat/Chat'
 
 function Logout() {
   localStorage.clear()
@@ -33,6 +34,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<RegisterAndLogout />} />
+          <Route path="/chat" element={<Chat />} />
           <Route
             path="/journal"
             element={
