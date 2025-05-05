@@ -1,0 +1,16 @@
+@import '../../../../styles/theme.css';
+
+.ai-message {
+    @apply bg-background;
+    @apply text-foreground;
+    @apply border border-background border-2 rounded-md;
+    @apply m-1 p-2;
+    @apply max-w-lg;
+}
+
+.user-message {
+    @apply border border-background border-2 rounded-md;
+    @apply m-1 p-2;
+    @apply max-w-lg;
+    @apply ml-auto;
+}
