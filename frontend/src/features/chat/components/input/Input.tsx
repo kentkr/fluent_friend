@@ -7,7 +7,7 @@ function Input({onSendMessage}: {onSendMessage: CallableFunction}) {
       return
     }
 
-    const content = inputRef.current.innerText.trim()
+    const content = inputRef.current.innerHTML
     if (content) {
       onSendMessage(content)
       inputRef.current.innerText = ''

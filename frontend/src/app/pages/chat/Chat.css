@@ -4,12 +4,21 @@
     @apply h-full; 
     @apply flex flex-col;
     @apply p-4;
+
+    @apply overflow-hidden;
 }
 
 .message-container {
     @apply flex-1;
     @apply border border-background border-2 rounded-md shadow-lg shadow-purple;
-    @apply p-2
+    @apply p-2;
+    @apply overflow-y-auto;
+}
+
+#message-list {
+  @apply h-full; 
+  @apply overflow-y-auto; 
+  @apply pr-2; 
 }
 
 .input-container {
