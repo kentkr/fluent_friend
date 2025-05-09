@@ -1,8 +1,11 @@
-
+import { AxiosResponse } from 'axios';
 import api from '../../../api';
+import lt from './lt'
 import { SerialDecoration } from '../pm/suggestion.d';
 import { EntryObj } from '../types/Journal';
+import { LTCheckParams, LTCheckResponse } from './lt.d'
 
+// TODO: handle errors
 export function putEntry(entry: EntryObj): void {
   api
     .put(`/api/journal_entries/update/${entry.id}/`, entry)
@@ -26,5 +29,10 @@ export async function getDecs(entryId: number): Promise<SerialDecoration[]> {
   const response = await api.get(`/api/journal_entries/update/${entryId}/decs/`)
   console.log(`get decs ${entryId}`, response.data.decorations)
   return response.data.decorations
+}
+
+export async function ltCheck(query: LTCheckParams): Promise<LTCheckResponse> {
+  const res = await lt.post<LTCheckParams, AxiosResponse<LTCheckResponse>>('/v2/check', query) 
+  return res.data 
 }
 
