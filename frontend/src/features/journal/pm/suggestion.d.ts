@@ -13,6 +13,7 @@ export interface SerialDecoration {
 
 interface SuggSpec {
   correction: string,
+  explanation: string,
   // store attrs for later use
   attrs: DecorationAttrs
 }

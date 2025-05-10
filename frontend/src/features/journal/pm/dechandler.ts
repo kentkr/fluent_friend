@@ -2,36 +2,26 @@ import { DecorationSet } from "@tiptap/pm/view";
 import { Transaction } from "@tiptap/pm/state";
 import { Node } from "prosemirror-model";
 import { Decoration, DecorationAttrs, EditorView } from "prosemirror-view";
-import { CorrectionResponse, SerialDecoration } from "./suggestion.d";
+import { CorrectionResponse, SerialDecoration, SuggSpec } from "./suggestion.d";
 import { debounceLag } from "../utils/debounce";
-import { getDecs, postCorrections, postDecs } from "../api/journal_entries";
+import { getDecs, postCorrections, postDecs, ltCheck } from "../api/journal_entries";
+import { LTCheckResponse } from "../api/lt.d";
 
-
-async function getDecorations(start: number, text: string): Promise<Decoration[]> {
-  let corrections: CorrectionResponse    
-  try {
-    let res = await postCorrections(start, text)
-    corrections = res.data
-    console.log('returned corrections', corrections)
-  } catch (err) {
-    alert(err)
-    corrections = { changes_made: false , changes: []}
-  }
-  let decos: Decoration[] = []
-  if (corrections.changes) {
-    for (var correction of corrections.changes) {
-      let attrs: DecorationAttrs = { class: 'correction-dec' }
-      let d = Decoration.inline(
-        correction.from, 
-        correction.to, 
-        correction.spec.attrs,
-        correction.spec
-      )
-      decos.push(d)
+// TODO: integrate this into DecHandler
+function ltToDecs(start: number, ltCheckResponse :LTCheckResponse): Decoration[] {
+  let attrs: DecorationAttrs = { class: 'correction-dec' }
+  let decs: Decoration[] = []
+  for (var match of ltCheckResponse.matches) {
+    let offset = match.offset+start
+    let spec: SuggSpec = {
+      correction: match.replacements[0].value,
+      explanation: match.message,
+      attrs
     }
+    let d = Decoration.inline(offset, offset+match.length, attrs, spec)
+    decs.push(d)
   }
-  console.log('decos', decos)
-  return decos
+  return decs
 }
 
 class DecHandler {
@@ -49,7 +39,7 @@ class DecHandler {
     this.state = state
     this.view = view
     // Bind the context and create debounced function once
-    this.debouncedAddDecs = debounceLag(() => this.addDecs(), 5000);
+    this.debouncedAddDecs = debounceLag(() => this.addDecs(), 500);
   }
 
   update(tr: Transaction, view: EditorView, state: Node): void {
@@ -134,11 +124,16 @@ class DecHandler {
     // receive decorations from api
     let decs: Decoration[] = []
     for (var node of nodes) {
-      // TODO: merge nodes to send one api call, to reduce requests. Cost will stay the same 
+      if (node.node.textContent === '') {
+        continue
+      }
       // start at i+1 bc paragraph start token
-      let newDecs = await getDecorations(node.pos+1, node.node.textContent)  
-      decs = decs.concat(newDecs)
+      this.getDecorations(node.pos+1, node.node.textContent, 'fr-FR')  
+      //decs = decs.concat(newDecs)
     }
+  }
+
+  push(decs: Decoration[]) {
     // clear old decorations if there's overlap
     let deleteDecs: Decoration [] = []
     for (var dec of decs) {
@@ -152,6 +147,23 @@ class DecHandler {
     // sync with editor and db
     this.syncDb()
     this.view.dispatch(this.view.state.tr.setMeta('refresh', true))
+  }
+
+  async getDecorations(start: number, text: string, language: string): Promise<Decoration[]> {
+    let ltCheckResponse: LTCheckResponse | undefined
+    try {
+      //let res = await postCorrections(start, text)
+      ltCheckResponse = await ltCheck({text: text, language: language})
+      console.log(ltCheckResponse)
+    } catch (err) {
+      alert(err)
+    }
+    if (ltCheckResponse){
+      let decs = ltToDecs(start, ltCheckResponse)
+      console.log('decos', decs)
+      this.push(decs)
+    }
+    return []
   }
 
   syncDb() {
