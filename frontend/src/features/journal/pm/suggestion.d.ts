@@ -1,4 +1,5 @@
 import { DecorationAttrs } from "prosemirror-view";
+import { Match } from "../api/lt";
 
 export interface CorrectionResponse {
   changes_made: boolean;
@@ -12,8 +13,7 @@ export interface SerialDecoration {
 }
 
 interface SuggSpec {
-  correction: string,
-  explanation: string,
+  ltMatch: Match
   // store attrs for later use
   attrs: DecorationAttrs
 }
