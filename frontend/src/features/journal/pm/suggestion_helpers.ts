@@ -32,11 +32,11 @@ export function updateTooltip(
 
   const found = decorationSet.find(pos, pos)
 
-  let correction = found[0].spec.explanation
+  let correction = found[0].spec.ltMatch.message
   let child = currTooltip.children[1] as HTMLElement
   child.innerText = correction
   let corr = currTooltip.children[0] as HTMLElement
-  corr.innerText = found[0].spec.correction
+  corr.innerText = found[0].spec.ltMatch.replacements[0].value
 
   let start = view.coordsAtPos(found![0].from)
   let end = view.coordsAtPos(found![0].to)
@@ -47,3 +47,4 @@ export function updateTooltip(
   currTooltip.style.top = (end.bottom + 5) + 'px'
   return currTooltip
 }
+

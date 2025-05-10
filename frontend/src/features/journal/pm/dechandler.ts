@@ -14,8 +14,7 @@ function ltToDecs(start: number, ltCheckResponse :LTCheckResponse): Decoration[]
   for (var match of ltCheckResponse.matches) {
     let offset = match.offset+start
     let spec: SuggSpec = {
-      correction: match.replacements[0].value,
-      explanation: match.message,
+      ltMatch: match,
       attrs
     }
     let d = Decoration.inline(offset, offset+match.length, attrs, spec)
@@ -133,7 +132,7 @@ class DecHandler {
     }
   }
 
-  push(decs: Decoration[]) {
+  push(decs: Decoration[]): void {
     // clear old decorations if there's overlap
     let deleteDecs: Decoration [] = []
     for (var dec of decs) {
