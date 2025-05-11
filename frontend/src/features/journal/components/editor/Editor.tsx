@@ -7,9 +7,7 @@ import './Editor.css'
 import Suggestion from '../../pm/suggestion';
 import { useDebouncedOnUpdate } from '../../utils/debounce';
 import { putEntry } from '../../api/journal_entries';
-
-import ControlledBubbleMenu from './ControlledBubbleMenu';
-import { ToolTipInfo, SuggSpec } from '../../pm/suggestion.d';
+import { ToolTipInfo, UpdateTooltipProps } from '../../pm/suggestion.d';
 import Tooltip from '../tooltip/Tooltip';
 
 export function Editor({ 
@@ -46,7 +44,15 @@ export function Editor({
     updateEditor({ text: text });
   }, 500);
 
+  // hold only the state for the tooltip
   const [tti, setTti] = useState<ToolTipInfo | undefined>()
+
+  function updateTooltip({ suggSpec }: UpdateTooltipProps): void {
+    setTti(prevTti => ({
+      suggSpec: suggSpec,
+      open: !prevTti?.open
+    }))
+  }
 
   const editor = useEditor({
     extensions: [
@@ -54,13 +60,7 @@ export function Editor({
       Underline,
       Suggestion.configure({
         entryId: currEntry.id,
-        retrieveTooltipContents: ({ open, suggSpec }: { open: boolean, suggSpec: SuggSpec }) => {
-          setTti(prevTti => ({
-            suggSpec: suggSpec,
-            open: !prevTti?.open
-          }))
-          console.log(tti)
-        }
+        updateTooltip: updateTooltip        
       }),
     ],
     content: currEntry.text,

@@ -2,6 +2,8 @@
 import { Popper } from "@mui/material";
 import { Editor, isNodeSelection, posToDOMRect } from "@tiptap/core";
 
+// from https://github.com/ueberdosis/tiptap/issues/2305#issuecomment-1020665146
+
 type Props = {
   editor: Editor;
   open: boolean;
@@ -13,7 +15,6 @@ function BubbleMenu ({
   open,
   children,
 }: Props) {
-  console.count('rendering')
   return <Popper
     open={open}
     placement="top"

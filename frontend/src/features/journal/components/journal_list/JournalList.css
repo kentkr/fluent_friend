@@ -1,5 +1,0 @@
-@import '../../../../styles/theme.css';
-
-.list-title {
-    @apply text-2xl;
-}
