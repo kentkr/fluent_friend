@@ -1,6 +1,12 @@
 import { DecorationAttrs } from "prosemirror-view";
 import { Match } from "../api/lt";
 
+
+export interface SuggestionOptions {
+  entryId: number
+  updateTooltip: (props: UpdateTooltipProps) => void
+}
+
 export interface CorrectionResponse {
   changes_made: boolean;
   changes: any[];
@@ -27,5 +33,9 @@ export interface EntryObj {
 
 export interface ToolTipInfo {
   open: boolean
+  suggSpec: SuggSpec
+}
+
+export interface UpdateTooltipProps {
   suggSpec: SuggSpec
 }

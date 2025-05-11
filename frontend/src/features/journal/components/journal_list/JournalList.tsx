@@ -1,10 +1,8 @@
 
 import api from '../../../../api';
-import './JournalList.css'
 import { EntryObj } from '../../types/Journal'
 import { JournalListProps } from './JournalList.d';
 import { Entry } from '../entry/Entry';
-import './JournalList.css'
 
 function JournalList({ entries, setEntries, setCurrEntry, newEntry }: JournalListProps): JSX.Element {
   // delete entry 
