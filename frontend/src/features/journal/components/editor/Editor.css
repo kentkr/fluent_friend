@@ -43,17 +43,17 @@
 }
 
 .error-dec {
-    @apply bg-red/30;
+    @apply bg-red/30 hover:bg-red/50;
     @apply underline decoration-red decoration-wavy;
 }
 
 .suggestion-dec {
-    @apply bg-cyan/30;
+    @apply bg-cyan/30 hover:bg-cyan/50;
     @apply underline decoration-cyan decoration-wavy;
 }
 
 .warning-dec {
-    @apply bg-yellow/30;
+    @apply bg-yellow/30 hover:bg-yellow/70;
     @apply underline decoration-yellow decoration-wavy;
 }
 

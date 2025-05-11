@@ -42,12 +42,11 @@ const issueClassMap = {
 
 // TODO: integrate this into DecHandler
 function ltToDecs(start: number, ltCheckResponse :LTCheckResponse): Decoration[] {
-  let defaultClass = 'warning-dec'
   let decs: Decoration[] = []
   for (var match of ltCheckResponse.matches) {
     let offset = match.offset+start
-    // @ts-ignore - extract objects like 'is-correction' are allowed
-    let attrs: DecorationAttrs = { class: defaultClass, 'is-correction': true} 
+    // @ts-ignore - extra objects like 'is-correction' are allowed
+    let attrs: DecorationAttrs = { class: 'warning-dec', 'is-correction': true} 
     if (match.rule.issueType in issueClassMap) {
       attrs.class = issueClassMap[match.rule.issueType as keyof typeof issueClassMap];
     }

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Editor as TiptapEditor, EditorContent, useEditor, BubbleMenuProps } from '@tiptap/react'
+import { useState } from 'react';
+import { Editor as TiptapEditor, EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { EntryObj } from '../../types/Journal'
 import Underline from '@tiptap/extension-underline'
@@ -9,6 +9,8 @@ import { useDebouncedOnUpdate } from '../../utils/debounce';
 import { putEntry } from '../../api/journal_entries';
 import { ToolTipInfo, UpdateTooltipProps } from '../../pm/suggestion.d';
 import Tooltip from '../tooltip/Tooltip';
+
+const DEBOUNCE_MS= 1000;
 
 export function Editor({ 
   currEntry, 
@@ -42,7 +44,7 @@ export function Editor({
   const onUpdate = useDebouncedOnUpdate(({ editor }) => {
     let text = editor.getHTML()
     updateEditor({ text: text });
-  }, 500);
+  }, DEBOUNCE_MS);
 
   // hold only the state for the tooltip
   const [tti, setTti] = useState<ToolTipInfo | undefined>()
@@ -88,7 +90,7 @@ export function Editor({
   return (
     <>
       <Tooltip editor={editor} tti={tti} />
-      <EditorContent editor={editor} className='editor-container-1'/>
+      <EditorContent editor={editor} className='editor-container-1' spellCheck={false}/>
     </>
   )
 }
