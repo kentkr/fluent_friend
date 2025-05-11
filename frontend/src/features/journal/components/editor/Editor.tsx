@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Editor as TiptapEditor, EditorContent, useEditor } from '@tiptap/react'
+import { useEffect, useRef, useState } from 'react';
+import { Editor as TiptapEditor, EditorContent, useEditor, BubbleMenuProps } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { EntryObj } from '../../types/Journal'
 import Underline from '@tiptap/extension-underline'
@@ -7,6 +7,10 @@ import './Editor.css'
 import Suggestion from '../../pm/suggestion';
 import { useDebouncedOnUpdate } from '../../utils/debounce';
 import { putEntry } from '../../api/journal_entries';
+
+import ControlledBubbleMenu from './ControlledBubbleMenu';
+import { ToolTipInfo, SuggSpec } from '../../pm/suggestion.d';
+import Tooltip from '../tooltip/Tooltip';
 
 export function Editor({ 
   currEntry, 
@@ -42,11 +46,22 @@ export function Editor({
     updateEditor({ text: text });
   }, 500);
 
+  const [tti, setTti] = useState<ToolTipInfo | undefined>()
+
   const editor = useEditor({
     extensions: [
       StarterKit,
       Underline,
-      Suggestion.configure({entryId: currEntry.id})
+      Suggestion.configure({
+        entryId: currEntry.id,
+        retrieveTooltipContents: ({ open, suggSpec }: { open: boolean, suggSpec: SuggSpec }) => {
+          setTti(prevTti => ({
+            suggSpec: suggSpec,
+            open: !prevTti?.open
+          }))
+          console.log(tti)
+        }
+      }),
     ],
     content: currEntry.text,
     editorProps: {
@@ -72,6 +87,7 @@ export function Editor({
 
   return (
     <>
+      <Tooltip editor={editor} tti={tti} />
       <EditorContent editor={editor} className='editor-container-1'/>
     </>
   )

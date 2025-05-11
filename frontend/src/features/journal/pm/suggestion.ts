@@ -3,6 +3,7 @@ import { Extension } from '@tiptap/core'
 import { Plugin,  PluginKey } from 'prosemirror-state'
 import DecHandler from './dechandler'
 import { initTooltip, updateTooltip } from './suggestion_helpers'
+import { SuggSpec } from './suggestion.d';
 
 // TODO: get a more robust way to make this part of the class state
 let EditorViewVar: EditorView;
@@ -11,18 +12,21 @@ const suggestionKey = new PluginKey('suggestion')
 
 interface SuggestionOptions {
   entryId: number
+  retrieveTooltipContents: CallableFunction
 }
 
 const Suggestion = Extension.create<SuggestionOptions>({
   name: 'suggestion',
   addOptions() {
     return {
-      entryId: -1
+      entryId: -1,
+      retrieveTooltipContents: ({ open, suggSpec }: { open: boolean, suggSpec: SuggSpec }) => {},
     }
   },
 
   addProseMirrorPlugins() {
     const entryId = this.options.entryId
+    const retrieveTooltipContents = this.options.retrieveTooltipContents
 
     const suggestionPlugin = new Plugin({
       key: suggestionKey,
@@ -69,7 +73,9 @@ const Suggestion = Extension.create<SuggestionOptions>({
             let decHandler = this.getState(view.state)
             let decorationSet = decHandler?.decSet
             if (decorationSet) {
-              updateTooltip(currTooltip, decorationSet, pos, view)
+              let dec = decorationSet.find(pos, pos)
+              //updateTooltip(currTooltip, decorationSet, pos, view)
+              retrieveTooltipContents({ open: true, suggSpec: dec[0].spec })
             }
           }
         },

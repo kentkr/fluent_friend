@@ -24,3 +24,8 @@ export interface EntryObj {
     title: string | null;
     text: string | null;
 } 
+
+export interface ToolTipInfo {
+  open: boolean
+  suggSpec: SuggSpec
+}

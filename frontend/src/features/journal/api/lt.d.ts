@@ -40,7 +40,7 @@ interface Language {
   detectedLanguage: DetectedLanguage;
 }
 
-interface Replacement {
+export interface Replacement {
   value: string;
 }
 
