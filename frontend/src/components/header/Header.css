@@ -19,6 +19,7 @@
     @apply px-4;
     @apply text-2xl;
     @apply hover:text-cyan;
+    font-family: DotGothic16;
 }
 
 .center-right {
@@ -29,4 +30,5 @@
 .big-button {
     @apply bg-green;
     @apply text-background;
+    @apply rounded-xl;
 }

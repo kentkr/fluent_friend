@@ -1,0 +1,15 @@
+@import '../../../../styles/theme.css';
+
+.menu {
+    @apply flex;
+}
+
+.menu-button {
+    @apply border border-background;
+    @apply hover:bg-cyan hover:text-foreground;
+    @apply p-1;
+}
+
+.is-active {
+    @apply bg-cyan/80;
+}
