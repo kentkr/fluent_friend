@@ -7,6 +7,9 @@ import { debounceLag } from "../utils/debounce";
 import { getDecs, postCorrections, postDecs, ltCheck } from "../api/journal_entries";
 import { LTCheckResponse } from "../api/lt.d";
 
+// TODO: move to constants file?
+const DEBOUNCE_MS = 1000;
+
 // color mapping of correction types
 // these won't be perfect but generally are what LT uses
 // pulled from https://www.w3.org/International/multilingualweb/lt/drafts/its20/its20.html#lqissue-typevalues:~:text=quality%20types%20natively.-,Value,from%20the%20wrong%20domain%20was%20used%20or%20terms%20are%20used%20inconsistently.,-The%20localization%20had
@@ -75,7 +78,7 @@ class DecHandler {
     this.state = state
     this.view = view
     // Bind the context and create debounced function once
-    this.debouncedAddDecs = debounceLag(() => this.addDecs(), 500);
+    this.debouncedAddDecs = debounceLag(() => this.addDecs(), DEBOUNCE_MS);
   }
 
   update(tr: Transaction, view: EditorView, state: Node): void {

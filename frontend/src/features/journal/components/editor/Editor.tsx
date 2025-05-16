@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Editor as TiptapEditor, EditorContent, useEditor } from '@tiptap/react'
+import { Editor as TiptapEditor, EditorContent, useEditor, useEditorState } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { EntryObj } from '../../types/Journal'
 import Underline from '@tiptap/extension-underline'
@@ -9,8 +9,10 @@ import { useDebouncedOnUpdate } from '../../utils/debounce';
 import { putEntry } from '../../api/journal_entries';
 import { ToolTipInfo, UpdateTooltipProps } from '../../pm/suggestion.d';
 import Tooltip from '../tooltip/Tooltip';
+import EditorMenu from '../editormenu/EditorMenu';
+import { EditorStateProps } from './Editor.d'
 
-const DEBOUNCE_MS= 1000;
+const DEBOUNCE_MS= 500;
 
 export function Editor({ 
   currEntry, 
@@ -68,7 +70,8 @@ export function Editor({
     content: currEntry.text,
     editorProps: {
       attributes: {
-        class: 'editor'
+        class: 'editor',
+        spellcheck: 'false',
       }
     },
     onUpdate: onUpdate,
@@ -87,9 +90,34 @@ export function Editor({
     return
   }
 
+  // from https://tiptap.dev/docs/examples/advanced/react-performance
+  const currentEditorState = useEditorState<EditorStateProps>({
+      editor,
+      selector: ctx => ({
+        isBold: ctx.editor.isActive('bold'),
+        isItalic: ctx.editor.isActive('italic'),
+        isStrike: ctx.editor.isActive('strike'),
+      }),
+      equalityFn: (prev, next) => {
+        // A deep-equal function would probably be more maintainable here, but, we use a shallow one to show that it can be customized.
+        if (!next) {
+          return false
+        }
+        return (
+          prev.isBold === next.isBold
+          && prev.isItalic === next.isItalic
+          && prev.isStrike === next.isStrike
+        )
+      },
+    })
+
   return (
     <>
       <Tooltip editor={editor} tti={tti} />
+      {
+        currentEditorState && 
+        <EditorMenu editor={editor} editorState={currentEditorState} />
+      }
       <EditorContent editor={editor} className='editor-container-1' spellCheck={false}/>
     </>
   )

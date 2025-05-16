@@ -3,6 +3,7 @@ import api from '../../../../api';
 import { EntryObj } from '../../types/Journal'
 import { JournalListProps } from './JournalList.d';
 import { Entry } from '../entry/Entry';
+import { FaSquarePlus } from "react-icons/fa6";
 
 function JournalList({ entries, setEntries, setCurrEntry, newEntry }: JournalListProps): JSX.Element {
   // delete entry 
@@ -34,7 +35,12 @@ function JournalList({ entries, setEntries, setCurrEntry, newEntry }: JournalLis
               ))
             }
           </ol>
-          <button onClick={() => newEntry()}>+</button>
+          <button 
+            className='button'
+            onClick={() => newEntry()}
+          >
+            <FaSquarePlus />
+          </button>
         </div>
       </div>
     </>
