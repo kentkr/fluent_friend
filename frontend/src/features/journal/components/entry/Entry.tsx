@@ -10,13 +10,13 @@ export function Entry({ entry, deleteEntry, selectEntry }: EntryProps): JSX.Elem
         <p>{entry.title}</p>
         <div>
           <button 
-            className="button"
+            className="edit-button"
             onClick={() => selectEntry({ entry: entry })}
           >
             <FaRegEdit />
           </button>
           <button 
-            className="button"
+            className="delete-button"
             onClick={() => deleteEntry({ id: entry.id} )}
           >
             <MdDelete />

@@ -11,7 +11,7 @@
     @apply px-1;
     @apply rounded-md;
     @extend tooltip-button;
-    @apply bg-green/75;
+    @apply bg-green/75 hover:bg-green;
 }
 
 .ignore {
@@ -19,4 +19,5 @@
     @apply rounded-md;
     @apply bg-background;
     @apply text-foreground;
+    @apply hover:text-light-purple;
 }

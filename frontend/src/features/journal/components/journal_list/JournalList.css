@@ -1,5 +1,5 @@
 @import '../../../../styles/theme.css';
 
-.button {
+.new-button {
     @apply hover:text-cyan;
 }
