@@ -3,12 +3,14 @@
 .header {
     @apply bg-background;
     @apply text-foreground;
+    font-family: DotGothic16;
 }
 
 .logo {
     width: 60px;
     height: auto;
     @apply shadow-md shadow-purple hover:shadow-cyan;
+    @apply rounded-md;
 }
 
 .nav-bar {
@@ -19,7 +21,6 @@
     @apply px-4;
     @apply text-2xl;
     @apply hover:text-cyan;
-    font-family: DotGothic16;
 }
 
 .center-right {
@@ -31,4 +32,7 @@
     @apply bg-green;
     @apply text-background;
     @apply rounded-xl;
+    @apply px-2 py-1;
+    @apply text-2xl;
+    @apply hover:text-cyan;
 }

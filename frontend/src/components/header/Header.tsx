@@ -26,7 +26,7 @@ function Header() {
           <div>
             <button className='big-button'>
               <a href='/login'>
-                <p className='nav-content'>Login</p>
+                <p>Login</p>
               </a>
             </button>
           </div>

@@ -4,6 +4,10 @@
     @apply flex justify-between m-1;
 }
 
-.button {
+.edit-button {
     @apply hover:text-cyan;
+}
+
+.delete-button {
+    @apply hover:text-red;
 }
