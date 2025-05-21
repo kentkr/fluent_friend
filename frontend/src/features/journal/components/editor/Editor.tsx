@@ -51,9 +51,9 @@ export function Editor({
   // hold only the state for the tooltip
   const [tti, setTti] = useState<ToolTipInfo | undefined>()
 
-  function updateTooltip({ suggSpec }: UpdateTooltipProps): void {
+  function updateTooltip({ suggDec }: UpdateTooltipProps): void {
     setTti(prevTti => ({
-      suggSpec: suggSpec,
+      suggDec: suggDec,
       open: !prevTti?.open
     }))
   }
@@ -91,6 +91,7 @@ export function Editor({
   }
 
   // from https://tiptap.dev/docs/examples/advanced/react-performance
+  // menu bar
   const currentEditorState = useEditorState<EditorStateProps>({
       editor,
       selector: ctx => ({

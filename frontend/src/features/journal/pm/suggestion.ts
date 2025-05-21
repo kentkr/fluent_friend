@@ -7,7 +7,7 @@ import { SuggestionOptions } from './suggestion.d'
 // TODO: get a more robust way to make this part of the class state
 let EditorViewVar: EditorView;
 
-const suggestionKey = new PluginKey('suggestion')
+export const suggestionKey = new PluginKey('suggestion')
 
 const Suggestion = Extension.create<SuggestionOptions>({
   name: 'suggestion',
@@ -65,7 +65,7 @@ const Suggestion = Extension.create<SuggestionOptions>({
             if (decorationSet) {
               let dec = decorationSet.find(pos, pos)
               // only pass in first dec - there shouldnt be multiple anyways
-              updateTooltip({ suggSpec: dec[0].spec })
+              updateTooltip({ suggDec: dec[0] })
             }
           }
         },

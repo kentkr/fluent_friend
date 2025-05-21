@@ -43,7 +43,7 @@ const issueClassMap = {
   'other': 'warning-dec',
 }
 
-// TODO: integrate this into DecHandler
+// TODO: integrate this into DecHandler - make it getDecorations
 function ltToDecs(start: number, ltCheckResponse :LTCheckResponse): Decoration[] {
   let decs: Decoration[] = []
   for (var match of ltCheckResponse.matches) {
@@ -91,35 +91,15 @@ class DecHandler {
   }
 
   mapDecs(tr: Transaction): void {
-    // mapping must happen after deletions: deletions have weird boundaries, we need to know deletions before decs mapped
-    this.handleDeletions(tr)
     // map forward/backward
     this.decSet = this.decSet.map(tr.mapping, tr.doc)
-  }
-
-  handleDeletions(tr: Transaction): void {
-    // get range of mapping and delete decs
+    // delete decs if they were modified
     tr.mapping.maps.forEach((stepMap) => {
       stepMap.forEach((oldStart, oldEnd, newStart, newEnd) => {
-        // true deletion occurs when old range is larger than new range
-        const isDeletion = oldEnd - oldStart > newEnd - newStart
-        if (isDeletion) {
-          let deletedFrom = oldStart;
-          // end of deletions = prevous start + (old range - new range) 
-          let deletedTo = oldStart + ((oldEnd - oldStart) - (newEnd - newStart));
-          // decs near deltion, but this includes deletedFrom-1 and deletedTo+1 - not what we want
-          let inRangedecs = this.decSet.find(deletedFrom, deletedTo);
-          if (inRangedecs.length > 0) {
-            const deleteDecs: Decoration[] = []
-            for (var dec of inRangedecs) {
-              // if deletion is inbounds of dec, add to deletion array
-              if (deletedFrom < dec.to && deletedTo > dec.from) {
-                deleteDecs.push(dec) 
-              }
-            }
-            this.decSet = this.decSet.remove(deleteDecs);
-          }
-        }
+        let trueFrom = oldStart;
+        // end of deletions = prevous start + (old range - new range) 
+        let trueTo = oldStart + ((oldEnd - oldStart) - (newEnd - newStart));
+        this.decSet = this.decSet.remove(this.decSet.find(trueFrom, trueTo));
       })
     })
   }
@@ -166,9 +146,10 @@ class DecHandler {
       if (node.node.textContent === '') {
         continue
       }
+      // remove all decs from paragraph
+      this.decSet.remove(this.decSet.find(node.pos+1, node.node.textContent.length))
       // start at i+1 bc paragraph start token
       this.getDecorations(node.pos+1, node.node.textContent, 'fr-FR')  
-      //decs = decs.concat(newDecs)
     }
   }
 
@@ -186,6 +167,13 @@ class DecHandler {
     // sync with editor and db
     this.syncDb()
     this.view.dispatch(this.view.state.tr.setMeta('refresh', true))
+  }
+
+  ignoreDec(from?: number, to?: number): void {
+    // used in the tooltip to ignore a decoration
+    this.decSet = this.decSet.remove(this.decSet.find(from, to))
+    this.syncDb()
+    this.view.dispatch(this.view.state.tr.setMeta('refresh', ''))
   }
 
   async getDecorations(start: number, text: string, language: string): Promise<Decoration[]> {
