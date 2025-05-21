@@ -1,5 +1,6 @@
 import { DecorationAttrs } from "prosemirror-view";
 import { Match } from "../api/lt";
+import { Decoration } from "prosemirror-view";
 
 
 export interface SuggestionOptions {
@@ -33,9 +34,13 @@ export interface EntryObj {
 
 export interface ToolTipInfo {
   open: boolean
-  suggSpec: SuggSpec
+  suggDec: SuggDec
 }
 
 export interface UpdateTooltipProps {
-  suggSpec: SuggSpec
+  suggDec: SuggDec
+}
+
+export interface SuggDec extends Decoration {
+  spec: SuggSpec
 }
