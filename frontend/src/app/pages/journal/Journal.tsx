@@ -30,6 +30,7 @@ function Journal() {
       .catch((err) => alert(err));
   }
 
+  // TODO put api calls in api file
   // Fetch entries on mount only
   useEffect(() => {
     api

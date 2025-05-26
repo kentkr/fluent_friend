@@ -3,18 +3,41 @@ import './EditorMenu.css'
 import { EditorStateProps } from '../editor/Editor.d'
 import { FaBold, FaItalic, FaStrikethrough } from "react-icons/fa";
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { useState } from "react";
 import { languageMap } from '../../lt/lt'
-import { LtLanguage } from "../../lt/lt.d";
+import {EntryObj} from "../../types/Journal";
+import {updateEntry} from "../../api/journal_entries";
 
-function EditorMenu({ editor, editorState }: { editor: Editor, editorState: EditorStateProps }) {
-  if (!editor) {
+function EditorMenu({ 
+  editor, 
+  editorState, 
+  currEntry, 
+  setCurrEntry 
+}: { 
+  editor: Editor, 
+  editorState: EditorStateProps,
+  currEntry: EntryObj,
+  setCurrEntry: React.Dispatch<React.SetStateAction<EntryObj | undefined>>
+}) {
+  if (!editor || !currEntry) {
     return null
   }
-  const [language, setLanguage] = useState('auto')
+  //const [language, setLanguage] = useState<string>('auto')
+  //const [nativeLanguage, setNativeLanguage] = useState<string | null>(null)
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setLanguage(event.target.value);
+  const languageChange = (event: SelectChangeEvent) => {
+    setCurrEntry((prevEntry) => {
+      if (!prevEntry) return prevEntry
+      return { ...prevEntry, language: event.target.value }
+    })
+    updateEntry({id: currEntry.id, language: event.target.value}) 
+  };
+
+  const nativeLanguageChange = (event: SelectChangeEvent) => {
+    setCurrEntry((prevEntry) => {
+      if (!prevEntry) return prevEntry
+      return { ...prevEntry, nativeLanguage: event.target.value }
+    });
+    updateEntry({id: currEntry.id, nativeLanguage: event.target.value}) 
   };
 
   return (
@@ -39,24 +62,42 @@ function EditorMenu({ editor, editorState }: { editor: Editor, editorState: Edit
           <FaStrikethrough />
         </button>
       </div>
-<FormControl fullWidth>
-  <InputLabel id='language-label'>Language</InputLabel>
-  <Select
-    labelId="language-select-label"
-    id='language-select'
-    value={language} // Convert 'auto' to empty string
-    label='Language'
-    onChange={handleChange}
-  >
-    <MenuItem key='auto' value='auto'>
-      <em>Auto</em>
-    </MenuItem>
-    
-    {Array.from(languageMap.keys()).map((key) => (
-      <MenuItem key={key} value={key}>{key}</MenuItem>
-    ))}
-  </Select>
-</FormControl>
+      {/* language selector */}
+      <FormControl fullWidth>
+        <InputLabel id='language-label'>Language</InputLabel>
+        <Select
+          labelId="language-select-label"
+          id='language-select'
+          value={'auto'} 
+          label='Language'
+          onChange={languageChange}
+        >
+          <MenuItem key='auto' value='auto'>
+            <em>Auto</em>
+          </MenuItem>
+          {Array.from(languageMap.keys()).map((key) => (
+            <MenuItem key={key} value={key}>{key}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      {/* native language selector */}
+      <FormControl fullWidth>
+        <InputLabel id='language-label'>Native Language</InputLabel>
+        <Select
+          labelId="native-language-select-label"
+          id='native-language-select'
+          value={'None'} 
+          label='Native Language'
+          onChange={nativeLanguageChange}
+        >
+          <MenuItem key='null' value={'None'}>
+            <em>None</em>
+          </MenuItem>
+          {Array.from(languageMap.keys()).map((key) => (
+            <MenuItem key={key} value={key}>{key}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     </div>
   )
 }

@@ -6,7 +6,7 @@ import Underline from '@tiptap/extension-underline'
 import './Editor.css'
 import Suggestion from '../../pm/suggestion';
 import { useDebouncedOnUpdate } from '../../utils/debounce';
-import { putEntry } from '../../api/journal_entries';
+import { updateEntry } from '../../api/journal_entries';
 import { ToolTipInfo, UpdateTooltipProps } from '../../pm/suggestion.d';
 import Tooltip from '../tooltip/Tooltip';
 import EditorMenu from '../editormenu/EditorMenu';
@@ -14,6 +14,8 @@ import { EditorStateProps } from './Editor.d'
 
 const DEBOUNCE_MS= 500;
 
+// add language/native language to db
+// 
 export function Editor({ 
   currEntry, 
   setCurrEntry, 
@@ -40,7 +42,7 @@ export function Editor({
 
     let updatedEntry = currEntry
     updatedEntry.text = text
-    putEntry(currEntry)
+    updateEntry(currEntry)
   }
 
   const onUpdate = useDebouncedOnUpdate(({ editor }) => {
@@ -127,7 +129,7 @@ export function Editor({
       <Tooltip editor={editor} tti={tti} toggleTooltip={toggleTooltip} />
       {
         currentEditorState && 
-        <EditorMenu editor={editor} editorState={currentEditorState} />
+        <EditorMenu editor={editor} editorState={currentEditorState} currEntry={currEntry} setCurrEntry={setCurrEntry}/>
       }
       <EditorContent editor={editor} className='editor-container-1' spellCheck={false}/>
     </>

@@ -19,6 +19,8 @@ class JournalEntries(models.Model):
     title = models.CharField(max_length=255, null = True)
     text = models.TextField(null = True)
     decorations = models.JSONField(null=True, default=list)
+    language = models.TextField(null = False, default='auto')
+    native_language = models.TextField(null = True)
 
     class Meta:
         db_table = 'journal_entries'  # Custom table name

@@ -1,20 +1,14 @@
-import re
 from typing import Dict, List
-from django.contrib.admin.utils import lookup_field
-from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics
-from rest_framework.views import APIView, Request, Response
+from rest_framework.views import APIView, Response
 from .serializers import JournalSerializer, UserSerializer, NoteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import JournalEntries, Note
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpRequest
+from django.http import HttpRequest 
 from dataclasses import dataclass
 from .ai.corrections import get_correction, get_decorations1
-from .ai.types import DecAttrs, DecSpec, Decoration
-# asdf
+
 class NoteListCreate(generics.ListCreateAPIView):
     """
     This is a string doc
@@ -71,16 +65,6 @@ class JournalEntryDelete(generics.DestroyAPIView):
         user = self.request.user
         return JournalEntries.objects.filter(user=user)
 
-
-class JournalEntryUpdate(generics.UpdateAPIView):
-    serializer_class = JournalSerializer
-    permission_classes = [IsAuthenticated]
-    lookup_field = 'id'
-
-    def get_queryset(self):
-        user = self.request.user
-        return JournalEntries.objects.filter(user=user)
-
 class JournalEntryUpdateDecs(APIView):
     serializer_class = JournalSerializer
     permission_classes = [IsAuthenticated]
@@ -97,6 +81,35 @@ class JournalEntryUpdateDecs(APIView):
         user = request.user
         decorations = JournalEntries.objects.filter(user=user, id=id).values('decorations')
         return Response({'decorations': decorations[0]['decorations']})
+
+
+# TODO: just make this the default way to get/post entry info
+class JournalEntryUpdateFields(APIView):
+    serializer_class = JournalSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: HttpRequest, id: int) -> Response:
+        user = request.user
+        fields = request.GET.getlist('fields[]')
+        res = JournalEntries.objects.filter(user=user, id=id).values(*fields)
+        return Response({'decorations': res})
+
+    def post(self, request: HttpRequest, id: int) -> Response:
+        user = request.user
+        journal_entry = JournalEntries.objects.get(user=user, id=id)
+        for key, value in request.data.items():
+            # we dont update user so skip - or don't give user id to the client
+            if key == 'user':
+                continue
+            if hasattr(journal_entry, key):
+                setattr(journal_entry, key, value)
+            else:
+                return Response({'error': f'Bad field: {key}'}, status=422)
+        journal_entry.save()
+        return Response({'msg': 'journal updated successfully', 'data': request.data})
+
+    def put(self, request: HttpRequest, id: int) -> Response:
+        return self.post(request, id)
 
 
 @dataclass
