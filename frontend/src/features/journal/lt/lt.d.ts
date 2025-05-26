@@ -78,3 +78,9 @@ interface Match {
   sentence: string;
   rule: Rule;
 }
+
+export interface LtLanguage {
+  name: string,
+  code: string,
+  longCode: string
+}

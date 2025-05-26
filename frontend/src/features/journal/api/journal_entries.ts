@@ -3,7 +3,7 @@ import api from '../../../api';
 import lt from './lt'
 import { SerialDecoration } from '../pm/suggestion.d';
 import { EntryObj } from '../types/Journal';
-import { LTCheckParams, LTCheckResponse } from './lt.d'
+import { LTCheckParams, LTCheckResponse } from '../lt/lt.d'
 
 // TODO: handle errors
 export function putEntry(entry: EntryObj): void {
