@@ -145,7 +145,7 @@ class DecHandler {
       // start at i+1 bc paragraph start token
       let start = node.pos+1
       let end = node.pos+1+node.node.textContent.length
-      this.getDecorations(start, end, node.node.textContent, 'fr-FR')  
+      this.getDecorations(start, end, node.node.textContent, 'auto')  
     }
   }
 
