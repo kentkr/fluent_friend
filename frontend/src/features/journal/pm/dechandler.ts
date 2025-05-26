@@ -96,10 +96,7 @@ class DecHandler {
     // delete decs if they were modified
     tr.mapping.maps.forEach((stepMap) => {
       stepMap.forEach((oldStart, oldEnd, newStart, newEnd) => {
-        let trueFrom = oldStart;
-        // end of deletions = prevous start + (old range - new range) 
-        let trueTo = oldStart + ((oldEnd - oldStart) - (newEnd - newStart));
-        this.decSet = this.decSet.remove(this.decSet.find(trueFrom, trueTo));
+        this.decSet = this.decSet.remove(this.decSet.find(oldStart, oldEnd));
       })
     })
   }
@@ -141,15 +138,14 @@ class DecHandler {
     // get impacted nodes
     const nodes = this.getParagraphNodes();
     // receive decorations from api
-    let decs: Decoration[] = []
     for (var node of nodes) {
       if (node.node.textContent === '') {
         continue
       }
-      // remove all decs from paragraph
-      this.decSet.remove(this.decSet.find(node.pos+1, node.node.textContent.length))
       // start at i+1 bc paragraph start token
-      this.getDecorations(node.pos+1, node.node.textContent, 'fr-FR')  
+      let start = node.pos+1
+      let end = node.pos+1+node.node.textContent.length
+      this.getDecorations(start, end, node.node.textContent, 'fr-FR')  
     }
   }
 
@@ -176,7 +172,7 @@ class DecHandler {
     this.view.dispatch(this.view.state.tr.setMeta('refresh', ''))
   }
 
-  async getDecorations(start: number, text: string, language: string): Promise<Decoration[]> {
+  async getDecorations(start: number, end: number, text: string, language: string): Promise<Decoration[]> {
     let ltCheckResponse: LTCheckResponse | undefined
     try {
       //let res = await postCorrections(start, text)
@@ -187,7 +183,9 @@ class DecHandler {
     }
     if (ltCheckResponse){
       let decs = ltToDecs(start, ltCheckResponse)
-      console.log('decos', decs)
+      // remove decs before pushing
+      // TODO: does not follow single responsibility, should refactor
+      this.decSet = this.decSet.remove(this.decSet.find(start, end))
       this.push(decs)
     }
     return []

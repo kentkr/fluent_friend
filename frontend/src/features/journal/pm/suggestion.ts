@@ -2,7 +2,7 @@ import { DecorationSet, EditorView } from 'prosemirror-view'
 import { Extension } from '@tiptap/core'
 import { Plugin,  PluginKey } from 'prosemirror-state'
 import DecHandler from './dechandler'
-import { SuggestionOptions } from './suggestion.d'
+import { SuggDec, SuggestionOptions } from './suggestion.d'
 
 // TODO: get a more robust way to make this part of the class state
 let EditorViewVar: EditorView;
@@ -65,8 +65,11 @@ const Suggestion = Extension.create<SuggestionOptions>({
             if (decorationSet) {
               let dec = decorationSet.find(pos, pos)
               // only pass in first dec - there shouldnt be multiple anyways
-              updateTooltip({ suggDec: dec[0] })
+              updateTooltip({ suggDec: dec[0], open: true })
             }
+          } else {
+            let placeHolder: SuggDec = {from: -1, to: -1, spec: {ltMatch: {}, attrs: {}}}
+            updateTooltip({ suggDec: placeHolder, open: false })
           }
         },
       },

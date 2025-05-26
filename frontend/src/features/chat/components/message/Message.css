@@ -5,12 +5,12 @@
     @apply text-foreground;
     @apply border border-background border-2 rounded-md;
     @apply m-1 p-2;
-    @apply max-w-lg;
+    @apply w-fit max-w-lg;
 }
 
 .user-message {
     @apply border border-background border-2 rounded-md;
     @apply m-1 p-2;
-    @apply max-w-lg;
+    @apply w-fit max-w-lg;
     @apply ml-auto;
 }

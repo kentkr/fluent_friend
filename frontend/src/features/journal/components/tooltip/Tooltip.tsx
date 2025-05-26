@@ -35,13 +35,14 @@ function Replacements({ list, range, replaceText, clickIgnore }: { list: any[], 
   )
 }
 
-function Tooltip ({ editor, tti }: { editor: Editor, tti: ToolTipInfo | undefined }) {
+function Tooltip ({ editor, tti, toggleTooltip }: { editor: Editor, tti: ToolTipInfo | undefined, toggleTooltip: CallableFunction }) {
   if (!editor || !tti) return
 
   const suggState: DecHandler = suggestionKey.getState(editor.state)
 
   function clickIgnore() {
     suggState.ignoreDec(tti?.suggDec.from, tti?.suggDec.from)
+    toggleTooltip()
   }
 
   const shortMessage = tti.suggDec.spec.ltMatch.shortMessage
@@ -63,6 +64,7 @@ function Tooltip ({ editor, tti }: { editor: Editor, tti: ToolTipInfo | undefine
       } else {
         console.error("Invalid range or replacement", { range, replacement });
       }
+      toggleTooltip()
     } catch (error) {
       console.error("Error replacing text:", error);
     }
