@@ -51,11 +51,21 @@ export function Editor({
   // hold only the state for the tooltip
   const [tti, setTti] = useState<ToolTipInfo | undefined>()
 
-  function updateTooltip({ suggDec }: UpdateTooltipProps): void {
+  function updateTooltip({ suggDec, open }: UpdateTooltipProps): void {
     setTti(prevTti => ({
       suggDec: suggDec,
-      open: !prevTti?.open
+      open: open
     }))
+  }
+
+  function toggleTooltip(): void {
+    setTti(prevTti => {
+      if (!prevTti) return undefined
+      return {
+        suggDec: prevTti.suggDec,
+        open: !prevTti.open
+      }
+    })
   }
 
   const editor = useEditor({
@@ -114,7 +124,7 @@ export function Editor({
 
   return (
     <>
-      <Tooltip editor={editor} tti={tti} />
+      <Tooltip editor={editor} tti={tti} toggleTooltip={toggleTooltip} />
       {
         currentEditorState && 
         <EditorMenu editor={editor} editorState={currentEditorState} />

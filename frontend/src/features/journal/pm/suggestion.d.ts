@@ -39,6 +39,7 @@ export interface ToolTipInfo {
 
 export interface UpdateTooltipProps {
   suggDec: SuggDec
+  open: boolean
 }
 
 export interface SuggDec extends Decoration {
