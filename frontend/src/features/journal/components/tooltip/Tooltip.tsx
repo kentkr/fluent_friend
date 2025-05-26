@@ -1,4 +1,4 @@
-import { Replacement } from "../../api/lt.d"
+import { Replacement } from "../../lt/lt.d"
 import { ToolTipInfo } from "../../pm/suggestion.d"
 import BubbleMenu from "../bubblemenu/BubbleMenu"
 import { Editor  } from '@tiptap/react'

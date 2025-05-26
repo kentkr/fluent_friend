@@ -2,10 +2,10 @@ import { DecorationSet } from "@tiptap/pm/view";
 import { Transaction } from "@tiptap/pm/state";
 import { Node } from "prosemirror-model";
 import { Decoration, DecorationAttrs, EditorView } from "prosemirror-view";
-import { CorrectionResponse, SerialDecoration, SuggSpec } from "./suggestion.d";
+import { SerialDecoration, SuggSpec } from "./suggestion.d";
 import { debounceLag } from "../utils/debounce";
-import { getDecs, postCorrections, postDecs, ltCheck } from "../api/journal_entries";
-import { LTCheckResponse } from "../api/lt.d";
+import { getDecs, postDecs, ltCheck } from "../api/journal_entries";
+import { LTCheckResponse } from "../lt/lt.d";
 
 // TODO: move to constants file?
 const DEBOUNCE_MS = 1000;
@@ -176,8 +176,7 @@ class DecHandler {
     let ltCheckResponse: LTCheckResponse | undefined
     try {
       //let res = await postCorrections(start, text)
-      ltCheckResponse = await ltCheck({text: text, language: language})
-      console.log(ltCheckResponse)
+      ltCheckResponse = await ltCheck({text: text, language: language, motherTongue: 'tl-PH'})
     } catch (err) {
       alert(err)
     }
