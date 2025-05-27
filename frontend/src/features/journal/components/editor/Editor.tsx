@@ -76,7 +76,9 @@ export function Editor({
       Underline,
       Suggestion.configure({
         entryId: currEntry.id,
-        updateTooltip: updateTooltip        
+        updateTooltip: updateTooltip,
+        language: currEntry.language,
+        nativeLanguage: currEntry.nativeLanguage
       }),
     ],
     content: currEntry.text,

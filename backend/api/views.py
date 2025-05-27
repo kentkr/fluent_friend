@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.views import APIView, Response
@@ -91,8 +91,9 @@ class JournalEntryUpdateFields(APIView):
     def get(self, request: HttpRequest, id: int) -> Response:
         user = request.user
         fields = request.GET.getlist('fields[]')
-        res = JournalEntries.objects.filter(user=user, id=id).values(*fields)
-        return Response({'decorations': res})
+        # rows (we take only the first) of all requested fields
+        result_row: Dict[str, Any] = JournalEntries.objects.filter(user=user, id=id).values(*fields)[0]
+        return Response(result_row)
 
     def post(self, request: HttpRequest, id: int) -> Response:
         user = request.user

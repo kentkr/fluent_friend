@@ -5,19 +5,22 @@
  */
 export function javaToPepCase(s: string): string {
   // first letter uppercase then return
-  if (s[0].toUpperCase() == s[0]) {
+  if (isUpperCase(s[0])) {
     return s 
   }
 
   let pepString = []
   for (var char of s) {
-    if (char.toUpperCase() == char) {
+    if (isUpperCase(char)) {
       pepString.push('_')
       pepString.push(char.toLowerCase())
       continue
     }
     pepString.push(char)
   }
-  console.log(s, 'to', pepString.join(''))
   return pepString.join('')
+}
+
+function isUpperCase(s: string): boolean {
+  return s !== s.toLowerCase() && s === s.toUpperCase()
 }

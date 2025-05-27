@@ -12,6 +12,7 @@ export function updateEntry(entry: Partial<EntryObj>): void {
   Object.entries(entry).forEach(([key, value]) => {
     pepFriendlyObj[javaToPepCase(key)] = value
   })
+  // TODO its not clear that entry.id is required here
   api
     .put(`/api/journal_entries/update/${entry.id}/`, pepFriendlyObj)
     .catch((err) => alert(err));

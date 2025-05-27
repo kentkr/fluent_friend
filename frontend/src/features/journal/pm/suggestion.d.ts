@@ -6,6 +6,8 @@ import { Decoration } from "prosemirror-view";
 export interface SuggestionOptions {
   entryId: number
   updateTooltip: (props: UpdateTooltipProps) => void
+  language: string
+  nativeLanguage: string | null
 }
 
 export interface CorrectionResponse {

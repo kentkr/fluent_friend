@@ -6,6 +6,7 @@ import { SerialDecoration, SuggSpec } from "./suggestion.d";
 import { debounceLag } from "../utils/debounce";
 import { getDecs, postDecs, ltCheck } from "../api/journal_entries";
 import { LTCheckResponse } from "../lt/lt.d";
+import {languageMap} from "../lt/lt";
 
 // TODO: move to constants file?
 const DEBOUNCE_MS = 1000;
@@ -69,14 +70,18 @@ class DecHandler {
   entryId: number;
   state: Node
   view: EditorView
+  language: string
+  nativeLanguage: string | null
   private debouncedAddDecs: () => void;
 
-  constructor(state: Node, view: EditorView, entryId: number) {
+  constructor(state: Node, view: EditorView, entryId: number, language: string, nativeLanguage: string | null) {
     this.decSet = DecorationSet.create(state, []);
     this.trBuf = [];
     this.entryId = entryId;
     this.state = state
     this.view = view
+    this.language = language
+    this.nativeLanguage = nativeLanguage
     // Bind the context and create debounced function once
     this.debouncedAddDecs = debounceLag(() => this.addDecs(), DEBOUNCE_MS);
   }
@@ -172,11 +177,17 @@ class DecHandler {
     this.view.dispatch(this.view.state.tr.setMeta('refresh', ''))
   }
 
-  async getDecorations(start: number, end: number, text: string, language: string): Promise<Decoration[]> {
+  async getDecorations(start: number, end: number, text: string): Promise<void> {
     let ltCheckResponse: LTCheckResponse | undefined
     try {
-      //let res = await postCorrections(start, text)
-      ltCheckResponse = await ltCheck({text: text, language: language, motherTongue: 'tl-PH'})
+      // TODO dog wtf - handle the language state better fr
+      let language = languageMap.get(this.language)
+      let nativeLanguage = this.nativeLanguage !== null 
+        ? languageMap.get(this.nativeLanguage) 
+        : undefined
+      if (language) {
+        ltCheckResponse = await ltCheck({text: text, language: language, motherTongue: nativeLanguage})
+      }
     } catch (err) {
       alert(err)
     }
@@ -187,7 +198,6 @@ class DecHandler {
       this.decSet = this.decSet.remove(this.decSet.find(start, end))
       this.push(decs)
     }
-    return []
   }
 
   syncDb() {

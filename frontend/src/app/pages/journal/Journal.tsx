@@ -5,12 +5,13 @@ import { EntryObj } from "../../../features/journal/types/Journal";
 import JournalList from "../../../features/journal/components/journal_list/JournalList";
 import { Editor } from "../../../features/journal/components/editor/Editor";
 import { Title } from "../../../features/journal/components/title/Title";
+import {updateEntry} from "../../../features/journal/api/journal_entries";
 
 function Journal() {
   const [entries, setEntries] = useState<EntryObj[]>([])
   const [currEntry, setCurrEntry] = useState<EntryObj | undefined>();
 
-  function updateTitle({ title }: { entry_id: number, title: string }) {
+  function updateTitle({ title }: { entry_id: number, title: string }): void {
     if (!currEntry) return;
     setCurrEntry(prevCurrEntry => {
       if (!prevCurrEntry) return;
@@ -25,9 +26,7 @@ function Journal() {
 
     let updatedEntry = currEntry
     updatedEntry.title = title
-    api
-      .put(`/api/journal_entries/update/${currEntry.id}/`, updatedEntry)
-      .catch((err) => alert(err));
+    updateEntry(updatedEntry)
   }
 
   // TODO put api calls in api file
@@ -37,6 +36,10 @@ function Journal() {
       .get("/api/journal_entries/")
       .then((res) => res.data)
       .then((entries) => {
+        // TODO - fix when doing api stuff
+        for (var entry of entries) {
+          entry.nativeLanguage = entry.native_language
+        }
         setEntries(entries);
         // Set first entry as current if there are entries and no current entry selected
         if (entries.length > 0 && !currEntry) {
@@ -57,16 +60,18 @@ function Journal() {
       .post("/api/journal_entries/", {})
       .then((res) => res.data)
       .then((data) => {
+        console.log(data)
         setEntries(entries => [...entries, data]);
         setCurrEntry(data);
       })
-    // TODO: make new entry have a default value
   }
 
   // on first render skip
   if (!currEntry) {
     return <div>Loading...</div>;
   }
+  window.currEntry = currEntry
+  window.entries = entries
 
   return <>
     <div className="flex flex-1">
