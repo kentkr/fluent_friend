@@ -63,7 +63,7 @@ function EditorMenu({
         </button>
       </div>
       {/* language selector */}
-      <FormControl fullWidth>
+      <FormControl >
         <InputLabel id='language-label'>Language</InputLabel>
         <Select
           labelId="language-select-label"
@@ -81,7 +81,7 @@ function EditorMenu({
         </Select>
       </FormControl>
       {/* native language selector */}
-      <FormControl fullWidth>
+      <FormControl >
         <InputLabel id='language-label'>Native Language</InputLabel>
         <Select
           labelId="native-language-select-label"
