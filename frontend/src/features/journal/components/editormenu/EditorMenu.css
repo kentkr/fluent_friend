@@ -13,3 +13,7 @@
 .is-active {
     @apply bg-cyan/80;
 }
+
+.tmp {
+    @apply bg-green
+}
