@@ -68,7 +68,7 @@ function EditorMenu({
         <Select
           labelId="language-select-label"
           id='language-select'
-          value={'auto'} 
+          value={currEntry.language} 
           label='Language'
           onChange={languageChange}
         >
@@ -86,7 +86,7 @@ function EditorMenu({
         <Select
           labelId="native-language-select-label"
           id='native-language-select'
-          value={'None'} 
+          value={currEntry.nativeLanguage === undefined || currEntry.nativeLanguage === null? 'None' : currEntry.nativeLanguage} 
           label='Native Language'
           onChange={nativeLanguageChange}
         >

@@ -15,18 +15,22 @@ const Suggestion = Extension.create<SuggestionOptions>({
     return {
       entryId: -1,
       updateTooltip: () => {},
+      language: 'auto',
+      nativeLanguage: null
     }
   },
 
   addProseMirrorPlugins() {
     const entryId = this.options.entryId
     const updateTooltip = this.options.updateTooltip
+    const language = this.options.language
+    const nativeLanguage = this.options.nativeLanguage
 
     const suggestionPlugin = new Plugin({
       key: suggestionKey,
       state: {
         init(_, { doc }) {
-          return new DecHandler(doc, EditorViewVar, entryId)
+          return new DecHandler(doc, EditorViewVar, entryId, language, nativeLanguage)
         },
 
         apply(tr, decHandler, _, newState) {
