@@ -18,7 +18,7 @@ function Replacements({ list, range, replaceText, clickIgnore }: { list: any[], 
   if (!list || list.length === 0) return
 
   return (
-    <ol className='flex flex-wrap'>
+    <ol className='replacements-list'>
       {list.map((replacement: Replacement) => 
         <li className='p-1' key={replacement.value}>
           <button className='replacement' onClick={() => replaceText(range, replacement.value)}>
