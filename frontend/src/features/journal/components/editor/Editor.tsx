@@ -98,7 +98,10 @@ export function Editor({
       preserveWhitespace: 'full'
     },
     // when entry id changes recreate
-  }, [currEntry.id])
+    // TODO: make a more permanent fix for this, lang and native lang
+    // evaluate if repainting the editor is fine or if we need
+    // to update decHandler more directly
+  }, [currEntry.id, currEntry.language, currEntry.nativeLanguage])
 
   if (!editor) {
     return
