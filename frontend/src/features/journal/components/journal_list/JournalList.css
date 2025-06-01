@@ -17,11 +17,11 @@
     @apply flex flex-col;
     @apply p-2;
     @apply w-1/4 max-w-96;
-    @apply border border-background;
 }
 
 .list-container {
-    @apply border border-background;
+    @apply border border-background rounded-md;
+    @apply shadow-md shadow-purple;
     @apply p-2;
     @apply flex-1;
 }
