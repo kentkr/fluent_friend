@@ -5,7 +5,7 @@ import { EntryObj } from "../../../features/journal/types/Journal";
 import JournalList from "../../../features/journal/components/journal_list/JournalList";
 import { Editor } from "../../../features/journal/components/editor/Editor";
 import { Title } from "../../../features/journal/components/title/Title";
-import {updateEntry} from "../../../features/journal/api/journal_entries";
+import { updateEntry } from "../../../features/journal/api/journal_entries";
 
 function Journal() {
   const [entries, setEntries] = useState<EntryObj[]>([])
@@ -80,7 +80,6 @@ function Journal() {
           />
         <div className="editor-container-0">
           <Title currEntry={currEntry} updateTitle={updateTitle}/>
-          <hr className="hr-class"></hr>
           <Editor 
             currEntry={currEntry} 
             setCurrEntry={setCurrEntry} 

@@ -1,17 +1,19 @@
 @import '../../../../styles/theme.css';
 
 .menu {
-    @apply flex;
+    @apply flex justify-center;
+    @apply rounded-md;
+    @apply bg-background shadow-sm shadow-purple;
 }
 
 .menu-button {
     @apply border border-background;
-    @apply hover:bg-cyan hover:text-foreground;
+    @apply text-foreground hover:bg-cyan hover:text-background;
     @apply p-1;
     @apply mx-0.5;
     @apply rounded-md;
 }
 
 .is-active {
-    @apply bg-cyan/80;
+    @apply bg-cyan;
 }
