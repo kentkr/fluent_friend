@@ -6,7 +6,6 @@ export const selectAndMenuSx = {
   borderColor: 'var(--color-background)',
   '&:hover': { 
     bgcolor: 'var(--color-cyan)',
-    color: 'var(--color-foreground)'
   },
   '&.MuiSelect-root': {
     borderColor: 'var(--color-green)',
