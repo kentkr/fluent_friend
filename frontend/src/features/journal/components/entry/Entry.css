@@ -13,6 +13,10 @@
     @apply flex-1;
 }
 
+.use-placeholder {
+    @apply text-grey;
+}
+
 .edit-button {
     @apply hover:text-cyan;
 }

@@ -7,9 +7,3 @@ export interface JournalListProps {
   newEntry: CallableFunction;
 }
 
-export interface EntryProps {
-  entry: EntryObj;
-  deleteEntry: CallableFunction;
-  selectEntry: CallableFunction;
-}
-
