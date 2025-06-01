@@ -7,6 +7,10 @@
     @apply max-w-sm;
 }
 
+.replacements-list {
+    @apply flex flex-wrap items-center;
+}
+
 .replacement {
     @apply px-1;
     @apply rounded-md;
