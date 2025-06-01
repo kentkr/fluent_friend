@@ -48,7 +48,7 @@ class JournalListCreate(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return JournalEntries.objects.filter(user=user)
+        return JournalEntries.objects.filter(user=user).order_by('-id')
 
     def perform_create(self, serializer):
         if serializer.is_valid():

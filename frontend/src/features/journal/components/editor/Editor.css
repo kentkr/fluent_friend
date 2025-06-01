@@ -20,6 +20,7 @@
     @apply max-w-none;
     @apply outline-none;
     @apply overflow-auto;
+    @apply text-[16px];
 }
 
 .suggestion-text {
