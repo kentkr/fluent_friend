@@ -26,7 +26,7 @@ function JournalList({ entries, setEntries, setCurrEntry, newEntry }: JournalLis
   for (var e of entries) {
     console.log(e.id)
   }
-  
+
   return ( 
     <>
       <div className="component-container">

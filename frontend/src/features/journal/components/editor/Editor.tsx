@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Editor as TiptapEditor, EditorContent, useEditor, useEditorState } from '@tiptap/react'
+import Placeholder from '@tiptap/extension-placeholder'
+import { EditorContent, useEditor, useEditorState } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { EntryObj } from '../../types/Journal'
-import Underline from '@tiptap/extension-underline'
 import './Editor.css'
 import Suggestion from '../../pm/suggestion';
 import { useDebouncedOnUpdate } from '../../utils/debounce';
@@ -73,13 +73,16 @@ export function Editor({
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Underline,
+      Placeholder.configure({
+        placeholder: 'Today was whimsical...'
+      }),
       Suggestion.configure({
         entryId: currEntry.id,
         updateTooltip: updateTooltip,
         language: currEntry.language,
         nativeLanguage: currEntry.nativeLanguage
       }),
+
     ],
     content: currEntry.text,
     editorProps: {
