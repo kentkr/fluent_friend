@@ -48,7 +48,7 @@ function JournalList({ entries, setEntries, setCurrEntry, newEntry }: JournalLis
             onClick={() => newEntry()}
           >
             <span className='new-button-span'>
-              <p>New entry</p>
+              <p className='px-1'>New entry</p>
               <FaSquarePlus />
             </span>
           </button>
