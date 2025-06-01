@@ -5,6 +5,7 @@ import { JournalListProps } from './JournalList.d';
 import { Entry } from '../entry/Entry';
 import { FaSquarePlus } from "react-icons/fa6";
 import './JournalList.css'
+import React from 'react';
 
 function JournalList({ entries, setEntries, setCurrEntry, newEntry }: JournalListProps): JSX.Element {
   // delete entry 
@@ -22,17 +23,23 @@ function JournalList({ entries, setEntries, setCurrEntry, newEntry }: JournalLis
     setCurrEntry(entry)
   }
 
+  for (var e of entries) {
+    console.log(e.id)
+  }
+  
   return ( 
     <>
-      <div className="p-2 w-1/4 border boder-background flex flex-col">
-        <h1 className='list-title'>Journal entries</h1>
-        <div className='border border-background p-2 flex-1'>
+      <div className="component-container">
+        <p className='list-title'>Entries</p>
+        <div className='list-container'>
           <ol>
             {
               entries
-                .sort((a, b) => a.id - b.id)
-                .map((entry) => (
-                <Entry key={entry.id} entry={entry} deleteEntry={deleteEntry} selectEntry={selectEntry}/>
+                .map((entry, index, arr) => (
+                  <React.Fragment key={entry.id}>
+                    <Entry entry={entry} deleteEntry={deleteEntry} selectEntry={selectEntry}/>
+                    {index < arr.length - 1 && <hr className='list-separator' />} 
+                  </React.Fragment> 
               ))
             }
           </ol>
@@ -40,7 +47,10 @@ function JournalList({ entries, setEntries, setCurrEntry, newEntry }: JournalLis
             className='new-button'
             onClick={() => newEntry()}
           >
-            <FaSquarePlus />
+            <span className='new-button-span'>
+              <p>New entry</p>
+              <FaSquarePlus />
+            </span>
           </button>
         </div>
       </div>

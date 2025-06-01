@@ -43,7 +43,6 @@ function Journal() {
         setEntries(entries);
         // Set first entry as current if there are entries and no current entry selected
         if (entries.length > 0 && !currEntry) {
-          entries.sort((a: EntryObj, b: EntryObj) => a.id - b.id)
           setCurrEntry(entries[0]);
         } 
 

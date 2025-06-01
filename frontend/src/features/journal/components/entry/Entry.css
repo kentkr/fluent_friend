@@ -1,7 +1,16 @@
 @import '../../../../styles/theme.css';
 
 .entry-li {
-    @apply flex justify-between m-1;
+    @apply flex justify-between items-center m-1;
+}
+
+.button-div {
+    @apply flex items-center;
+}
+
+.entry-title {
+    @apply truncate overflow-hidden whitespace-nowrap;
+    @apply flex-1;
 }
 
 .edit-button {
