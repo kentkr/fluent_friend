@@ -70,8 +70,6 @@ function Journal() {
   if (!currEntry) {
     return <div>Loading...</div>;
   }
-  window.currEntry = currEntry
-  window.entries = entries
 
   return <>
     <div className="flex flex-1">
@@ -83,7 +81,7 @@ function Journal() {
           />
         <div className="editor-container-0">
           <Title currEntry={currEntry} updateTitle={updateTitle}/>
-          <hr></hr>
+          <hr className="hr-class"></hr>
           <Editor 
             currEntry={currEntry} 
             setCurrEntry={setCurrEntry} 
