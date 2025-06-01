@@ -9,7 +9,7 @@ import { LTCheckResponse } from "../lt/lt.d";
 import {languageMap} from "../lt/lt";
 
 // TODO: move to constants file?
-const DEBOUNCE_MS = 1000;
+const DEBOUNCE_MS = 500;
 
 // color mapping of correction types
 // these won't be perfect but generally are what LT uses
@@ -150,7 +150,7 @@ class DecHandler {
       // start at i+1 bc paragraph start token
       let start = node.pos+1
       let end = node.pos+1+node.node.textContent.length
-      this.getDecorations(start, end, node.node.textContent, 'auto')  
+      this.getDecorations(start, end, node.node.textContent)  
     }
   }
 

@@ -14,6 +14,11 @@ export function Title({ currEntry, updateTitle }: { currEntry: EntryObj, updateT
     extensions: [
       StarterKit,
     ],
+    editorProps: {
+      attributes: {
+        class: 'text-xl'
+      },
+    },
     content: currEntry.title,
     onUpdate: onUpdate,
     shouldRerenderOnTransaction: false,

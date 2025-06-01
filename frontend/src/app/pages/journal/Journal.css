@@ -53,3 +53,7 @@
 .icon {
     @apply bg-cyan;
 }
+
+.hr-class {
+    @apply mt-1 mb-2;
+}

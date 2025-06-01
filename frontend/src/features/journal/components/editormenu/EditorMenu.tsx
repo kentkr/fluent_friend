@@ -1,11 +1,27 @@
 import { Editor } from "@tiptap/react"
 import './EditorMenu.css'
 import { EditorStateProps } from '../editor/Editor.d'
-import { FaBold, FaItalic, FaStrikethrough } from "react-icons/fa";
-import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { languageMap } from '../../lt/lt'
 import {EntryObj} from "../../types/Journal";
 import {updateEntry} from "../../api/journal_entries";
+import { FaBold, FaItalic, FaStrikethrough } from "react-icons/fa";
+import { 
+  FormControl, 
+  InputLabel, 
+  MenuItem, 
+  Select, 
+  SelectChangeEvent, 
+  Tooltip, 
+  Divider,
+} from "@mui/material";
+import { 
+  selectAndMenuSx, 
+  menuProps, 
+  formSx, 
+  labelSx,
+  dividerSx,
+} from "./muisx"; 
+
 
 function EditorMenu({ 
   editor, 
@@ -21,8 +37,6 @@ function EditorMenu({
   if (!editor || !currEntry) {
     return null
   }
-  //const [language, setLanguage] = useState<string>('auto')
-  //const [nativeLanguage, setNativeLanguage] = useState<string | null>(null)
 
   const languageChange = (event: SelectChangeEvent) => {
     setCurrEntry((prevEntry) => {
@@ -42,7 +56,7 @@ function EditorMenu({
 
   return (
     <div className="menu">
-      <div>
+      <div className="flex items-center">
         <button
           className={editorState.isBold ? 'menu-button is-active': 'menu-button'}
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -62,39 +76,48 @@ function EditorMenu({
           <FaStrikethrough />
         </button>
       </div>
+      <Divider orientation="vertical" flexItem sx={dividerSx} />
       {/* language selector */}
-      <FormControl >
-        <InputLabel id='language-label'>Language</InputLabel>
+      <FormControl size='small' sx={formSx}>
+        <Tooltip title='Language' >
+          <InputLabel id='language-label' sx={labelSx}>Language</InputLabel>
+        </Tooltip>
         <Select
-          labelId="language-select-label"
+          labelId="language-label"
           id='language-select'
           value={currEntry.language} 
           label='Language'
           onChange={languageChange}
+          sx={selectAndMenuSx}
+          MenuProps={menuProps}
         >
-          <MenuItem key='auto' value='auto'>
+          <MenuItem key='auto' value='auto' sx={selectAndMenuSx}>
             <em>Auto</em>
           </MenuItem>
           {Array.from(languageMap.keys()).map((key) => (
-            <MenuItem key={key} value={key}>{key}</MenuItem>
+            <MenuItem key={key} value={key} sx={selectAndMenuSx}>{key}</MenuItem>
           ))}
         </Select>
       </FormControl>
       {/* native language selector */}
-      <FormControl >
-        <InputLabel id='language-label'>Native Language</InputLabel>
+      <FormControl size="small" sx={formSx}>
+        <Tooltip title='Native Language' >
+          <InputLabel id='native-language-label' sx={labelSx}>Native Language</InputLabel>
+        </Tooltip>
         <Select
-          labelId="native-language-select-label"
+          labelId="native-language-label"
           id='native-language-select'
           value={currEntry.nativeLanguage === undefined || currEntry.nativeLanguage === null? 'None' : currEntry.nativeLanguage} 
           label='Native Language'
           onChange={nativeLanguageChange}
+          sx={selectAndMenuSx}
+          MenuProps={menuProps}
         >
-          <MenuItem key='null' value={'None'}>
+          <MenuItem key='null' value={'None'} sx={selectAndMenuSx} >
             <em>None</em>
           </MenuItem>
           {Array.from(languageMap.keys()).map((key) => (
-            <MenuItem key={key} value={key}>{key}</MenuItem>
+            <MenuItem key={key} value={key} sx={selectAndMenuSx} >{key}</MenuItem>
           ))}
         </Select>
       </FormControl>
