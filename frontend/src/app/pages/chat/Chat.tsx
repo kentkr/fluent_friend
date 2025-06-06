@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import { useState, useReducer, useRef, useEffect } from 'react'
 import Input from '../../../features/chat/components/input/Input'
 import Message from '../../../features/chat/components/message/Message'
 import './Chat.css'
@@ -11,24 +11,38 @@ interface MessageProps {
 
 function Chat() {
   const [messages, setMessages] = useState<MessageProps[]>([
-    {id: 0, message: 'first', sender: 'ai'}
+    {id: Date.now(), message: 'first', sender: 'ai'}
   ])
+  const ws = useRef(null as unknown as WebSocket)
+
+  // mount ws on first render
+  useEffect(() => {
+    ws.current = new WebSocket(import.meta.env.VITE_WS_URL)
+    ws.current.onmessage = (event) => {
+      const aiMessage = {
+        id: Date.now(),
+        message: event.data,
+        sender: 'ai'
+      }
+      setMessages(prev => [...prev, aiMessage])
+    }
+    if (ws.current.readyState === ws.current.OPEN) {
+      return () => ws.current.close();
+    }
+  },
+  []
+  )
 
   const handleSendMessages = (content: string) => {
     const userMessage = {
-      id: messages.length + 1,
+      id: Date.now(),
       message: content,
       sender: 'user'
-    };
-    setMessages([...messages, userMessage])
-    setTimeout(() => {
-      const aiMessage = {
-        id: messages.length + 2,
-        message: `I received your message: "${content}"`,
-        sender: 'ai'
-      };
-      setMessages(prevMessages => [...prevMessages, aiMessage]);
-    }, 1000);
+    }
+    ws.current.send(content)
+    setMessages(prev => {
+      return [...prev, userMessage]
+    })
   }
 
   return <>
