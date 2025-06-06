@@ -1,3 +1,4 @@
+import time
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .tasks import get_gpt_response, get_gpt_correction
@@ -5,19 +6,19 @@ import asyncio
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
-        await self.send(f'received: {text_data}')
+        await self.send(f'server received: {text_data}')
         return
-        if not hasattr(self, 'message_history'):
-            self.message_history = []
+        #if not hasattr(self, 'message_history'):
+        #    self.message_history = []
 
-        data = json.loads(text_data)
+        #data = json.loads(text_data)
 
-        # move message history to frontend -- #12
-        self.message_history = data['message_history']
+        ## move message history to frontend -- #12
+        #self.message_history = data['message_history']
 
-        asyncio.create_task(self.send_user_message(data['message'], data['message_id']))
-        asyncio.create_task(self.send_gpt_correction(data['message'], data['message_id']))
-        asyncio.create_task(self.send_gpt_message(data['message_id'], self.message_history))
+        #asyncio.create_task(self.send_user_message(data['message'], data['message_id']))
+        #asyncio.create_task(self.send_gpt_correction(data['message'], data['message_id']))
+        #asyncio.create_task(self.send_gpt_message(data['message_id'], self.message_history))
 
     async def send_user_message(self, message, message_id):
         # add to user message
