@@ -5,11 +5,28 @@ import './Chat.css'
 import '/Users/kylekent/Desktop/fluent_friend/frontend/src/features/chat/components/message/Message.css'
 import DotLoader from '../../../components/dotloader/DotLoader'
 
+const LEN_MESSAGE_HISTORY = 5
+
 interface MessageObj {
   id: number;
-  message: string;
   sender: string;
+  message?: string;
   correction?: string;
+}
+
+interface GptInputMessages {
+  role: string,
+  content: string
+}
+
+interface WsSend {
+  aiMessageId: number;
+  userMessageId: number;
+  messageHistory: GptInputMessages[]
+}
+
+function createWsMessage(): JSON {
+
 }
 
 function AiMessage({ message }: { message: MessageObj }) {
@@ -64,18 +81,29 @@ function Chat() {
 
   const handleSendMessages = (content: string) => {
     const userMessage = {
-      id: Date.now(),
+      id: messages.length+1,
       message: content,
       sender: 'user'
     }
-    ws.current.send(content)
+    // create future ai message
+    const aiMessage = {
+      id: messages.length+2,
+      sender: 'ai'
+    }
+    const startOfMessageHistory = Math.min(1, messages.length-LEN_MESSAGE_HISTORY)
+    const x = {
+      aiMessageId: aiMessage.id,
+      userMessageId: userMessage.id,
+      messageHistory: messages.slice(startOfMessageHistory)
+    }
+    ws.current.send(JSON.stringify(x))
     setMessages(prev => {
-      return [...prev, userMessage]
+      return [...prev, userMessage, aiMessage]
     })
   }
-
   window.messages = messages
-  return <>
+
+ return (
     <div className='chat-page'>
       <div className='message-container'>
         <ol id='message-list'>
@@ -89,7 +117,7 @@ function Chat() {
       </div>
       <Input onSendMessage={handleSendMessages}/>
     </div>
-  </>
+  )
 }
 
 export default Chat
