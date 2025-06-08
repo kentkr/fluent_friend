@@ -1,55 +1,10 @@
-import { useState, useReducer, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Input from '../../../features/chat/components/input/Input'
-import Message from '../../../features/chat/components/message/Message'
 import './Chat.css'
-import '/Users/kylekent/Desktop/fluent_friend/frontend/src/features/chat/components/message/Message.css'
-import DotLoader from '../../../components/dotloader/DotLoader'
-
-const LEN_MESSAGE_HISTORY = 5
-
-interface MessageObj {
-  id: number;
-  sender: string;
-  message?: string;
-  correction?: string;
-}
-
-interface GptInputMessages {
-  role: string,
-  content: string
-}
-
-interface WsSend {
-  aiMessageId: number;
-  userMessageId: number;
-  messageHistory: GptInputMessages[]
-}
-
-function AiMessage({ message }: { message: MessageObj }) {
-  return (
-    <div className='ai-message'>
-      {
-        message.message === undefined ?
-          <DotLoader color='var(--color-foreground)' /> :
-          <p>{message.message}</p> 
-      }
-    </div>
-  )
-}
-
-function UserMessage({ message }: { message: MessageObj }) {
-  return (
-    <div className='user-message'>
-      <p>{message.message}</p>
-      <hr></hr>
-      {
-        message.correction === undefined ? 
-          <DotLoader color='var(--color-background)' /> :
-          <p dangerouslySetInnerHTML={{ __html: message.correction }}></p>
-      }
-    </div>
-  )
-}
+import { MessageObj } from '../../../features/chat/types'
+import UserMessage from '../../../features/chat/components/usermessage/UserMessage'
+import AiMessage from '../../../features/chat/components/aimessage/AiMessage'
+import { LEN_MESSAGE_HISTORY } from '../../../features/chat/constants'
 
 function Chat() {
   const [messages, setMessages] = useState<MessageObj[]>([
@@ -97,13 +52,12 @@ function Chat() {
       id: messages.length+1,
       sender: 'ai'
     }
-    const startOfMessageHistory = Math.max(1, messages.length-LEN_MESSAGE_HISTORY)
-    console.log('start message hi', startOfMessageHistory)
+    const fromMessageHistory = Math.max(1, messages.length-LEN_MESSAGE_HISTORY)
     const wsMessage = {
       aiMessageId: aiMessage.id,
       userMessageId: userMessage.id,
       message: userMessage.message, 
-      messageHistory: messages.slice(startOfMessageHistory)
+      messageHistory: messages.slice(fromMessageHistory)
     }
     ws.current.send(JSON.stringify(wsMessage))
     setMessages(prev => {

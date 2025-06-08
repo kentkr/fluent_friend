@@ -1,6 +1,6 @@
-import {MutableRefObject, useRef} from "react"
+import { MutableRefObject, useRef } from "react"
 
-function Input({onSendMessage}: {onSendMessage: CallableFunction}) {
+function Input({ onSendMessage }: { onSendMessage: CallableFunction }) {
   const inputRef: MutableRefObject<HTMLDivElement | null> = useRef(null)
   const handleSend = () => {
     if (!inputRef.current) {
