@@ -43,3 +43,12 @@
   content:attr(data-placeholder);
   color:gray
 }
+
+.correction-insert {
+    @apply bg-green/50;
+}
+
+.correction-delete {
+    @apply bg-red/30;
+    text-decoration: line-through;
+}
