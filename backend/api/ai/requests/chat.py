@@ -1,10 +1,21 @@
 
-from openai import OpenAI
+from openai import AsyncOpenAI
 from typing import List
 
+def _valid_msg_history(msg_history: List[dict]) -> List[dict]:
+    valid = []
+    for msg in msg_history:
+        d = {}
+        if msg['sender'] == 'user':
+            d['role'] = 'user'
+        else:
+            d['role'] = 'assistant'     
+        d['content'] = msg['message']
+        valid.append(d)
+    return valid
 
-def chat(client: OpenAI, prompt: str, message: str, message_history: List) -> str | None:
-    # TODO: i think we need to modify the role types for the message history
+async def chat(client: AsyncOpenAI, prompt: str, message: str, message_history: List) -> str | None:
+    message_history = _valid_msg_history(message_history)
     sys_msg = {
         'role': 'developer',
         'content': prompt
@@ -17,7 +28,7 @@ def chat(client: OpenAI, prompt: str, message: str, message_history: List) -> st
     }
     message_history.append(user_msg)
 
-    res = client.chat.completions.create(
+    res = await client.chat.completions.create(
         model = 'gpt-3.5-turbo',
         messages = message_history, 
         n = 1,
