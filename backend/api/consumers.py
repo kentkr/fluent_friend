@@ -1,14 +1,11 @@
-import time
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
-
-from api.ai.requests.prompts import CHAT_PROMPT, CORRECTION_PROMPT
-
 import asyncio
 from typing import Dict, Optional
+from channels.generic.websocket import AsyncWebsocketConsumer
 from api.ai.requests.chat import chat
 from api.ai.requests.correction import corrections
 from api.ai.clients import OPENAI
+from api.ai.requests.prompts import CHAT_PROMPT, CORRECTION_PROMPT
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data: Optional[str] = None, bytes_data: Optional[bytes] = None, close = False) -> None:
@@ -25,7 +22,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         asyncio.create_task(self.send_ai_response(data))
 
     async def send_ai_response(self, data: Dict) -> None:
-        ai_response = chat(OPENAI, CHAT_PROMPT, data['message'], data['messageHistory'])
+        ai_response = await chat(OPENAI, CHAT_PROMPT, data['message'], data['messageHistory'])
         print(ai_response, '++++')
         # add to user message
         res_obj = {
@@ -36,7 +33,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(res_obj))
 
     async def send_corrections(self, data: Dict) -> None:
-        correction = corrections(OPENAI, CORRECTION_PROMPT, data['message'])
+        correction = await corrections(OPENAI, CORRECTION_PROMPT, data['message'])
         user_correction = {
             'id': data['userMessageId'],
             'action': 'userCorrection',

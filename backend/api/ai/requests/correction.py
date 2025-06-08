@@ -1,7 +1,7 @@
 
 import re
 import difflib
-from openai import OpenAI
+from openai import AsyncOpenAI
 from typing import List
 
 def _corr_to_html(og_msg: str, corr_msg: str) -> str:
@@ -29,7 +29,7 @@ def _corr_to_html(og_msg: str, corr_msg: str) -> str:
 
     return corrections
 
-def corrections(client: OpenAI, prompt: str, message: str) -> str:
+async def corrections(client: AsyncOpenAI, prompt: str, message: str) -> str:
     sys_msg = {
         'role': 'developer',
         'content': prompt
@@ -42,13 +42,12 @@ def corrections(client: OpenAI, prompt: str, message: str) -> str:
     }
     message_history.append(user_msg)
 
-    res = client.chat.completions.create(
+    res = await client.chat.completions.create(
         model = 'gpt-3.5-turbo',
         messages = message_history, # type: ignore 
         n = 1,
         max_tokens = 200,
-        temperature = 1,
-        presence_penalty = 1,
+        temperature = 0.1,
     ) 
 
     corr = res.choices[0].message.content
