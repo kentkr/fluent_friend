@@ -1,39 +1,47 @@
 import time
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .tasks import get_gpt_response, get_gpt_correction
+
+from api.ai.requests.prompts import CHAT_PROMPT, CORRECTION_PROMPT
+
 import asyncio
+from typing import Dict, Optional
+from api.ai.requests.chat import chat
+from api.ai.requests.correction import corrections
+from api.ai.clients import OPENAI
 
 class ChatConsumer(AsyncWebsocketConsumer):
-    async def receive(self, text_data):
-        await self.send(f'server received: {text_data}')
-        return
-        #if not hasattr(self, 'message_history'):
-        #    self.message_history = []
+    async def receive(self, text_data: Optional[str] = None, bytes_data: Optional[bytes] = None, close = False) -> None:
+        data = {}
+        if text_data:
+            data = json.loads(text_data)
+        elif bytes_data:
+            data = json.loads(bytes_data.decode())
 
-        #data = json.loads(text_data)
+        if not data:
+            raise Exception(f'Failed to parse any data')
 
-        ## move message history to frontend -- #12
-        #self.message_history = data['message_history']
+        asyncio.create_task(self.send_corrections(data))
+        asyncio.create_task(self.send_ai_response(data))
 
-        #asyncio.create_task(self.send_user_message(data['message'], data['message_id']))
-        #asyncio.create_task(self.send_gpt_correction(data['message'], data['message_id']))
-        #asyncio.create_task(self.send_gpt_message(data['message_id'], self.message_history))
-
-    async def send_user_message(self, message, message_id):
+    async def send_ai_response(self, data: Dict) -> None:
+        ai_response = chat(OPENAI, CHAT_PROMPT, data['message'], data['messageHistory'])
+        print(ai_response, '++++')
         # add to user message
-        user_dict = json.dumps({'message':message, 'source':'user', 'message_id':message_id})
-        await self.send(text_data=user_dict)
+        res_obj = {
+            'id': data['aiMessageId'],
+            'action': 'aiMessage',
+            'message': ai_response
+        }
+        await self.send(text_data=json.dumps(res_obj))
 
-    async def send_gpt_message(self, message_id, message_history):
-        # get last six messages
-        response = await get_gpt_response(message_history[-6:])
-        # add to message history
-        self.message_history += [{'role': 'user', 'content': response}]
-        bot_dict = json.dumps({'message':response, 'source':'bot', 'message_id':message_id})
-        await self.send(text_data=bot_dict)
+    async def send_corrections(self, data: Dict) -> None:
+        correction = corrections(OPENAI, CORRECTION_PROMPT, data['message'])
+        user_correction = {
+            'id': data['userMessageId'],
+            'action': 'userCorrection',
+            'correction': correction
+        }
+        await self.send(json.dumps(user_correction))
 
-    async def send_gpt_correction(self, message, message_id):
-        response = await get_gpt_correction(message)
-        bot_dict = json.dumps({'message':response, 'source':'correction', 'message_id':message_id})
-        await self.send(text_data=bot_dict)
+

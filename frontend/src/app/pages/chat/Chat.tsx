@@ -25,10 +25,6 @@ interface WsSend {
   messageHistory: GptInputMessages[]
 }
 
-function createWsMessage(): JSON {
-
-}
-
 function AiMessage({ message }: { message: MessageObj }) {
   return (
     <div className='ai-message'>
@@ -49,7 +45,7 @@ function UserMessage({ message }: { message: MessageObj }) {
       {
         message.correction === undefined ? 
           <DotLoader color='var(--color-background)' /> :
-          <p>message.correction</p>
+          <p dangerouslySetInnerHTML={{ __html: message.correction }}></p>
       }
     </div>
   )
@@ -57,21 +53,32 @@ function UserMessage({ message }: { message: MessageObj }) {
 
 function Chat() {
   const [messages, setMessages] = useState<MessageObj[]>([
-    {id: Date.now(), message: 'first', sender: 'ai'}
+    {id: 0, message: 'first', sender: 'ai'}
   ])
   const ws = useRef(null as unknown as WebSocket)
 
-  // mount ws on first render
+  // mount ws on first render, set how ws handles messages
   useEffect(() => {
     ws.current = new WebSocket(import.meta.env.VITE_WS_URL)
     ws.current.onmessage = (event) => {
-      const aiMessage = {
-        id: Date.now(),
-        message: event.data,
-        sender: 'ai'
-      }
-      setMessages(prev => [...prev, aiMessage])
+      const eventData = JSON.parse(event.data)
+      setMessages(prev => {
+        const nextMessages = prev.map((message) => {
+          if (message.id === eventData.id) {
+            if (eventData.action === 'userCorrection') {
+              message.correction = eventData.correction
+              return message } 
+            if (eventData.action === 'aiMessage') {
+              message.message = eventData.message
+              return message 
+            }
+          }
+          return message
+        })
+        return nextMessages
+      })
     }
+
     if (ws.current.readyState === ws.current.OPEN) {
       return () => ws.current.close();
     }
@@ -81,27 +88,28 @@ function Chat() {
 
   const handleSendMessages = (content: string) => {
     const userMessage = {
-      id: messages.length+1,
+      id: messages.length,
       message: content,
       sender: 'user'
     }
     // create future ai message
     const aiMessage = {
-      id: messages.length+2,
+      id: messages.length+1,
       sender: 'ai'
     }
-    const startOfMessageHistory = Math.min(1, messages.length-LEN_MESSAGE_HISTORY)
-    const x = {
+    const startOfMessageHistory = Math.max(1, messages.length-LEN_MESSAGE_HISTORY)
+    console.log('start message hi', startOfMessageHistory)
+    const wsMessage = {
       aiMessageId: aiMessage.id,
       userMessageId: userMessage.id,
+      message: userMessage.message, 
       messageHistory: messages.slice(startOfMessageHistory)
     }
-    ws.current.send(JSON.stringify(x))
+    ws.current.send(JSON.stringify(wsMessage))
     setMessages(prev => {
       return [...prev, userMessage, aiMessage]
     })
   }
-  window.messages = messages
 
  return (
     <div className='chat-page'>
