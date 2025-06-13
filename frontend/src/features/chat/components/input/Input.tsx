@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { TextField } from "@mui/material"
+import { IoMdSend } from "react-icons/io";
 import './Input.css'
 
 function Input({ onSendMessage }: { onSendMessage: CallableFunction }) {
@@ -35,7 +36,9 @@ function Input({ onSendMessage }: { onSendMessage: CallableFunction }) {
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={handleKeyPress}
       />
-    <button className="send-button">send</button>
+    <button className="send-button">
+      <IoMdSend  style={{transform: 'rotate(270deg)' }}/>
+    </button>
     </div>
   </>
 }
