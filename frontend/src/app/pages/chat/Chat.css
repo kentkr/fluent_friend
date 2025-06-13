@@ -21,13 +21,6 @@
   @apply pr-2; 
 }
 
-.input-container {
-    @apply min-h-12;
-    @apply border border-background border-2 rounded-md shadow-lg shadow-purple;
-    @apply flex justify-between;
-    @apply mt-2;
-}
-
 .send-button {
     @apply border border-background border-2 rounded-md shadow-lg shadow-purple;
     @apply m-1 px-2;
