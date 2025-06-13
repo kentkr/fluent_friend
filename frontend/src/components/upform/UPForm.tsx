@@ -19,8 +19,8 @@ function UPForm({ route, method }: { route: any; method: any }) {
 
     let userTokens = await loginOrRegister(route, { username, password })
     if (method === "login") {
-      localStorage.setItem(ACCESS_TOKEN, userTokens.access_token);
-      localStorage.setItem(REFRESH_TOKEN, userTokens.refresh_token);
+      localStorage.setItem(ACCESS_TOKEN, userTokens.access);
+      localStorage.setItem(REFRESH_TOKEN, userTokens.refresh);
       navigate('/')
     } else {
       navigate('/login')
