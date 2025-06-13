@@ -1,17 +1,14 @@
-import { MutableRefObject, useRef } from "react"
+import { useState } from "react"
+import { TextField } from "@mui/material"
+import './Input.css'
+import { inputSx } from "./sx"
 
 function Input({ onSendMessage }: { onSendMessage: CallableFunction }) {
-  const inputRef: MutableRefObject<HTMLDivElement | null> = useRef(null)
-  const handleSend = () => {
-    if (!inputRef.current) {
-      return
-    }
+  const [message, setMessage] = useState<string>('')
 
-    const content = inputRef.current.innerHTML
-    if (content) {
-      onSendMessage(content)
-      inputRef.current.innerText = ''
-    }
+  function handleSend() {
+    onSendMessage(message)
+    setMessage('')
   }
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -23,16 +20,18 @@ function Input({ onSendMessage }: { onSendMessage: CallableFunction }) {
       //<input id='input' className='input' contentEditable placeholder='Type your message here' />
   return <>
     <div className='input-container'>
-      <div 
-        ref={inputRef}
-        className="input"
-        contentEditable
-        onKeyDown={handleKeyPress}
-        data-placeholder="Type a message..."
-        />
-      <button className='send-button'>
-        send
-      </button>
+      <TextField
+        sx={inputSx}
+        value={message}
+        multiline
+        maxRows={4}
+        variant="outlined"
+        placeholder="Write in any language..."
+        fullWidth
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyPress={handleKeyPress}
+      />
+    <button className="send-button">send</button>
     </div>
   </>
 }

@@ -1,0 +1,7 @@
+@import '../../../../styles/theme.css';
+
+.input-container {
+    @apply min-h-12;
+    @apply flex justify-between items-center;
+    @apply mt-2;
+}
