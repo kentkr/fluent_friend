@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import api from '../../../api';
+import api from '../../../api/api-client';
 import lt from './lt'
 import { SerialDecoration } from '../pm/suggestion.d';
 import { EntryObj } from '../types/Journal';
@@ -42,3 +42,31 @@ export async function ltCheck(query: LTCheckParams): Promise<LTCheckResponse> {
   return res.data 
 }
 
+export async function listJournalEntries(): Promise<EntryObj[]> {
+  let entries = await api
+    .get("/api/journal_entries/")
+    .then((res) => res.data)
+    .then((entries) => {
+      // set the backend naming convention to be frontend - this could be more efficient but doesnt matter
+      for (var entry of entries) {
+        entry.nativeLanguage = entry.native_language
+      }
+      return entries
+    })
+    .catch((err) => alert(err));
+  return entries
+}
+
+export async function deleteEntry(id: number): Promise<void> {
+  api 
+    .delete(`/api/journal_entries/delete/${id}/`, {})
+    .catch((err) => alert(err))
+}
+
+export async function newEntry(): Promise<EntryObj> {
+  let entry = await api 
+    .post("/api/journal_entries/", {})
+    .then((res) => { return res.data })
+    .catch((err) => alert(err))
+  return entry
+}

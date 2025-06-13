@@ -1,9 +1,9 @@
 import { useState } from "react";
-import api from "../../api";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
 import "./UPForm.css"
 import LoadingIndicator from "../loadingindicator/LoadingIndicator";
+import { loginOrRegister } from "../../api/auth";
 
 function UPForm({ route, method }: { route: any; method: any }) {
   const [username, setUsername] = useState("");
@@ -17,20 +17,15 @@ function UPForm({ route, method }: { route: any; method: any }) {
     setLoading(true);
     e.preventDefault();
 
-    try {
-      const res = await api.post(route, { username, password })
-      if (method === "login") {
-        localStorage.setItem(ACCESS_TOKEN, res.data.access);
-        localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-        navigate("/")
-      } else {
-        navigate("/login")
-      }
-    } catch (error) {
-      alert(error)
-    } finally {
-      setLoading(false)
+    let userTokens = await loginOrRegister(route, { username, password })
+    if (method === "login") {
+      localStorage.setItem(ACCESS_TOKEN, userTokens.access_token);
+      localStorage.setItem(REFRESH_TOKEN, userTokens.refresh_token);
+      navigate('/')
+    } else {
+      navigate('/login')
     }
+    setLoading(false)
   };
 
   return (
