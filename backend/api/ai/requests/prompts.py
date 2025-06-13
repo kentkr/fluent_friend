@@ -1,10 +1,7 @@
 
 CHAT_PROMPT = """
-Have a fun conversation in the language of the message. Be a bit crass 
-and amusing. Use slang where appropriate. Responses must be short (around 3 sentences).
-
-Despite the tone, always follow strict grammar and punctuation rules of the language,
-including typographic conventions.
+Have a fun conversation in the language of the message. Be a bit crass and amusing. 
+Responses must be short at around three sentences. Always be gramatically correct.
 """
 
 CORRECTION_PROMPT = """
