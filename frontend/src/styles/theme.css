@@ -29,8 +29,7 @@
 html, body {
     @apply h-full w-full;
     @apply m-0;
-    font-family: Open Sans;
-    @apply font-mono ;
+    font-family: 'DotGothic16', sans-serif;
     @apply bg-foreground;
 }
 
@@ -41,6 +40,6 @@ html, body {
 
 h1, h2, h3 {
     font-family: DotGothic16;
-   font-size: 40px; 
+    font-size: 40px; 
 }
 
