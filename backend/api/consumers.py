@@ -18,12 +18,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not data:
             raise Exception(f'Failed to parse any data')
 
+        print('data: ', data)
         asyncio.create_task(self.send_corrections(data))
         asyncio.create_task(self.send_ai_response(data))
 
     async def send_ai_response(self, data: Dict) -> None:
         ai_response = await chat(OPENAI, CHAT_PROMPT, data['message'], data['messageHistory'])
-        print(ai_response, '++++')
         # add to user message
         res_obj = {
             'id': data['aiMessageId'],
@@ -34,6 +34,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def send_corrections(self, data: Dict) -> None:
         correction = await corrections(OPENAI, CORRECTION_PROMPT, data['message'])
+        print('correction: ', correction)
         user_correction = {
             'id': data['userMessageId'],
             'action': 'userCorrection',

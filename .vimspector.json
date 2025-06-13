@@ -5,7 +5,7 @@
       "adapter": "debugpy",
       "configuration": {
         "request": "launch",
-        "program": "backend/tmp.py",
+        "program": "tmp.py",
         "python": "/Users/kylekent/Desktop/fluent_friend/backend/venv/bin/python3",
         "args": [],
         "stopAtEntry": true,
