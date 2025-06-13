@@ -1,5 +1,5 @@
 
-import api from '../../../../api';
+import { deleteEntry as apiDeleteEntry } from '../../api/journal_entries';
 import { EntryObj } from '../../types/Journal'
 import { JournalListProps } from './JournalList.d';
 import { Entry } from '../entry/Entry';
@@ -10,21 +10,18 @@ import React from 'react';
 function JournalList({ entries, setEntries, setCurrEntry, newEntry }: JournalListProps): JSX.Element {
   // delete entry 
   function deleteEntry({ id }: { id: number }) {
-    api 
-      .delete(`/api/journal_entries/delete/${id}/`, {})
-      .then((res) => res.data)
-      .then((data) => {
-        setEntries(prevEntries => prevEntries.filter(entry => entry.id !== id))
-      })
+    apiDeleteEntry(id)
+    setEntries(prevEntries => prevEntries.filter(entry => entry.id !== id))
+    if (entries.length > 0){
+      setCurrEntry(entries[0])
+    } else {
+      newEntry()
+    }
   }
 
   // grab en entry to set as curr
   function selectEntry({ entry }: { entry: EntryObj }) {
     setCurrEntry(entry)
-  }
-
-  for (var e of entries) {
-    console.log(e.id)
   }
 
   return ( 
