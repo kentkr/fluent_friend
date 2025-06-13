@@ -5,6 +5,9 @@ from openai import AsyncOpenAI
 from typing import List
 
 def _corr_to_html(og_msg: str, corr_msg: str) -> str:
+    # quick fix to handle line breaks
+    og_msg = og_msg.replace('\n', '<br/>')
+    corr_msg = corr_msg.replace('\n', '<br/>')
     # split text - retain spaces, ignore '-'
     split_orig = re.findall(r'\s?\w+(?:-\w+)*|\s?[^\w\s]', og_msg)
     split_corrected = re.findall(r'\s?\w+(?:-\w+)*|\s?[^\w\s]', corr_msg)

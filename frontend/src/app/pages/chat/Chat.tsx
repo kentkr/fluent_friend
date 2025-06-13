@@ -6,9 +6,14 @@ import UserMessage from '../../../features/chat/components/usermessage/UserMessa
 import AiMessage from '../../../features/chat/components/aimessage/AiMessage'
 import { LEN_MESSAGE_HISTORY } from '../../../features/chat/constants'
 
+const firstMessage = `
+Hey there! I'm an AI chat bot that will help you practice any language.
+Send me a message in that language to get started.
+`
+
 function Chat() {
   const [messages, setMessages] = useState<MessageObj[]>([
-    {id: 0, message: 'first', sender: 'ai'}
+    {id: 0, message: firstMessage, sender: 'ai'}
   ])
   const ws = useRef(null as unknown as WebSocket)
 

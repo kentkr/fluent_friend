@@ -36,7 +36,7 @@ function Input({ onSendMessage }: { onSendMessage: CallableFunction }) {
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={handleKeyPress}
       />
-    <button className="send-button">
+    <button className="send-button" onClick={handleSend}>
       <IoMdSend  style={{transform: 'rotate(270deg)' }}/>
     </button>
     </div>
