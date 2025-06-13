@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { TextField } from "@mui/material"
 import './Input.css'
-import { inputSx } from "./sx"
 
 function Input({ onSendMessage }: { onSendMessage: CallableFunction }) {
   const [message, setMessage] = useState<string>('')
@@ -21,11 +20,16 @@ function Input({ onSendMessage }: { onSendMessage: CallableFunction }) {
   return <>
     <div className='input-container'>
       <TextField
-        sx={inputSx}
+        slotProps={{
+          input: {
+            className: "mui-textfield-input",
+            disableUnderline: true,
+          }
+        }}
         value={message}
         multiline
         maxRows={4}
-        variant="outlined"
+        variant="standard"
         placeholder="Write in any language..."
         fullWidth
         onChange={(e) => setMessage(e.target.value)}

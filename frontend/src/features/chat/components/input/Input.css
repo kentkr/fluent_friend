@@ -5,3 +5,8 @@
     @apply flex justify-between items-center;
     @apply mt-2;
 }
+
+.mui-textfield-input {
+    @apply p-1;
+    @apply border border-background border-2 rounded-lg;
+}
