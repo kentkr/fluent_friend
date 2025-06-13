@@ -6,7 +6,7 @@ export default function UserMessage({ message }: { message: MessageObj }) {
   return (
     <div className='user-message'>
       <p>{message.message}</p>
-      <hr></hr>
+      <hr className='m-1'></hr>
       {
         message.correction === undefined ? 
           <DotLoader color='var(--color-background)' /> :

@@ -3,7 +3,8 @@
 .ai-message {
     @apply bg-background;
     @apply text-foreground;
-    @apply border border-background border-2 rounded-md;
+    @apply rounded-md;
+    @apply shadow-md shadow-purple;
     @apply m-1 p-2;
     @apply w-fit max-w-lg;
 }
