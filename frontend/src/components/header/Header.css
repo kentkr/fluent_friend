@@ -1,38 +1,38 @@
 @import '../../styles/theme.css';
 
 .header {
-    @apply bg-background;
-    @apply text-foreground;
-    font-family: DotGothic16;
+  @apply bg-background;
+  @apply text-foreground;
+  font-family: DotGothic16;
 }
 
 .logo {
-    width: 60px;
-    height: auto;
-    @apply shadow-md shadow-purple hover:shadow-cyan;
-    @apply rounded-md;
+  width: 60px;
+  height: auto;
+  @apply shadow-md shadow-purple hover:shadow-cyan;
+  @apply rounded-md;
 }
 
 .nav-bar {
-    @apply flex m-2 px-16 items-center;
+  @apply flex m-2 pl-2 items-center;
 }
 
 .nav-content {
-    @apply px-4;
-    @apply text-2xl;
-    @apply hover:text-cyan;
+  @apply px-4;
+  @apply text-2xl;
+  @apply hover:text-cyan;
 }
 
 .center-right {
-    @apply flex grow justify-between;
-    @apply px-8;
+  @apply flex grow justify-between;
+  @apply px-4;
 }
 
 .big-button {
-    @apply bg-green;
-    @apply text-background;
-    @apply rounded-xl;
-    @apply px-2 py-1;
-    @apply text-2xl;
-    @apply hover:text-cyan;
+  @apply flex justify-center items-center;
+  @apply bg-green hover:bg-cyan;
+  @apply text-background hover:text-background;
+  @apply rounded-4xl;
+  @apply mx-2 px-2 py-1;
+  @apply text-xl;
 }

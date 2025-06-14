@@ -32,7 +32,12 @@ function Header() {
             </a>
           </div>
           {/* right */}
-          <div>
+          <div className='flex'>
+            <button className='big-button'>
+              <a href='https://buymeacoffee.com/kyle.kent321'>
+                <p>Support</p>
+              </a>
+            </button>
             {loading ? (
               <button className='big-button' disabled>
                 <p>Login</p>

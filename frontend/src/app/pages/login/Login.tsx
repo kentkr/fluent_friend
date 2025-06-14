@@ -4,9 +4,9 @@ import UPForm from "../../../components/upform/UPForm"
 
 function Login() {
   const [searchParams] = useSearchParams()
-  const redirectTo = searchParams.get('redirect') || '/'
+  const redirect= searchParams.get('redirect') || '/'
 
-  return <UPForm method="login" redirect={redirectTo} />
+  return <UPForm method="login" redirect={redirect} />
 }
 
 export default Login
