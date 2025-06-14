@@ -2,8 +2,9 @@
 export interface AuthContextType {
     loggedIn: boolean
     loading: boolean
-    login: () => void
+    login: (username: string, password: string) => Promise<void> = async (username, password)
     logout: () => void
     checkLoginStatus: () => void
+    register: (username: string, password: string) => void
 }
 

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {ACCESS_TOKEN, REFRESH_TOKEN} from "../../constants";
 import { ReactNode } from "react";
 import { AuthContextType } from './AuthProvider.d'
+import { loginOrRegister } from "../../api/auth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -33,7 +34,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }): ReactNode =
     checkLoginStatus()
   }, [])
 
-  const login = () => {
+  const login = async (username: string, password: string) => {
+    let userTokens = await loginOrRegister("/api/token/", { username, password })
+    localStorage.setItem(ACCESS_TOKEN, userTokens.access);
+    localStorage.setItem(REFRESH_TOKEN, userTokens.refresh);
     setLoggedIn(true)
   }
 
@@ -42,12 +46,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }): ReactNode =
     setLoggedIn(false)
   }
 
+  const register = (username: string, password: string) => {
+    loginOrRegister('/api/user/register/', { username, password })
+  }
+
   const value: AuthContextType = {
     loggedIn,
     loading,
     login,
     logout,
-    checkLoginStatus
+    checkLoginStatus,
+    register,
   }
 
   return (
