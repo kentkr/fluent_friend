@@ -4,6 +4,15 @@ import "./UPForm.css"
 import LoadingIndicator from "../loadingindicator/LoadingIndicator";
 import { useAuth } from "../authprovider/AuthProvider";
 
+const sanitizeRedirect = (relativeUrl: string): string  => {
+  // only allow relative paths right now
+  if (relativeUrl.startsWith('/') && !relativeUrl.startsWith('//')) {
+    return relativeUrl
+  }
+
+  throw new Error('Non relative redirect found. This redirect may be malicious')
+}
+
 function UPForm({ method, redirect }: { method: any, redirect: string }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -12,10 +21,11 @@ function UPForm({ method, redirect }: { method: any, redirect: string }) {
   const { login, register, loading, loggedIn } = useAuth()
 
   const name = method === "login" ? "Login" : "Register";
+  const sanitizedRedirect = sanitizeRedirect(redirect)
 
   useEffect(() => {
     if (loggedIn) {
-      navigate(redirect)
+      navigate(sanitizedRedirect)
     }
   }, [loggedIn])
 
@@ -27,7 +37,7 @@ function UPForm({ method, redirect }: { method: any, redirect: string }) {
       login(username, password)
     } else {
       register(username, password)
-      navigate(redirect)
+      navigate(sanitizedRedirect)
     }
   };
 
