@@ -62,6 +62,11 @@ function UPForm({ method, redirect }: { method: any, redirect: string }) {
       <button className="form-button" type="submit">
         {name}
       </button>
+      {method === 'login' && (
+        <p>
+          Not registered? <a href="/register" className="register-link">Click here</a>
+        </p>
+      )}
     </form>
   );
 }
