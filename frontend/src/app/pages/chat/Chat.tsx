@@ -16,6 +16,11 @@ function Chat() {
     {id: 0, message: firstMessage, sender: 'ai'}
   ])
   const ws = useRef(null as unknown as WebSocket)
+  const messagesEndRef = useRef<HTMLLIElement>(null)
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'auto' })
+  }, [messages])
 
   // mount ws on first render, set how ws handles messages
   useEffect(() => {
@@ -80,6 +85,7 @@ function Chat() {
               {msg.sender === 'user' && <UserMessage message={msg} />}
             </li>
           ))}
+          <li ref={messagesEndRef}/>
         </ol>
       </div>
       <Input onSendMessage={handleSendMessages}/>
