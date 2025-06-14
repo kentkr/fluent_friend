@@ -4,12 +4,14 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
 import "./UPForm.css"
 import LoadingIndicator from "../loadingindicator/LoadingIndicator";
 import { loginOrRegister } from "../../api/auth";
+import { useAuth } from "../authprovider/AuthProvider";
 
 function UPForm({ route, method }: { route: any; method: any }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth()
 
   const name = method === "login" ? "Login" : "Register";
 
@@ -21,7 +23,8 @@ function UPForm({ route, method }: { route: any; method: any }) {
     if (method === "login") {
       localStorage.setItem(ACCESS_TOKEN, userTokens.access);
       localStorage.setItem(REFRESH_TOKEN, userTokens.refresh);
-      navigate('/')
+      login()
+      navigate(-1)
     } else {
       navigate('/login')
     }

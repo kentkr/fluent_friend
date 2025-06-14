@@ -8,22 +8,33 @@ import ProtectedRoute from "../components/ProtectedRoute"
 import Header from "../components/header/Header"
 import Journal from "./pages/journal/Journal"
 import Chat from './pages/chat/Chat'
+import { AuthProvider, useAuth } from '../components/authprovider/AuthProvider'
+import { useEffect } from 'react'
 
 function Logout() {
-  localStorage.clear()
-  return <Navigate to="/login" />
+  const { logout } = useAuth()
+  useEffect(() => {
+    logout()
+  }, [logout])
+
+  return <Navigate to="/login" replace />
 }
 
 function RegisterAndLogout() {
-  localStorage.clear()
+  const { logout } = useAuth()
+  
+  useEffect(() => {
+    logout()
+  }, [logout])
+
   return <Register />
 }
 
 function App() {
   return (
-    <>
-      <Header/>
+    <AuthProvider>
       <BrowserRouter>
+        <Header/>
         <Routes>
           <Route
             path="/"
@@ -46,7 +57,7 @@ function App() {
           <Route path="*" element={<NotFound />}></Route>
         </Routes>
       </BrowserRouter>
-    </>
+    </AuthProvider>
   )
 }
 
