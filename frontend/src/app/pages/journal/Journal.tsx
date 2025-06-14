@@ -60,8 +60,6 @@ function Journal() {
     return <div>Loading...</div>;
   }
 
-  const titlePlaceholder = 'Log 0, still no pussy...'
-
   return <>
     <div className="flex flex-1">
         <JournalList 
