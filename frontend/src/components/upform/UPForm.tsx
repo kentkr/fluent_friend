@@ -1,30 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./UPForm.css"
 import LoadingIndicator from "../loadingindicator/LoadingIndicator";
 import { useAuth } from "../authprovider/AuthProvider";
 
-function UPForm({method }: { method: any }) {
+function UPForm({ method, redirect }: { method: any, redirect: string }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [attemptLogin, setAttemptLogin] = useState<boolean>(false)
   const navigate = useNavigate();
-  const { login, register } = useAuth()
+  const { login, register, loading, loggedIn } = useAuth()
 
   const name = method === "login" ? "Login" : "Register";
 
+  useEffect(() => {
+    if (loggedIn) {
+      navigate(redirect)
+    }
+  }, [loggedIn])
+
   const handleSubmit = async (e: any) => {
-    setLoading(true);
+    setAttemptLogin(true)
     e.preventDefault();
 
     if (method === "login") {
       login(username, password)
-      navigate('/')
     } else {
       register(username, password)
-      navigate('/login')
+      navigate(redirect)
     }
-    setLoading(false)
   };
 
   return (
@@ -43,8 +47,8 @@ function UPForm({method }: { method: any }) {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
-        />
-      {loading && <LoadingIndicator />}
+      />
+      {attemptLogin && <LoadingIndicator />}
       <button className="form-button" type="submit">
         {name}
       </button>
