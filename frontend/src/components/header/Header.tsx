@@ -35,7 +35,7 @@ function Header() {
           <div>
             {loading ? (
               <button className='big-button' disabled>
-                <p>Loading...</p>
+                <p>Login</p>
               </button>
             ) : loggedIn ? (
               <button className='big-button' onClick={logoutTHenNavigate}>

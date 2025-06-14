@@ -1,24 +1,17 @@
-import { Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { isLoggedIn } from "../api/auth";
+import { Navigate, useLocation } from "react-router-dom";
+import {useAuth} from "./authprovider/AuthProvider";
 
 
 function ProtectedRoute({ children }: { children: any }) {
-  const [isAuthorized, setIsAuthorized] = useState<null | boolean>(null);
+  const { loggedIn, loading } = useAuth()
+  // location of previous url
+  const location = useLocation()
 
-  // on mount get authorization
-  useEffect(() => {
-    const getAuth = async () => {
-      setIsAuthorized(await isLoggedIn())
-    }
-    getAuth()
-  }, [])
-
-  if (isAuthorized === null) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  return isAuthorized ? children : <Navigate to="/login" />;
+  return loggedIn ? children : <Navigate to={`/login?redirect=${location.pathname}`} />;
 }
 
 export default ProtectedRoute;

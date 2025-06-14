@@ -14,6 +14,7 @@ export const useAuth = (): AuthContextType => {
   return context
 }
 
+// TODO: this doesnt feel sufficient - we should check if the refresh token needs to be refreshed
 const checkTokens = (): boolean => {
   const accessToken = localStorage.getItem(ACCESS_TOKEN)
   const refreshToken = localStorage.getItem(REFRESH_TOKEN)
