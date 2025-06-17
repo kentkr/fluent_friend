@@ -8,6 +8,14 @@ import { getDecs, postDecs, ltCheck } from "../api/journal_entries";
 import { LTCheckResponse } from "../lt/lt.d";
 import {languageMap} from "../lt/lt";
 
+function shouldIgnoreDec(newDec: Decoration, ignoredDec: Decoration): boolean {
+  const fromMatch = newDec.from === ignoredDec.from
+  const toMatch = newDec.to === ignoredDec.to
+  // @ts-ignore - type exists
+  const phraseMatch = newDec.type.spec.phrase
+  return (fromMatch && toMatch && phraseMatch)
+}
+
 // TODO: move to constants file?
 const DEBOUNCE_MS = 500;
 
@@ -164,8 +172,7 @@ class DecHandler {
     let deleteDecs: Decoration[] = []
     for (var dec of decs) {
       let ignore = this.ignoreDecSet.find(dec.from, dec.to)[0]
-      console.log('ignoring', ignore && JSON.stringify(dec) === JSON.stringify(ignore))
-      if (ignore && JSON.stringify(dec) === JSON.stringify(ignore)) {
+      if (ignore && shouldIgnoreDec(dec, ignore)) {
         continue
       }
       newDecs = newDecs.concat(dec)
