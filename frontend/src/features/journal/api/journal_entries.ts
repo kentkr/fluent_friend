@@ -20,21 +20,21 @@ export function updateEntry(entry: Partial<EntryObj>): void {
 
 // This is a seprate function than updateEntry bc decs should not be part of EntryObj
 // it should only be managed by DecHandler
-export function postDecs(entryId: number, decs: SerialDecoration[]): void {
+export function postDecs(entryId: number, decs: SerialDecoration[], ignoreDecs: SerialDecoration[]): void {
   console.log(`post decs ${entryId}`, decs)
   api
-    .post(`/api/journal_entries/update/${entryId}/`, {decorations: decs})
+    .post(`/api/journal_entries/update/${entryId}/`, {decorations: decs, ignore_decorations: ignoreDecs})
     .catch((err) => alert(err))
 }
 
-export async function getDecs(entryId: number): Promise<SerialDecoration[]> {
+export async function getDecs(entryId: number): Promise<[SerialDecoration[], SerialDecoration[]]> {
   const response = await api.get(`/api/journal_entries/update/${entryId}/`, {
     params: {
-      fields: ['decorations']
+      fields: ['decorations', 'ignore_decorations']
     }
   })
   console.log(`get decs ${entryId}`, response.data.decorations)
-  return response.data.decorations
+  return [response.data.decorations, response.data.ignore_decorations]
 }
 
 export async function ltCheck(query: LTCheckParams): Promise<LTCheckResponse> {
