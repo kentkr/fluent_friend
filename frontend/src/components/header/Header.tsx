@@ -1,6 +1,7 @@
 import './Header.css'
 import { useAuth } from '../authprovider/AuthProvider';
 import { useNavigate } from 'react-router-dom';
+import BuyMeCoffee from '../buymecoffee/BuyMeCoffee'; 
 
 function Header() {
   const { loggedIn, loading, logout } = useAuth()
@@ -33,11 +34,7 @@ function Header() {
           </div>
           {/* right */}
           <div className='flex'>
-            <button className='big-button'>
-              <a href='https://buymeacoffee.com/kyle.kent321'>
-                <p>Support</p>
-              </a>
-            </button>
+            <BuyMeCoffee />
             {loading ? (
               <button className='big-button' disabled>
                 <p>Login</p>

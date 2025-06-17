@@ -205,7 +205,7 @@ class DecHandler {
     for (var match of ltCheckResponse.matches) {
       let editorOffset = match.offset+start
       // @ts-ignore - extra objects like 'is-correction' are allowed
-      let attrs: DecorationAttrs = { class: 'warning-dec', 'is-correction': true} 
+      let attrs: DecorationAttrs = { class: 'warning-dec', 'is-correction': true } 
       if (match.rule.issueType in issueClassMap) {
         attrs.class = issueClassMap[match.rule.issueType as keyof typeof issueClassMap];
       }
