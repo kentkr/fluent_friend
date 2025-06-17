@@ -14,18 +14,4 @@ const lt = axios.create({
   }
 })
 
-// TODO: this caused a cors issue (was probably above tho). We may need something like it for security 
-//lt.interceptors.request.use(
-//  (config) => {
-//    const token = localStorage.getItem(ACCESS_TOKEN);
-//    if (token) {
-//      config.headers.Authorization = `Bearer ${token}`;
-//    }
-//    return config;
-//  },
-//  (error) => {
-//    return Promise.reject(error);
-//  }
-//);
-
 export default lt

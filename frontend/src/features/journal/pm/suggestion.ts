@@ -34,6 +34,7 @@ const Suggestion = Extension.create<SuggestionOptions>({
         },
 
         apply(tr, decHandler, _, newState) {
+          window.decHandler = decHandler
           // if doc changed trigger updates to decs
           if (tr.docChanged) {
             decHandler.update(tr, EditorViewVar, newState.doc)
