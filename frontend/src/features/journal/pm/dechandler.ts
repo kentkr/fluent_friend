@@ -2,76 +2,13 @@ import { DecorationSet } from "@tiptap/pm/view";
 import { Transaction } from "@tiptap/pm/state";
 import { Node } from "prosemirror-model";
 import { Decoration, DecorationAttrs, EditorView } from "prosemirror-view";
-import { SerialDecoration, SuggDec, SuggSpec } from "./suggestion.d";
+import { SerialDecoration, SuggDec, SuggSpec, ParagraphNode} from "./suggestion.d";
 import { debounceLag } from "../utils/debounce";
 import { getDecs, postDecs, ltCheck } from "../api/journal_entries";
 import { LTCheckResponse } from "../lt/lt.d";
-import {languageMap} from "../lt/lt";
-
-function shouldIgnoreDec(newDec: SuggDec, ignoredDec: SuggDec): boolean {
-  const fromMatch = newDec.from === ignoredDec.from
-  const toMatch = newDec.to === ignoredDec.to
-  // @ts-ignore - type exists
-  const phraseMatch = newDec.type.spec.phrase
-  return (fromMatch && toMatch && phraseMatch)
-}
-
-// TODO: move to constants file?
-const DEBOUNCE_MS = 500;
-
-// color mapping of correction types
-// these won't be perfect but generally are what LT uses
-// pulled from https://www.w3.org/International/multilingualweb/lt/drafts/its20/its20.html#lqissue-typevalues:~:text=quality%20types%20natively.-,Value,from%20the%20wrong%20domain%20was%20used%20or%20terms%20are%20used%20inconsistently.,-The%20localization%20had
-const issueClassMap = {
-  'terminology': 'warning-dec',
-  'mistranslation': 'warning-dec',
-  'omission': 'warning-dec',
-  'untranslated': 'warning-dec',
-  'addition': 'warning-dec',
-  'duplication': 'suggestion-dec',
-  'inconsistency': 'warning-dec',
-  'grammar': 'error-dec',
-  'legal': 'warning-dec',
-  'register': 'suggestion-dec',
-  'locale-specific-content': 'warning-dec',
-  'locale-violation': 'warning-dec',
-  'style': 'warning-dec',
-  'characters': 'warning-dec',
-  'misspelling': 'error-dec',
-  'typographical': 'warning-dec',
-  'formatting': 'warning-dec',
-  'inconsistent-entities': 'warning-dec',
-  'numbers': 'warning-dec',
-  'markup': 'warning-dec',
-  'pattern-problem': 'warning-dec',
-  'whitespace': 'error-dec',
-  'internationalization': 'suggestion-dec',
-  'length': 'warning-dec',
-  'non-conformance': 'warning-dec',
-  'uncategorized': 'warning-dec',
-  'other': 'warning-dec',
-}
-
-// TODO: integrate this into DecHandler - make it getDecorations
-function ltToDecs(start: number, ltCheckResponse :LTCheckResponse, text: string): SuggDec[] {
-  let decs: SuggDec[] = []
-  for (var match of ltCheckResponse.matches) {
-    let editorOffset = match.offset+start
-    // @ts-ignore - extra objects like 'is-correction' are allowed
-    let attrs: DecorationAttrs = { class: 'warning-dec', 'is-correction': true} 
-    if (match.rule.issueType in issueClassMap) {
-      attrs.class = issueClassMap[match.rule.issueType as keyof typeof issueClassMap];
-    }
-    let spec: SuggSpec = {
-      ltMatch: match,
-      attrs: attrs,
-      phrase: text.substring(match.offset, match.offset+match.length)
-    }
-    let d = Decoration.inline(editorOffset, editorOffset+match.length, attrs, spec)
-    decs.push(d)
-  }
-  return decs
-}
+import { languageMap } from "../lt/lt";
+import { issueClassMap } from "./utils";
+import { JOURNAL_DEBOUNCE_MS } from "../../../constants";
 
 class DecHandler {
   decSet: DecorationSet;
@@ -94,7 +31,7 @@ class DecHandler {
     this.language = language
     this.nativeLanguage = nativeLanguage
     // Bind the context and create debounced function once
-    this.debouncedAddDecs = debounceLag(() => this.addDecs(), DEBOUNCE_MS);
+    this.debouncedAddDecs = debounceLag(() => this.addDecs(), JOURNAL_DEBOUNCE_MS);
   }
 
   update(tr: Transaction, view: EditorView, state: Node): void {
@@ -112,7 +49,7 @@ class DecHandler {
     this.ignoreDecSet = this.ignoreDecSet.map(tr.mapping, tr.doc)
     // delete decs if they were modified
     tr.mapping.maps.forEach((stepMap) => {
-      stepMap.forEach((oldStart, oldEnd, newStart, newEnd) => {
+      stepMap.forEach((oldStart, oldEnd, _newStart, _newEnd) => {
         this.decSet = this.decSet.remove(this.decSet.find(oldStart, oldEnd));
       })
     })
@@ -172,7 +109,7 @@ class DecHandler {
     let deleteDecs: SuggDec[] = []
     for (var dec of decs) {
       let ignore = this.ignoreDecSet.find(dec.from, dec.to)[0]
-      if (ignore && shouldIgnoreDec(dec, ignore)) {
+      if (ignore && DecHandler.shouldIgnoreDec(dec, ignore)) {
         continue
       }
       newDecs = newDecs.concat(dec)
@@ -214,7 +151,7 @@ class DecHandler {
       alert(err)
     }
     if (ltCheckResponse){
-      let decs = ltToDecs(start, ltCheckResponse, text)
+      let decs = DecHandler.ltToDecs(start, ltCheckResponse, text)
       // remove decs before pushing
       // TODO: does not follow single responsibility, should refactor
       this.decSet = this.decSet.remove(this.decSet.find(start, end))
@@ -253,6 +190,34 @@ class DecHandler {
       decorations.push(d)
     }
     return decorations
+  }
+
+  static shouldIgnoreDec(newDec: SuggDec, ignoredDec: SuggDec): boolean {
+    const fromMatch = newDec.from === ignoredDec.from
+    const toMatch = newDec.to === ignoredDec.to
+    // @ts-ignore - type exists
+    const phraseMatch = newDec.type.spec.phrase
+    return (fromMatch && toMatch && phraseMatch)
+  }
+
+  static ltToDecs(start: number, ltCheckResponse :LTCheckResponse, text: string): SuggDec[] {
+    let decs: SuggDec[] = []
+    for (var match of ltCheckResponse.matches) {
+      let editorOffset = match.offset+start
+      // @ts-ignore - extra objects like 'is-correction' are allowed
+      let attrs: DecorationAttrs = { class: 'warning-dec', 'is-correction': true} 
+      if (match.rule.issueType in issueClassMap) {
+        attrs.class = issueClassMap[match.rule.issueType as keyof typeof issueClassMap];
+      }
+      let spec: SuggSpec = {
+        ltMatch: match,
+        attrs: attrs,
+        phrase: text.substring(match.offset, match.offset+match.length)
+      }
+      let d = Decoration.inline(editorOffset, editorOffset+match.length, attrs, spec)
+      decs.push(d)
+    }
+    return decs
   }
 }
 

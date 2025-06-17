@@ -1,6 +1,7 @@
 import { DecorationAttrs } from "prosemirror-view";
 import { Match } from "../api/lt";
 import { Decoration } from "prosemirror-view";
+import { Node } from "prosemirror-model";
 
 
 export interface SuggestionOptions {
