@@ -34,7 +34,7 @@ const Suggestion = Extension.create<SuggestionOptions>({
         },
 
         apply(tr, decHandler, _, newState) {
-          window.decHandler = decHandler
+          //window.decHandler = decHandler
           // if doc changed trigger updates to decs
           if (tr.docChanged) {
             decHandler.update(tr, EditorViewVar, newState.doc)
@@ -73,7 +73,7 @@ const Suggestion = Extension.create<SuggestionOptions>({
               updateTooltip({ suggDec: dec[0], open: true })
             }
           } else {
-            let placeHolder: SuggDec = {from: -1, to: -1, spec: {ltMatch: {}, attrs: {}}}
+            let placeHolder: SuggDec = {from: -1, to: -1, spec: {ltMatch: {}, attrs: {}, phrase: ''}}
             updateTooltip({ suggDec: placeHolder, open: false })
           }
         },

@@ -7,6 +7,7 @@ import { debounceLag } from "../utils/debounce";
 import { getDecs, postDecs, ltCheck } from "../api/journal_entries";
 import { LTCheckResponse } from "../lt/lt.d";
 import {languageMap} from "../lt/lt";
+import {indigo} from "@mui/material/colors";
 
 function shouldIgnoreDec(newDec: Decoration, ignoredDec: Decoration): boolean {
   const fromMatch = newDec.from === ignoredDec.from
@@ -223,27 +224,30 @@ class DecHandler {
   }
 
   syncDb() {
-    let decs = this.serialize()
-    postDecs(this.entryId, decs)
+    let decs = DecHandler.serialize(this.decSet)
+    let ignoreDecs = DecHandler.serialize(this.ignoreDecSet)
+    postDecs(this.entryId, decs, ignoreDecs)
   }
 
   async getDbDecs() {
-    let serialDecs = await getDecs(this.entryId)
-    let decs = this.deserialize(serialDecs)
+    let [serialDecs, serialIgnoreDecs] = await getDecs(this.entryId)
+    let decs = DecHandler.deserialize(serialDecs)
+    let ignoreDecs = DecHandler.deserialize(serialIgnoreDecs)
     this.decSet = this.decSet.add(this.state, decs)
+    this.ignoreDecSet = this.ignoreDecSet.add(this.state, ignoreDecs)
     this.view.dispatch(this.view.state.tr.setMeta('refresh', true))
   }
 
-  serialize(): SerialDecoration[] {
+  static serialize(decSet: DecorationSet): SerialDecoration[] {
     let serialDecs: SerialDecoration[] = []
-    const decs = this.decSet.find()
+    const decs = decSet.find()
     decs.forEach(dec => {
       serialDecs.push({from: dec.from, to: dec.to, spec: dec.spec})
     })
     return serialDecs
   } 
 
-  deserialize(decs: SerialDecoration[]): Decoration[] {
+  static deserialize(decs: SerialDecoration[]): Decoration[] {
     let decorations: Decoration[] = []
     for (var dec of decs) {
       let d = Decoration.inline(dec.from, dec.to, dec.spec.attrs, dec.spec)
