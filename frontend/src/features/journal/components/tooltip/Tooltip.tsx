@@ -15,8 +15,6 @@ function Message({ text, className }: { text: string, className: string }) {
 }
 
 function Replacements({ list, range, replaceText, clickIgnore }: { list: any[], range: Range, replaceText: CallableFunction, clickIgnore: CallableFunction }) {
-  if (!list || list.length === 0) return
-
   return (
     <ol className='replacements-list'>
       {list.map((replacement: Replacement) => 
