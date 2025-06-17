@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import {ACCESS_TOKEN, REFRESH_TOKEN} from "../../constants";
 import { ReactNode } from "react";
 import { AuthContextType } from './AuthProvider.d'
-import { loginOrRegister } from "../../api/auth";
+import { isLoggedIn, loginOrRegister } from "../../api/auth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -14,20 +13,13 @@ export const useAuth = (): AuthContextType => {
   return context
 }
 
-// TODO: this doesnt feel sufficient - we should check if the refresh token needs to be refreshed
-const checkTokens = (): boolean => {
-  const accessToken = localStorage.getItem(ACCESS_TOKEN)
-  const refreshToken = localStorage.getItem(REFRESH_TOKEN)
-  return !!(accessToken && refreshToken)
-}
-
 export const AuthProvider = ({ children }: { children: ReactNode }): ReactNode => {
   const [loggedIn, setLoggedIn] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  const checkLoginStatus = () => {
-    const isLoggedIn = checkTokens()
-    setLoggedIn(isLoggedIn)
+  const checkLoginStatus = async () => {
+    const _isLoggedIn = await isLoggedIn()
+    setLoggedIn(_isLoggedIn)
     setLoading(false)
   }
 
@@ -36,10 +28,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }): ReactNode =
   }, [])
 
   const login = async (username: string, password: string) => {
-    let userTokens = await loginOrRegister("/api/token/", { username, password })
-    localStorage.setItem(ACCESS_TOKEN, userTokens.access);
-    localStorage.setItem(REFRESH_TOKEN, userTokens.refresh);
-    setLoggedIn(true)
+    let res = await loginOrRegister("/api/token/", { username, password })
+    setLoggedIn(res)
   }
 
   const logout = () => {
