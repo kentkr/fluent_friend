@@ -1,4 +1,4 @@
-import { DecorationSet, EditorView } from 'prosemirror-view'
+import { EditorView } from 'prosemirror-view'
 import { Extension } from '@tiptap/core'
 import { Plugin,  PluginKey } from 'prosemirror-state'
 import DecHandler from './dechandler'
