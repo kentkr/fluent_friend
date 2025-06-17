@@ -14,7 +14,7 @@
 }
 
 .use-placeholder {
-    @apply text-grey;
+    @apply text-grey/80;
 }
 
 .edit-button {

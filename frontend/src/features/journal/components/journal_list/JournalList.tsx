@@ -7,13 +7,23 @@ import { FaSquarePlus } from "react-icons/fa6";
 import './JournalList.css'
 import React from 'react';
 
-function JournalList({ entries, setEntries, setCurrEntry, newEntry }: JournalListProps): JSX.Element {
+function JournalList({ entries, setEntries, currEntry, setCurrEntry, newEntry }: JournalListProps): JSX.Element {
   // delete entry 
   function deleteEntry({ id }: { id: number }) {
     apiDeleteEntry(id)
     setEntries(prevEntries => prevEntries.filter(entry => entry.id !== id))
-    if (entries.length > 0){
-      setCurrEntry(entries[0])
+    if (currEntry && id !== currEntry.id) {
+      // if deleted entry is not curr, do nothing
+      return
+    } else if (entries.length > 1){
+      // if list not empty, set last entry as curr
+      // in this case entries empty is > 1 bc entries hasn't updated yet
+      entries.map((entry) => {
+        if (entry.id !== id) {
+          setCurrEntry(entry)
+          return
+        }
+      })
     } else {
       newEntry()
     }

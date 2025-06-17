@@ -11,6 +11,7 @@ import { ToolTipInfo, UpdateTooltipProps } from '../../pm/suggestion.d';
 import Tooltip from '../tooltip/Tooltip';
 import EditorMenu from '../editormenu/EditorMenu';
 import { EditorStateProps } from './Editor.d'
+import { JOURNAL_EDITOR_PLACEHOLDER } from '../../../../constants';
 
 const DEBOUNCE_MS= 500;
 
@@ -74,7 +75,7 @@ export function Editor({
     extensions: [
       StarterKit,
       Placeholder.configure({
-        placeholder: 'Today was whimsical...'
+        placeholder: JOURNAL_EDITOR_PLACEHOLDER
       }),
       Suggestion.configure({
         entryId: currEntry.id,

@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import './Journal.css'
 import { EntryObj } from "../../../features/journal/types/Journal";
 import JournalList from "../../../features/journal/components/journal_list/JournalList";
@@ -10,6 +10,8 @@ import { newEntry as apiNewEntry } from "../../../features/journal/api/journal_e
 function Journal() {
   const [entries, setEntries] = useState<EntryObj[]>([])
   const [currEntry, setCurrEntry] = useState<EntryObj | undefined>();
+  // dont allow newEntry on mount to run twice
+  const hasCreatedInitialEntry = useRef(false)
 
   // Fetch entries on mount only
   useEffect(() => {
@@ -19,11 +21,12 @@ function Journal() {
       // Set first entry as current if there are entries and no current entry selected
       if (entries.length > 0 && !currEntry) {
         setCurrEntry(entries[0]);
-      } 
+      }
 
-      // if no entries then create new one
-      if (!entries && !currEntry){
-        newEntry()
+      // create new entry if none exist
+      if (entries.length === 0 && !currEntry && !hasCreatedInitialEntry.current){
+        hasCreatedInitialEntry.current = true
+        await newEntry()
       }
     }
 
@@ -51,7 +54,7 @@ function Journal() {
 
   async function newEntry() {
     const entry = await apiNewEntry()
-    setEntries(entries => [...entries, entry]);
+    setEntries(entries => [entry, ...entries]);
     setCurrEntry(entry);
   }
 
@@ -65,6 +68,7 @@ function Journal() {
         <JournalList 
           entries={entries} 
           setEntries={setEntries} 
+          currEntry={currEntry}
           setCurrEntry={setCurrEntry} 
           newEntry={newEntry} 
           />
