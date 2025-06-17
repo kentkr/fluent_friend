@@ -45,10 +45,10 @@ const issueClassMap = {
 }
 
 // TODO: integrate this into DecHandler - make it getDecorations
-function ltToDecs(start: number, ltCheckResponse :LTCheckResponse): Decoration[] {
+function ltToDecs(start: number, ltCheckResponse :LTCheckResponse, text: string): Decoration[] {
   let decs: Decoration[] = []
   for (var match of ltCheckResponse.matches) {
-    let offset = match.offset+start
+    let editorOffset = match.offset+start
     // @ts-ignore - extra objects like 'is-correction' are allowed
     let attrs: DecorationAttrs = { class: 'warning-dec', 'is-correction': true} 
     if (match.rule.issueType in issueClassMap) {
@@ -56,9 +56,10 @@ function ltToDecs(start: number, ltCheckResponse :LTCheckResponse): Decoration[]
     }
     let spec: SuggSpec = {
       ltMatch: match,
-      attrs
+      attrs: attrs,
+      phrase: text.substring(match.offset, match.offset+match.length)
     }
-    let d = Decoration.inline(offset, offset+match.length, attrs, spec)
+    let d = Decoration.inline(editorOffset, editorOffset+match.length, attrs, spec)
     decs.push(d)
   }
   return decs
@@ -66,6 +67,7 @@ function ltToDecs(start: number, ltCheckResponse :LTCheckResponse): Decoration[]
 
 class DecHandler {
   decSet: DecorationSet;
+  ignoreDecSet: DecorationSet;
   trBuf: Transaction[];
   entryId: number;
   state: Node
@@ -76,6 +78,7 @@ class DecHandler {
 
   constructor(state: Node, view: EditorView, entryId: number, language: string, nativeLanguage: string | null) {
     this.decSet = DecorationSet.create(state, []);
+    this.ignoreDecSet = DecorationSet.create(state, []);
     this.trBuf = [];
     this.entryId = entryId;
     this.state = state
@@ -98,6 +101,7 @@ class DecHandler {
   mapDecs(tr: Transaction): void {
     // map forward/backward
     this.decSet = this.decSet.map(tr.mapping, tr.doc)
+    this.ignoreDecSet = this.ignoreDecSet.map(tr.mapping, tr.doc)
     // delete decs if they were modified
     tr.mapping.maps.forEach((stepMap) => {
       stepMap.forEach((oldStart, oldEnd, newStart, newEnd) => {
@@ -156,15 +160,22 @@ class DecHandler {
 
   push(decs: Decoration[]): void {
     // clear old decorations if there's overlap
-    let deleteDecs: Decoration [] = []
+    let newDecs: Decoration[] = []
+    let deleteDecs: Decoration[] = []
     for (var dec of decs) {
+      let ignore = this.ignoreDecSet.find(dec.from, dec.to)[0]
+      console.log('ignoring', ignore && JSON.stringify(dec) === JSON.stringify(ignore))
+      if (ignore && JSON.stringify(dec) === JSON.stringify(ignore)) {
+        continue
+      }
+      newDecs = newDecs.concat(dec)
       let oldDecs = this.decSet.find(dec.from, dec.to)
       // TODO: oldDecs can have null values so passing them as a list 
       deleteDecs = deleteDecs.concat(oldDecs)
     }
     this.decSet = this.decSet.remove(deleteDecs)
     // add to new/replacement decorations
-    this.decSet = this.decSet.add(this.state, decs)
+    this.decSet = this.decSet.add(this.state, newDecs)
     // sync with editor and db
     this.syncDb()
     this.view.dispatch(this.view.state.tr.setMeta('refresh', true))
@@ -172,6 +183,8 @@ class DecHandler {
 
   ignoreDec(from?: number, to?: number): void {
     // used in the tooltip to ignore a decoration
+    // we must acll this.decset.find twice - its output is mutable
+    this.ignoreDecSet = this.ignoreDecSet.add(this.state, this.decSet.find(from, to))
     this.decSet = this.decSet.remove(this.decSet.find(from, to))
     this.syncDb()
     this.view.dispatch(this.view.state.tr.setMeta('refresh', ''))
@@ -194,7 +207,7 @@ class DecHandler {
       alert(err)
     }
     if (ltCheckResponse){
-      let decs = ltToDecs(start, ltCheckResponse)
+      let decs = ltToDecs(start, ltCheckResponse, text)
       // remove decs before pushing
       // TODO: does not follow single responsibility, should refactor
       this.decSet = this.decSet.remove(this.decSet.find(start, end))

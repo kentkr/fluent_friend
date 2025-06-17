@@ -25,6 +25,8 @@ interface SuggSpec {
   ltMatch: Match
   // store attrs for later use
   attrs: DecorationAttrs
+  // utilized for ignoring
+  phrase: string
 }
 
 export interface EntryObj {
