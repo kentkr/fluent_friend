@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./UPForm.css"
 import LoadingIndicator from "../loadingindicator/LoadingIndicator";
@@ -10,7 +10,8 @@ const sanitizeRedirect = (relativeUrl: string): string  => {
     return relativeUrl
   }
 
-  throw new Error('Non relative redirect found. This redirect may be malicious')
+  alert('The url contains an invalid redirect. It may be malicious.')
+  return '/'
 }
 
 function UPForm({ method, redirect }: { method: any, redirect: string }) {
@@ -18,10 +19,12 @@ function UPForm({ method, redirect }: { method: any, redirect: string }) {
   const [password, setPassword] = useState("");
   const [attemptLogin, setAttemptLogin] = useState<boolean>(false)
   const navigate = useNavigate();
-  const { login, register, loading, loggedIn } = useAuth()
+  const { login, register, loggedIn } = useAuth()
 
   const name = method === "login" ? "Login" : "Register";
-  const sanitizedRedirect = sanitizeRedirect(redirect)
+  const sanitizedRedirect = useMemo(() => {
+    return sanitizeRedirect(redirect)
+  }, [redirect])
 
   useEffect(() => {
     if (loggedIn) {
