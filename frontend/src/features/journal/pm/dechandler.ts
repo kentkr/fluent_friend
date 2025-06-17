@@ -2,14 +2,13 @@ import { DecorationSet } from "@tiptap/pm/view";
 import { Transaction } from "@tiptap/pm/state";
 import { Node } from "prosemirror-model";
 import { Decoration, DecorationAttrs, EditorView } from "prosemirror-view";
-import { SerialDecoration, SuggSpec } from "./suggestion.d";
+import { SerialDecoration, SuggDec, SuggSpec } from "./suggestion.d";
 import { debounceLag } from "../utils/debounce";
 import { getDecs, postDecs, ltCheck } from "../api/journal_entries";
 import { LTCheckResponse } from "../lt/lt.d";
 import {languageMap} from "../lt/lt";
-import {indigo} from "@mui/material/colors";
 
-function shouldIgnoreDec(newDec: Decoration, ignoredDec: Decoration): boolean {
+function shouldIgnoreDec(newDec: SuggDec, ignoredDec: SuggDec): boolean {
   const fromMatch = newDec.from === ignoredDec.from
   const toMatch = newDec.to === ignoredDec.to
   // @ts-ignore - type exists
@@ -54,8 +53,8 @@ const issueClassMap = {
 }
 
 // TODO: integrate this into DecHandler - make it getDecorations
-function ltToDecs(start: number, ltCheckResponse :LTCheckResponse, text: string): Decoration[] {
-  let decs: Decoration[] = []
+function ltToDecs(start: number, ltCheckResponse :LTCheckResponse, text: string): SuggDec[] {
+  let decs: SuggDec[] = []
   for (var match of ltCheckResponse.matches) {
     let editorOffset = match.offset+start
     // @ts-ignore - extra objects like 'is-correction' are allowed
@@ -143,7 +142,7 @@ class DecHandler {
     lastTr.doc.nodesBetween(min, max, (node, pos, parent, index) => {
       if (node.isBlock) {
         // TODO: make this a type
-        nodes.push(new ParagraphNode(node, pos, parent, index));
+        nodes.push({node, pos, parent, index});
       } 
       return true;
     });
@@ -167,10 +166,10 @@ class DecHandler {
     }
   }
 
-  push(decs: Decoration[]): void {
+  push(decs: SuggDec[]): void {
     // clear old decorations if there's overlap
-    let newDecs: Decoration[] = []
-    let deleteDecs: Decoration[] = []
+    let newDecs: SuggDec[] = []
+    let deleteDecs: SuggDec[] = []
     for (var dec of decs) {
       let ignore = this.ignoreDecSet.find(dec.from, dec.to)[0]
       if (ignore && shouldIgnoreDec(dec, ignore)) {
@@ -247,28 +246,13 @@ class DecHandler {
     return serialDecs
   } 
 
-  static deserialize(decs: SerialDecoration[]): Decoration[] {
-    let decorations: Decoration[] = []
+  static deserialize(decs: SerialDecoration[]): SuggDec[] {
+    let decorations: SuggDec[] = []
     for (var dec of decs) {
       let d = Decoration.inline(dec.from, dec.to, dec.spec.attrs, dec.spec)
       decorations.push(d)
     }
     return decorations
-  }
-}
-
-// TODO make interface?
-class ParagraphNode {
-  node: Node
-  pos: number
-  parent: Node | null
-  index: number
-
-  constructor(node: Node, pos: number, parent: Node | null, index: number) {
-    this.node = node
-    this.pos = pos
-    this.parent = parent
-    this.index = index
   }
 }
 
