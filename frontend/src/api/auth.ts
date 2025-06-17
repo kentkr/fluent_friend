@@ -22,29 +22,29 @@ export async function isLoggedIn(): Promise<boolean> {
   }
 }
 
-export async function loginOrRegister(route: string, creds: Creds): Promise<UserTokens> {
+export async function loginOrRegister(route: string, creds: Creds): Promise<boolean> {
   const tokens = await api.post(route, creds)
     .then((res) => res.data )
-    .catch((err) => alert(err))
-  return tokens
-}
-
-async function refreshToken(): Promise<boolean> {
-  const refreshToken = localStorage.getItem(REFRESH_TOKEN); 
-  const isAuthorized = await api.post("/api/token/refresh/", {
-    refresh: refreshToken,
-  })
-    .then((res) => {
-      if (res.status === 200) {
-        localStorage.setItem(ACCESS_TOKEN, res.data.access)
-        return true
-      } else {
-        return false
-      }
-    })
     .catch((err) => {
       alert(err)
       return false
     })
-  return isAuthorized
+  localStorage.setItem(ACCESS_TOKEN, tokens.access);
+  localStorage.setItem(REFRESH_TOKEN, tokens.refresh);
+  return true
 }
+
+export async function refreshToken(): Promise<boolean> {
+  const refreshToken = localStorage.getItem(REFRESH_TOKEN); 
+  if (!refreshToken) return false;
+
+  try {
+    const res = await api.post<UserTokens>('/api/token/refresh/', { refreshToken })
+    const { access } = res.data
+    localStorage.setItem(ACCESS_TOKEN, access)
+    return true
+  } catch (e) {
+    return false
+  }
+}
+

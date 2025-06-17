@@ -1,12 +1,12 @@
 import axios from "axios";
 import { ACCESS_TOKEN } from "../constants";
-
-const apiUrl = "/choreo-apis/awbo/backend/rest-api-be2/v1.0";
+import { refreshToken } from "./auth";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : apiUrl,
+  baseURL: import.meta.env.VITE_API_URL 
 });
 
+// set default config info
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem(ACCESS_TOKEN);
@@ -19,5 +19,29 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// handle logged out errors
+api.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+      const success = await refreshToken()
+      if (success) {
+        const newToken = localStorage.getItem(ACCESS_TOKEN)
+        if (newToken) {
+          originalRequest.request.headers.Authorization = `Bearer ${newToken}`
+          return api(originalRequest)
+        }
+      }
+      // refresh failed
+      localStorage.clear()
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
 
 export default api;
