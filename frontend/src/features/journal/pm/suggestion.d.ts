@@ -49,3 +49,10 @@ export interface UpdateTooltipProps {
 export interface SuggDec extends Decoration {
   spec: SuggSpec
 }
+
+export interface ParagraphNode {
+  node: Node
+  pos: number
+  parent: Node | null
+  index: number
+}
