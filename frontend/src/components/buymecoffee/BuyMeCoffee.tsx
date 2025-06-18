@@ -1,15 +1,16 @@
 import './BuyMeCoffee.css'
 import { BiCoffee } from "react-icons/bi";
+import { FaHeart } from "react-icons/fa";
 
 export default function BuyMeCoffee() {
   return (
     <a
-      className="buyButton"
+      className="buy-button"
       target="_blank"
       href="https://buymeacoffee.com/kyle.kent321"
     >
+      <FaHeart className='buy-heart'/>
       <BiCoffee />
-      <span className="coffeeButtonText">Buy me a coffee</span>
     </a>
   );
 }
