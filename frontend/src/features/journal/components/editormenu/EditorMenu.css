@@ -24,22 +24,3 @@
   @apply text-sm;
 }
 
-.select-button {
-  @apply flex items-center;
-  @apply space-x-1 px-2 py-1;
-  @apply bg-foreground hover:bg-cyan;
-  @apply text-xs;
-  @apply rounded;
-}
-
-.dropdown-div {
-  @apply absolute top-full left-0 mt-1;
-  @apply bg-foreground rounded shadow-lg;
-  @apply z-10 min-w-16;
-}
-
-.dropdown-item {
-  @apply block w-full text-left;
-  @apply px-3 py-1 text-xs hover:bg-cyan;
-  @apply first:rounded-t last:rounded-b;
-}

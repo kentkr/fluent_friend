@@ -2,6 +2,7 @@ import { FaChevronDown } from "react-icons/fa";
 import { ReactElement, useState} from "react";
 import { SelectDropdownProps, SelectObj } from './SelectDropdown.d'
 import {languages} from "../../features/journal/lt/lt";
+import './SelectDropdown.css'
 
 // TODO: cleanup - i couldn't loop through a map bc no internet
 // so figure out a better way to manage language tool values
@@ -28,17 +29,17 @@ const SelectDropdown = ({
   }
 
   return (
-    <div className="relative p-1">
+    <div className="the-select-dropdown-div">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="select-button"
+        className="select-dropdown-button"
       >
         {icon}
         <span>{display}</span>
         <FaChevronDown size={10} />
       </button>
       {isOpen && (
-        <div className="dropdown-div">
+        <div className="select-dropdown-div">
           {inputList.map((value: any) => (
             <button
               key={value}
@@ -46,7 +47,7 @@ const SelectDropdown = ({
                 onSelect(value)
                 setIsOpen(false);
               }}
-              className="dropdown-item"
+              className="select-dropdown-item"
             >
               {value}
             </button>

@@ -1,0 +1,30 @@
+@import '../../styles/theme.css';
+
+.the-select-dropdown-div {
+  @apply relative p-1;
+}
+
+.select-dropdown-button {
+  @apply flex items-center;
+  @apply space-x-1 px-2 py-1;
+  @apply bg-foreground hover:bg-cyan;
+  @apply text-xs;
+  @apply rounded;
+}
+
+.select-dropdown-div {
+  @apply absolute top-full left-0 mt-1;
+  @apply bg-foreground rounded shadow-lg;
+  @apply z-10 min-w-16;
+  @apply max-h-96 overflow-auto;
+}
+
+.select-dropdown-item {
+  @apply block w-full text-left;
+  @apply px-3 py-1 text-xs hover:bg-cyan;
+  @apply first:rounded-t last:rounded-b;
+}
+
+.x {
+  @apply relative p-1;
+}
