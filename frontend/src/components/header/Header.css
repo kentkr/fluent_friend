@@ -9,6 +9,7 @@
 .logo {
   width: 60px;
   height: auto;
+  @apply: min-h-16 min-w-16;
   @apply shadow-md shadow-purple hover:shadow-cyan;
   @apply rounded-md;
 }

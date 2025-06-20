@@ -9,7 +9,6 @@ import { FaHome } from "react-icons/fa";
 import VerticalDivider from "../../../../components/verticaldivider/VerticalDivider";
 import SelectDropdown from "../../../../components/selectdropdown/SelectDropdown";
 import { languageList, languageMap, nativeLanguageList, nativeLanguageMap } from "../../lt/lt";
-import { SelectObj } from "../../../../components/selectdropdown/SelectDropdown.d";
 
 
 function EditorMenu({ 

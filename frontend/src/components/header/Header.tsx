@@ -7,7 +7,7 @@ function Header() {
   const { loggedIn, loading, logout } = useAuth()
   const navigate = useNavigate()
 
-  const logoutTHenNavigate = (): void => {
+  const logoutThenNavigate = (): void => {
     logout()
     navigate('/')
   }
@@ -40,7 +40,7 @@ function Header() {
                 <p>Login</p>
               </button>
             ) : loggedIn ? (
-              <button className='big-button' onClick={logoutTHenNavigate}>
+              <button className='big-button' onClick={logoutThenNavigate}>
                 <p>Logout</p>
               </button>
             ) : (
