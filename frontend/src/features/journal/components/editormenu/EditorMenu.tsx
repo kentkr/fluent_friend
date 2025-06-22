@@ -9,6 +9,7 @@ import { FaHome } from "react-icons/fa";
 import VerticalDivider from "../../../../components/verticaldivider/VerticalDivider";
 import SelectDropdown from "../../../../components/selectdropdown/SelectDropdown";
 import { languageList, languageMap, nativeLanguageList, nativeLanguageMap } from "../../lt/lt";
+import {Tooltip} from "@mui/material";
 
 
 function EditorMenu({ 
@@ -67,18 +68,28 @@ function EditorMenu({
         </button>
       </div>
       <VerticalDivider />
-      <SelectDropdown 
-        icon={<FaGlobeAmericas/>} 
-        onSelect={languageChange} 
-        inputList={languageList} 
-        currentSelection={currEntry.language!}
-      />
-      <SelectDropdown 
-        icon={<FaHome />} 
-        onSelect={nativeLanguageChange} 
-        inputList={nativeLanguageList}
-        currentSelection={currEntry.nativeLanguage!}
-        />
+      <Tooltip title='Language'>
+        {/* Tooltip needs to wrap a html element not functional component*/}
+        <div>
+          <SelectDropdown 
+            icon={<FaGlobeAmericas/>} 
+            onSelect={languageChange} 
+            inputList={languageList} 
+            currentSelection={currEntry.language!}
+            />
+        </div>
+      </Tooltip>
+      <Tooltip title='Native Language'>
+        {/* Tooltip needs to wrap a html element not functional component*/}
+        <div>
+          <SelectDropdown 
+            icon={<FaHome />} 
+            onSelect={nativeLanguageChange} 
+            inputList={nativeLanguageList}
+            currentSelection={currEntry.nativeLanguage!}
+            />
+        </div>
+      </Tooltip>
     </div>
   )
 }
