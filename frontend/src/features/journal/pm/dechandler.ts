@@ -136,17 +136,9 @@ class DecHandler {
 
   async getDecorations(start: number, end: number, text: string): Promise<void> {
     let ltCheckResponse: LTCheckResponse | undefined
+    const nativeLanguage = this.nativeLanguage === null ? undefined : this.nativeLanguage
     try {
-      // TODO dog wtf - handle the language state better fr
-      let language = languageMap.get(this.language)
-      let nativeLanguage = this.nativeLanguage !== null 
-        ? languageMap.get(this.nativeLanguage) 
-        : undefined
-      if (language) {
-        ltCheckResponse = await ltCheck({text: text, language: language, motherTongue: nativeLanguage})
-      } else {
-        ltCheckResponse = await ltCheck({text: text, language: 'auto', motherTongue: nativeLanguage})
-      }
+      ltCheckResponse = await ltCheck({text: text, language: this.language, motherTongue: nativeLanguage})
     } catch (err) {
       alert(err)
     }
