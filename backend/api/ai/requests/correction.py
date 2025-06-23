@@ -2,7 +2,6 @@
 import re
 import difflib
 from openai import AsyncOpenAI
-from typing import List
 
 def _corr_to_html(og_msg: str, corr_msg: str) -> str:
     # quick fix to handle line breaks
