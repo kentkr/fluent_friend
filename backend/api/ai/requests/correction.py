@@ -4,6 +4,10 @@ import difflib
 from openai import AsyncOpenAI
 
 def _corr_to_html(og_msg: str, corr_msg: str) -> str:
+    """ 
+    Do a diff algo on the two input strings. Insert html spans
+    into the string
+    """
     # quick fix to handle line breaks
     og_msg = og_msg.replace('\n', '<br/>')
     corr_msg = corr_msg.replace('\n', '<br/>')
@@ -32,6 +36,12 @@ def _corr_to_html(og_msg: str, corr_msg: str) -> str:
     return corrections
 
 async def corrections(client: AsyncOpenAI, prompt: str, message: str) -> str:
+    """
+    Given a string, return a corrected version. For now 
+    the correction returns as a html string
+
+    TODO: Return a json
+    """
     sys_msg = {
         'role': 'developer',
         'content': prompt

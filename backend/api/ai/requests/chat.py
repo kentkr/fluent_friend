@@ -3,6 +3,10 @@ from openai import AsyncOpenAI
 from typing import List
 
 def _valid_msg_history(msg_history: List[dict]) -> List[dict]:
+    """ 
+    Helper function to convert chat history from the 
+    frontend to a chat gpt valid msg history 
+    """
     valid = []
     for msg in msg_history:
         d = {}
@@ -14,7 +18,15 @@ def _valid_msg_history(msg_history: List[dict]) -> List[dict]:
         valid.append(d)
     return valid
 
-async def chat(client: AsyncOpenAI, prompt: str, message: str, message_history: List) -> str | None:
+async def chat(
+    client: AsyncOpenAI, 
+    prompt: str, 
+    message: str, 
+    message_history: List
+) -> str | None:
+    """
+    Function to enable chatting with an AI client
+    """
     message_history = _valid_msg_history(message_history)
     sys_msg = {
         'role': 'developer',

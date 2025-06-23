@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, Never, NoReturn
 from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.views import APIView, Response
@@ -21,7 +21,7 @@ class JournalListCreate(generics.ListCreateAPIView):
         user = self.request.user
         return JournalEntries.objects.filter(user=user).order_by('-id')
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer) -> None:
         if serializer.is_valid():
             serializer.save(user=self.request.user)
         else:
