@@ -2,22 +2,24 @@
 services:
   backend:
     build: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
+    image: kentkr/ff-backend:0.0.0dev
+    command: uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 4
+    restart: unless-stopped
     ports:
-      - 0.0.0.0:8000:8000
+      - 8000:8000
     env_file:
       - ./backend/.env.dev
+    depends_on:
+      - redis
+      - db
 
   frontend:
-    build:
-      context: ./frontend
+    build: ./frontend
     image: kentkr/ff-frontend:0.0.0
     restart: unless-stopped
     env_file:
       - ./frontend/.env
     depends_on:
-      - redis
-      - db
       - backend
     ports:
       - 3000:80
@@ -26,7 +28,7 @@ services:
     image: postgres:16
     restart: unless-stopped
     ports:
-      - 127.0.0.1:5432:5432
+      - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -39,25 +41,26 @@ services:
     image: redis:7
     restart: unless-stopped
     ports:
-      - 127.0.0.1:6379:6379
+      - 6379:6379
 
-      #languagetool:
-      #  image: erikvl87/languagetool:6.5-dockerupdate-1
-      #  container_name: languagetool
-      #  ports:
-      #    - 0.0.0.0:8010:8010                        # Using default port from the image
-      #  environment:
-      #    - langtool_languageModel=/ngrams   # OPTIONAL: Using ngrams data
-      #    - langtool_fasttextBinary=/fasttext
-      #    - langtool_fasttextModel=/lid.176.bin
-      #    - Java_Xms=512m                    # OPTIONAL: Setting a minimal Java heap size of 512 mib
-      #    - Java_Xmx=1g                      # OPTIONAL: Setting a maximum Java heap size of 1 Gib
-      #  volumes:
-      #    - /home/kylekent/languagetool/ngrams:/ngrams     # OPTIONAL: The location of ngrams data on the local machine
-      #    # TODO: remove - fasttext is for language identification, not something we need
-      #    - /home/kylekent/languagetool/fastText/fasttext:/fasttext
-      #    - /home/kylekent/languagetool/fastText/lid.176.bin:/lid.176.bin
-      #    #- /path/to/logback.xml:/LanguageTool/logback.xml:ro  # OPTIONAL: Overwrite the logging configuration
+  lt:
+    image: erikvl87/languagetool:6.5-dockerupdate-1
+    container_name: languagetool
+    restart: unless-stopped
+    ports:
+      - 8010:8010                        # Using default port from the image
+    environment:
+      #- langtool_languageModel=/ngrams   # OPTIONAL: Using ngrams data
+      #- langtool_fasttextBinary=/fasttext
+      #- langtool_fasttextModel=/lid.176.bin
+      - Java_Xms=512m                    # OPTIONAL: Setting a minimal Java heap size of 512 mib
+      - Java_Xmx=1g                      # OPTIONAL: Setting a maximum Java heap size of 1 Gib
+      #volumes:
+      #  - /home/kylekent/languagetool/ngrams:/ngrams     # OPTIONAL: The location of ngrams data on the local machine
+      #  # TODO: remove - fasttext is for language identification, not something we need
+      #  - /home/kylekent/languagetool/fastText/fasttext:/fasttext
+      #  - /home/kylekent/languagetool/fastText/lid.176.bin:/lid.176.bin
+      #  #- /path/to/logback.xml:/LanguageTool/logback.xml:ro  # OPTIONAL: Overwrite the logging configuration
 
 volumes:
   postgres_data:
