@@ -1,12 +1,13 @@
 
 services:
   backend:
+    image: kentkr/ff-backend:0.0.0
     build: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
     ports:
       - 0.0.0.0:8000:8000
     env_file:
-      - ./backend/.env.dev
+      - ./backend/.env.prod
 
   frontend:
     image: kentkr/ff-frontend:0.0.0
