@@ -9,16 +9,18 @@ services:
       - ./backend/.env.dev
 
   frontend:
+    build:
+      context: ./frontend
     image: kentkr/ff-frontend:0.0.0
-    build: ./frontend
     restart: unless-stopped
-    command: sh -C "npm run build & npm run preview"
     env_file:
       - ./frontend/.env
     depends_on:
       - redis
       - db
       - backend
+    ports:
+      - 3000:80
 
   db:
     image: postgres:16
