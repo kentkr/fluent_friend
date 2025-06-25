@@ -1,7 +1,9 @@
-from typing import Any, Dict, Never, NoReturn
+from typing import Any, Dict
+import requests
 from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.views import APIView, Response
+from backend import settings
 from .serializers import JournalSerializer, UserSerializer 
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import JournalEntries 
@@ -82,3 +84,16 @@ class JournalEntryUpdateFields(APIView):
 
     def put(self, request: HttpRequest, id: int) -> Response:
         return self.post(request, id)
+
+class LTCheck(APIView):
+    """ Redirect languagetool request to enforce auth """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: HttpRequest) -> Response:
+        print('POST', request.POST)
+        print('headers', request.headers)
+        res = requests.post(
+            f'{settings.LT_URL}/check', 
+            request.POST
+        ) 
+        return Response(data=res.json(), status=res.status_code, content_type=request.content_type)

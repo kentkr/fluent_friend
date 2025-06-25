@@ -1,6 +1,5 @@
-import { AxiosResponse } from 'axios';
+import { AxiosHeaders, AxiosRequestConfig, AxiosResponse } from 'axios';
 import api from '../../../api/api-client';
-import lt from './lt'
 import { SerialDecoration } from '../pm/suggestion.d';
 import { EntryObj } from '../types/Journal';
 import { LTCheckParams, LTCheckResponse } from '../lt/lt.d'
@@ -36,7 +35,17 @@ export async function getDecs(entryId: number): Promise<[SerialDecoration[], Ser
 }
 
 export async function ltCheck(query: LTCheckParams): Promise<LTCheckResponse> {
-  const res = await lt.post<LTCheckParams, AxiosResponse<LTCheckResponse>>('/v2/check', query) 
+  const config: AxiosRequestConfig = {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8', 
+    }
+  }
+  const res = await api.post<LTCheckParams, AxiosResponse<LTCheckResponse>>(
+    '/api/lt/v2/check/', 
+    query,
+    config,
+  )
   return res.data 
 }
 

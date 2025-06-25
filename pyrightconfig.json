@@ -1,5 +1,8 @@
 
 {
-    "venvPath": "/Users/kylekent/Desktop/fluent_friend/backend/",
-    "venv": "venv"
+  "venvPath": "/Users/kylekent/Desktop/fluent_friend/backend/",
+  "venv": "venv",
+  "executionEnvironments": [
+    {"root": "backend"}
+  ]
 }
