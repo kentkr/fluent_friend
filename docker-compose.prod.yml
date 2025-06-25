@@ -15,7 +15,7 @@ services:
     image: kentkr/ff-frontend:0.0.0
     command: caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
     env_file:
-      - ./frontend/.env
+      - ./frontend/.env.prod
 
   db:
     extends:
