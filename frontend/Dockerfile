@@ -3,11 +3,13 @@ FROM node:20-alpine AS builder
 
 WORKDIR /frontend
 
+ARG VITE_MODE
+
 # Install deps and build
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
+RUN npm run build -- --mode $VITE_MODE
 
 # --- Stage 2: Serve with Caddy (tiny final image) ---
 FROM caddy:2.7.6-alpine

@@ -8,17 +8,19 @@ services:
     ports:
       - 8000:8000
     env_file:
-      - ./backend/.env.prod
+      - ./backend/.env.dev
     depends_on:
       - redis
       - db
 
   frontend:
-    build: ./frontend
-    image: kentkr/ff-frontend:0.0.0
+    build: 
+      context: ./frontend
+      args:
+        # set the mode which reads in correct env file (.env.<mode>)
+        - VITE_MODE=dev
+    image: kentkr/ff-frontend:0.0.0dev
     restart: unless-stopped
-    env_file:
-      - ./frontend/.env
     depends_on:
       - backend
     ports:
