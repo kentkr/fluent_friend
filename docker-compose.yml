@@ -47,7 +47,6 @@ services:
 
   lt:
     image: erikvl87/languagetool:6.5-dockerupdate-1
-    container_name: languagetool
     restart: unless-stopped
     ports:
       - 8010:8010                        # Using default port from the image

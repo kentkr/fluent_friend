@@ -19,7 +19,7 @@ DJANGO_DEBUG=
 DJANGO_ALLOWED_HOSTS=
 
 # languagetool api
-LT_URL=http://localhost:8010/v2
+LT_URL=http://lt:8010/v2
  ```
 
 # frontend
