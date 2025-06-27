@@ -29,15 +29,13 @@ services:
   db:
     image: postgres:16
     restart: unless-stopped
+    env_file:
+      ./backend/.env.dev
     ports:
       - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      - ./backend/init:/docker-entrypoint-initdb.d
   
   redis:
     image: redis:7
@@ -45,23 +43,15 @@ services:
     ports:
       - 6379:6379
 
+  # lt accepts n-gram data in a volume - if desired check out languagetool_runbook.md
   lt:
     image: erikvl87/languagetool:6.5-dockerupdate-1
     restart: unless-stopped
     ports:
       - 8010:8010                        # Using default port from the image
     environment:
-      #- langtool_languageModel=/ngrams   # OPTIONAL: Using ngrams data
-      #- langtool_fasttextBinary=/fasttext
-      #- langtool_fasttextModel=/lid.176.bin
       - Java_Xms=512m                    # OPTIONAL: Setting a minimal Java heap size of 512 mib
       - Java_Xmx=1g                      # OPTIONAL: Setting a maximum Java heap size of 1 Gib
-      #volumes:
-      #  - /home/kylekent/languagetool/ngrams:/ngrams     # OPTIONAL: The location of ngrams data on the local machine
-      #  # TODO: remove - fasttext is for language identification, not something we need
-      #  - /home/kylekent/languagetool/fastText/fasttext:/fasttext
-      #  - /home/kylekent/languagetool/fastText/lid.176.bin:/lid.176.bin
-      #  #- /path/to/logback.xml:/LanguageTool/logback.xml:ro  # OPTIONAL: Overwrite the logging configuration
 
 volumes:
   postgres_data:
