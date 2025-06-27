@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react';
+import { languages } from './languages';
 import './Home.css';
+
+function randomLanguage(): string {
+  const max = languages.length-1
+  const min = 0
+  const randomIndex = Math.floor(Math.random() * (max - min + 1) + min)
+  return languages[randomIndex];
+}
 
 function Home() {
   const [isVisible, setIsVisible] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState(0);
-  
-  const languages = ['Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Japanese'];
+  const [currentLanguage, setCurrentLanguage] = useState(randomLanguage());
   
   useEffect(() => {
     setIsVisible(true);
     const interval = setInterval(() => {
-      setCurrentLanguage((prev) => (prev + 1) % languages.length);
+      setCurrentLanguage(randomLanguage())
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -24,7 +30,7 @@ function Home() {
             Fluent Friend
           </h1>
           <div className='hero-subtitle'>
-            Practice <span className='language-rotator'>{languages[currentLanguage]}</span> like you have a fluent friend
+            Practice <span className='language-rotator'>{currentLanguage}</span> like you have a fluent friend
           </div>
           <p className='hero-description'>
             Designed for intermediate learners who want to <em className='hero-emphasis'>practice</em>, not start from scratch. 
@@ -34,9 +40,11 @@ function Home() {
 
         {/* CTA Buttons */}
         <div className='cta-buttons-container'>
-          <button className='cta-primary'>
-            Start Practicing Free
-          </button>
+          <a href='/chat'>
+            <button className='cta-primary'>
+              Start Practicing Free
+            </button>
+          </a>
         </div>
 
         {/* Learning Method Section */}
@@ -131,15 +139,15 @@ function Home() {
             <h3 className='social-proof-title'>Join Intermediate Learners Worldwide</h3>
             <div className='stats-container'>
               <div className='stat-item'>
-                <div className='stat-number'>500+</div>
+                <div className='stat-number'>3+</div>
                 <div className='stat-label'>Active Learners</div>
               </div>
               <div className='stat-item'>
-                <div className='stat-number'>15+</div>
+                <div className='stat-number'>100+</div>
                 <div className='stat-label'>Languages</div>
               </div>
               <div className='stat-item'>
-                <div className='stat-number'>4.8★</div>
+                <div className='stat-number'>5★</div>
                 <div className='stat-label'>User Rating</div>
               </div>
             </div>
@@ -152,9 +160,11 @@ function Home() {
           <p className='final-cta-description'>
             No more boring textbooks. No more fear of making mistakes. Just real conversations that build real fluency.
           </p>
-          <button className='cta-final'>
-            Start Your First Conversation
-          </button>
+          <a href='/chat'>
+            <button className='cta-final'>
+              Start Your First Conversation
+            </button>
+          </a>
           <p className='cta-disclaimer'>Free to try • No credit card required</p>
         </div>
       </div>
