@@ -37,9 +37,6 @@ function Home() {
           <button className='cta-primary'>
             Start Practicing Free
           </button>
-          <button className='cta-secondary'>
-            Watch Demo
-          </button>
         </div>
 
         {/* Learning Method Section */}

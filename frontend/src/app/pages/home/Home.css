@@ -2,14 +2,14 @@
 
 /* === PAGE LAYOUT === */
 .page-background {
-    @apply bg-gradient-to-br from-light-purple via-foreground to-green;
+    @apply bg-gradient-to-br from-light-purple via-foreground to-cyan;
 }
 
 .hero-container {
     @apply flex flex-col items-center;
     @apply px-4 py-16;
     @apply max-w-4xl mx-auto;
-    @apply text-grey;
+    @apply text-gray-800;
 }
 
 /* === HERO SECTION === */
@@ -28,7 +28,7 @@
 .hero-title {
     @apply text-5xl md:text-6xl font-bold;
     @apply text-center mb-6;
-    @apply bg-gradient-to-r from-cyan to-indigo-600;
+    @apply bg-gradient-to-r from-background to-background;
     @apply bg-clip-text text-transparent;
 }
 
@@ -42,7 +42,7 @@
 
 .language-rotator {
     @apply mx-2 font-semibold;
-    @apply text-blue-600;
+    @apply text-cyan;
     @apply transition-all duration-500;
 }
 
@@ -54,7 +54,7 @@
 }
 
 .hero-emphasis {
-    @apply text-blue-600 font-medium;
+    @apply text-cyan font-medium;
 }
 
 /* === CTA BUTTONS === */
@@ -64,12 +64,12 @@
 }
 
 .cta-primary {
-    @apply bg-blue-600 text-white;
+    @apply bg-cyan text-white;
     @apply px-8 py-4;
     @apply rounded-xl;
     @apply text-lg font-semibold;
     @apply shadow-xl;
-    @apply hover:bg-blue-700 hover:shadow-2xl;
+    @apply hover:bg-green hover:shadow-2xl hover:shadow-purple;
     @apply transform hover:-translate-y-1;
     @apply transition-all duration-300;
 }
@@ -110,7 +110,7 @@
 
 .section-title {
     @apply text-3xl font-bold mb-4;
-    @apply text-gray-800;
+    @apply text-background;
 }
 
 .section-title-center {
@@ -125,7 +125,7 @@
 }
 
 .text-highlight {
-    @apply text-blue-600;
+    @apply text-cyan;
 }
 
 /* === LEARNING STEPS === */
@@ -134,7 +134,7 @@
 }
 
 .learning-step-card {
-    @apply bg-white;
+    @apply bg-foreground;
     @apply rounded-2xl;
     @apply p-6;
     @apply shadow-lg hover:shadow-xl;
@@ -153,7 +153,7 @@
 
 .step-icon-circle {
     @apply w-12 h-12;
-    @apply bg-blue-100;
+    @apply bg-light-purple/40;
     @apply rounded-full;
     @apply flex items-center justify-center;
     @apply text-2xl mb-2;
@@ -161,13 +161,13 @@
 
 .step-number {
     @apply text-sm font-bold;
-    @apply text-blue-600;
+    @apply text-cyan;
     @apply text-center;
 }
 
 .step-title {
     @apply text-xl font-semibold mb-2;
-    @apply text-gray-800;
+    @apply text-background;
 }
 
 .step-description {
@@ -204,7 +204,7 @@
 
 .feature-title {
     @apply text-2xl font-semibold mb-4;
-    @apply text-gray-800;
+    @apply text-background;
 }
 
 .feature-description {
@@ -216,14 +216,14 @@
     @apply bg-white;
     @apply p-4;
     @apply rounded-lg;
-    @apply border-l-4 border-blue-500;
+    @apply border-l-4 border-cyan;
 }
 
 .feature-example-journal {
     @apply bg-white;
     @apply p-4;
     @apply rounded-lg;
-    @apply border-l-4 border-green-500;
+    @apply border-l-4 border-green;
 }
 
 .example-text {
@@ -231,16 +231,16 @@
 }
 
 .example-feedback {
-    @apply text-blue-600;
+    @apply text-cyan;
 }
 
 .example-coming-soon {
-    @apply block text-green-600 mt-1;
+    @apply block text-green mt-1;
 }
 
 /* === SOCIAL PROOF === */
 .social-proof-card {
-    @apply bg-gray-50;
+    @apply bg-foreground;
     @apply rounded-2xl;
     @apply p-8;
     @apply border border-gray-200;
@@ -248,7 +248,7 @@
 
 .social-proof-title {
     @apply text-xl font-semibold mb-4;
-    @apply text-gray-800;
+    @apply text-background;
 }
 
 .stats-container {
@@ -263,7 +263,7 @@
 
 .stat-number {
     @apply text-2xl font-bold;
-    @apply text-blue-600;
+    @apply text-cyan;
 }
 
 .stat-label {
