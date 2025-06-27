@@ -4,7 +4,6 @@ services:
     extends:
       file: docker-compose.yml
       service: backend
-    command: uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 4
     image: kentkr/ff-backend:0.0.0
     env_file: ./backend/.env.prod
 
@@ -13,14 +12,15 @@ services:
       file: docker-compose.yml
       service: frontend
     image: kentkr/ff-frontend:0.0.0
-    command: caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
-    env_file:
-      - ./frontend/.env.prod
+    build:
+      args:
+        - VITE_MODE=prod
 
   db:
     extends:
       file: docker-compose.yml
       service: db
+    env_file: ./backend/.env.prod
   
   redis:
     extends:
@@ -31,3 +31,15 @@ services:
     extends:
       file: docker-compose.yml
       service: lt
+    environment:
+      - langtool_languageModel=/ngrams   # OPTIONAL: Using ngrams data
+      - langtool_fasttextBinary=/fasttext
+      - langtool_fasttextModel=/lid.176.bin
+      - Java_Xms=512m                    # OPTIONAL: Setting a minimal Java heap size of 512 mib
+      - Java_Xmx=1g                      # OPTIONAL: Setting a maximum Java heap size of 1 Gib
+    volumes:
+      - ${HOME}/languagetool/ngrams:/ngrams     # OPTIONAL: The location of ngrams data on the local machine
+      # TODO: remove - fasttext is for language identification, not something we need
+      - ${HOME}/languagetool/fastText/fasttext:/fasttext
+      - ${HOME}/languagetool/fastText/lid.176.bin:/lid.176.bin
+      #- /path/to/logback.xml:/LanguageTool/logback.xml:ro  # OPTIONAL: Overwrite the logging configuration
