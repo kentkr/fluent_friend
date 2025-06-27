@@ -30,7 +30,7 @@ LT_URL=http://lt:8010/v2
 lives at `frontend/.env.<VITE_MODE>`
 
 ```sh
-# https or wss for dev/prod
+# insecure for local (http, ws) secure host (https, wss) through cloudlflare
 VITE_API_URL=""
 VITE_WS_URL=""
 # url of frontend

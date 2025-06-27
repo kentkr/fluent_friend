@@ -16,13 +16,15 @@ python3 manage.py makemigrations
 python3 manage.py migrate
 ```
 
-Run the backend `python3 manage.py runserver`
+Run the backend `python3 manage.py runserver`. 
 
 Open a new terminal, install frontend dependencies, then start it
 ```sh
 npm install
 npm run dev
 ```
+
+Access the webpage at `http://localhost:5173/`
 
 # raspberrypi
 
@@ -37,3 +39,5 @@ docker context create <env> --docker "host=<ssh_url>"
 docker context use <env>
 docker compose up --build -d
 ```
+
+Access the webpage at `http://<raspberrypi_host>:3000/`
