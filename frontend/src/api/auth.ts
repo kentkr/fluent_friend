@@ -16,6 +16,9 @@ export async function isLoggedIn(): Promise<boolean> {
   // if token is old try to refresh
   if (tokenExpiration && tokenExpiration < now) {
     const wasRefreshed = await refreshToken()
+    if (!wasRefreshed) {
+      localStorage.clear()
+    }
     return wasRefreshed
   } else {
     return true
@@ -39,7 +42,7 @@ export async function refreshToken(): Promise<boolean> {
   if (!refreshToken) return false;
 
   try {
-    const res = await api.post<UserTokens>('/api/token/refresh/', { refreshToken })
+    const res = await api.post<UserTokens>('/api/token/refresh/', { refresh: refreshToken })
     const { access } = res.data
     localStorage.setItem(ACCESS_TOKEN, access)
     return true

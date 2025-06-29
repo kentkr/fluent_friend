@@ -32,7 +32,7 @@ api.interceptors.response.use(
       if (success) {
         const newToken = localStorage.getItem(ACCESS_TOKEN)
         if (newToken) {
-          originalRequest.request.headers.Authorization = `Bearer ${newToken}`
+          originalRequest.headers.Authorization = `Bearer ${newToken}`
           return api(originalRequest)
         }
       }
