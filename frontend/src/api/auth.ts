@@ -33,7 +33,14 @@ export async function loginOrRegister(route: string, creds: Creds): Promise<bool
     localStorage.setItem(REFRESH_TOKEN, tokens.refresh);
     return true
   } catch (err) {
-    alert(err) 
+    if (err.response?.status === 401) {
+      alert('Username and password not found')
+    } else if (err.response?.status === 400) {
+      alert('This username is already taken')
+    } else {
+      alert('Unknown error found')
+      console.log(err)
+    }
     return false
   }
 }
