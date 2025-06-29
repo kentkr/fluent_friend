@@ -65,20 +65,20 @@ function Journal() {
 
   return <>
     <div className="flex flex-1">
-        <JournalList 
-          entries={entries} 
-          setEntries={setEntries} 
-          currEntry={currEntry}
+      <JournalList 
+        entries={entries} 
+        setEntries={setEntries} 
+        currEntry={currEntry}
+        setCurrEntry={setCurrEntry} 
+        newEntry={newEntry} 
+        />
+      <div className="editor-container-0">
+        <Title currEntry={currEntry} updateTitle={updateTitle}/>
+        <Editor 
+          currEntry={currEntry} 
           setCurrEntry={setCurrEntry} 
-          newEntry={newEntry} 
+          setEntries={setEntries}
           />
-        <div className="editor-container-0">
-          <Title currEntry={currEntry} updateTitle={updateTitle}/>
-          <Editor 
-            currEntry={currEntry} 
-            setCurrEntry={setCurrEntry} 
-            setEntries={setEntries}
-            />
       </div>
     </div>
   </>

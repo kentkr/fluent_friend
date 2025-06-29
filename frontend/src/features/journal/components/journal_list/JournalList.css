@@ -15,8 +15,7 @@
 
 .component-container {
     @apply flex flex-col;
-    @apply p-2;
-    @apply w-1/4 max-w-96;
+    @apply max-w-96;
 }
 
 .list-container {
