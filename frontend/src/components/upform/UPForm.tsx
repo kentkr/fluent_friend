@@ -15,7 +15,7 @@ const sanitizeRedirect = (relativeUrl: string): string  => {
 }
 
 function UPForm({ method, redirect }: { method: any, redirect: string }) {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [attemptLogin, setAttemptLogin] = useState<boolean>(false)
   const navigate = useNavigate();
@@ -37,9 +37,9 @@ function UPForm({ method, redirect }: { method: any, redirect: string }) {
     e.preventDefault();
 
     if (method === "login") {
-      login(username, password)
+      login(email, password)
     } else {
-      register(username, password)
+      register(email, password)
       navigate(sanitizedRedirect)
     }
   };
@@ -50,9 +50,9 @@ function UPForm({ method, redirect }: { method: any, redirect: string }) {
       <input
         className="form-input"
         type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
         />
       <input
         className="form-input"
