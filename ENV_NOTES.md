@@ -35,4 +35,5 @@ VITE_API_URL=""
 VITE_WS_URL=""
 # url of frontend
 VITE_ALLOWED_HOSTS=""
+CF_TOKEN=""
 ```
