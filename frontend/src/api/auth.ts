@@ -26,15 +26,16 @@ export async function isLoggedIn(): Promise<boolean> {
 }
 
 export async function loginOrRegister(route: string, creds: Creds): Promise<boolean> {
-  const tokens = await api.post(route, creds)
-    .then((res) => res.data )
-    .catch((err) => {
-      alert(err)
-      return false
-    })
-  localStorage.setItem(ACCESS_TOKEN, tokens.access);
-  localStorage.setItem(REFRESH_TOKEN, tokens.refresh);
-  return true
+  try {
+    const res = await api.post(route, creds) 
+    const tokens = res.data
+    localStorage.setItem(ACCESS_TOKEN, tokens.access);
+    localStorage.setItem(REFRESH_TOKEN, tokens.refresh);
+    return true
+  } catch (err) {
+    alert(err) 
+    return false
+  }
 }
 
 export async function refreshToken(): Promise<boolean> {
