@@ -2,17 +2,14 @@ import './Header.css'
 import { useAuth } from '../authprovider/AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import BuyMeCoffee from '../buymecoffee/BuyMeCoffee'; 
-import {useState} from 'react';
 
 function Header() {
   const { loggedIn, loading, logout } = useAuth()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
 
   const logoutThenNavigate = (): void => {
     logout()
     navigate('/')
-    setMobileMenuOpen(false)
   }
 
   return (
