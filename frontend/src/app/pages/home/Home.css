@@ -37,7 +37,7 @@
     @apply text-center mb-4;
     @apply text-gray-600;
     @apply min-h-[3rem];
-    @apply flex items-center justify-center;
+    @apply flex flex-wrap items-center justify-center;
 }
 
 .language-rotator {
