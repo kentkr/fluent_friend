@@ -1,6 +1,5 @@
 from typing import Any, Dict
 import requests
-from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.views import APIView, Response
 from backend import settings
@@ -8,6 +7,10 @@ from .serializers import JournalSerializer, UserSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import JournalEntries 
 from django.http import HttpRequest 
+from django.contrib.auth import get_user_model
+
+# get custom user
+User = get_user_model()
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
