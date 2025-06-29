@@ -2,21 +2,24 @@ import './Header.css'
 import { useAuth } from '../authprovider/AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import BuyMeCoffee from '../buymecoffee/BuyMeCoffee'; 
+import {useState} from 'react';
 
 function Header() {
   const { loggedIn, loading, logout } = useAuth()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
 
   const logoutThenNavigate = (): void => {
     logout()
     navigate('/')
+    setMobileMenuOpen(false)
   }
 
   return (
     <header className='header'>
       <nav className='nav-bar'>
         {/* left */}
-        <div>
+        <div className='logo-container'>
           <a href='/'>
             <img src='ff_light.png' className='logo'/>
           </a>
@@ -24,7 +27,7 @@ function Header() {
         {/* center and right */}
         <div className='center-right'>
           {/* center */}
-          <div className='flex'>
+          <div className='flex justify-center items-center'>
             <a href='/chat'>
               <p className='nav-content'>Chat</p>
             </a>

@@ -3,13 +3,13 @@
 .header {
   @apply bg-background;
   @apply text-foreground;
-  font-family: DotGothic16;
+}
+
+.logo-container {
 }
 
 .logo {
-  width: 60px;
-  height: auto;
-  @apply: min-h-16 min-w-16;
+  @apply h-8 w-8 min-h-6 min-w-8 sm:h-16 sm:w-16;
   @apply shadow-md shadow-purple hover:shadow-cyan;
   @apply rounded-md;
 }
@@ -19,8 +19,8 @@
 }
 
 .nav-content {
-  @apply px-4;
-  @apply text-2xl;
+  @apply px-2 sm:px-4;
+  @apply text-xl sm:text-2xl;
   @apply hover:text-cyan;
 }
 
