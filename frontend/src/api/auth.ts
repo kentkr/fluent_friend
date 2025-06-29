@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import api from "./api-client";
 import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
 import { Creds, UserTokens } from "../types/api";
+import axios, {AxiosError} from "axios";
 
 export async function isLoggedIn(): Promise<boolean> {
   const token = localStorage.getItem(ACCESS_TOKEN)
@@ -32,15 +33,13 @@ export async function loginOrRegister(route: string, creds: Creds): Promise<bool
     localStorage.setItem(ACCESS_TOKEN, tokens.access);
     localStorage.setItem(REFRESH_TOKEN, tokens.refresh);
     return true
-  } catch (err) {
-    if (err.response?.status === 401) {
-      alert('Username and password not found')
-    } else if (err.response?.status === 400) {
-      alert('This username is already taken')
+  } catch (err: any | AxiosError) {
+    if (axios.isAxiosError(err)) {
+      alert(`Status code: ${err.response?.status}, message: ${err.request?.response}`)
     } else {
-      alert('Unknown error found')
-      console.log(err)
+      alert('Caught unexpected error.')
     }
+    console.log(err)
     return false
   }
 }

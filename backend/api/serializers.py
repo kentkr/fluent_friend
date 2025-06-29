@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
             user = User.objects.create_user(**validated_data)
         except ValidationError as e:
             err_str = ' - '.join([err.message for err in e.error_list])
-            raise serializers.ValidationError(err_str, code=422)
+            raise serializers.ValidationError(err_str)
         return user
 
 

@@ -27,8 +27,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }): ReactNode =
     checkLoginStatus()
   }, [])
 
-  const login = async (username: string, password: string) => {
-    let res = await loginOrRegister("/api/token/", { username, password })
+  const login = async (email: string, password: string) => {
+    let res = await loginOrRegister("/api/token/", { email, password })
     setLoggedIn(res)
   }
 
@@ -37,8 +37,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }): ReactNode =
     setLoggedIn(false)
   }
 
-  const register = (username: string, password: string) => {
-    loginOrRegister('/api/user/register/', { username, password })
+  const register = (email: string, password: string) => {
+    loginOrRegister('/api/user/register/', { email, password })
   }
 
   const value: AuthContextType = {
