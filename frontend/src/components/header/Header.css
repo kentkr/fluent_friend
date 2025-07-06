@@ -1,0 +1,39 @@
+@import '../../styles/theme.css';
+
+.header {
+  @apply bg-background;
+  @apply text-foreground;
+}
+
+.logo-container {
+}
+
+.logo {
+  @apply h-8 w-8 min-h-6 min-w-8 sm:h-16 sm:w-16;
+  @apply shadow-md shadow-purple hover:shadow-cyan;
+  @apply rounded-md;
+}
+
+.nav-bar {
+  @apply flex m-2 pl-2 items-center;
+}
+
+.nav-content {
+  @apply px-2 sm:px-4;
+  @apply text-xl sm:text-2xl;
+  @apply hover:text-cyan;
+}
+
+.center-right {
+  @apply flex grow justify-between;
+  @apply px-4;
+}
+
+.big-button {
+  @apply flex justify-center items-center;
+  @apply bg-green hover:bg-cyan;
+  @apply text-background hover:text-background;
+  @apply rounded-4xl;
+  @apply mx-2 px-2 py-1;
+  @apply text-xl;
+}

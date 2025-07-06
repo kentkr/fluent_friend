@@ -1,0 +1,19 @@
+
+{
+  "configurations": {
+    "Launch": {
+      "adapter": "debugpy",
+      "configuration": {
+        "request": "launch",
+        "program": "tmp.py",
+        "python": "/Users/kylekent/Desktop/fluent_friend/backend/venv/bin/python3",
+        "args": [],
+        "stopAtEntry": true,
+        "cwd": "${workspaceRoot}",
+        "environment": [],
+        "console": "integratedTerminal",
+        "setupCommands": []
+      }
+    }
+  }
+}

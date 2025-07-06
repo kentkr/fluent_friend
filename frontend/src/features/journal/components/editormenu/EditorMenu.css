@@ -1,0 +1,26 @@
+@import '../../../../styles/theme.css';
+
+.menu {
+    @apply flex justify-center items-center;
+    @apply rounded-md;
+    @apply bg-background shadow-sm shadow-purple;
+}
+
+.menu-button {
+    @apply border border-background;
+    @apply text-foreground hover:bg-cyan hover:text-background;
+    @apply p-1;
+    @apply mx-0.5;
+    @apply rounded-md;
+}
+
+.is-active {
+    @apply bg-cyan;
+}
+
+.menu-item {
+  @apply p-1;
+  @apply bg-foreground;
+  @apply text-sm;
+}
+

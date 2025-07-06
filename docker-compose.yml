@@ -1,45 +1,57 @@
-version: "3.11"
 
 services:
-  web:
-    build: .
-    entrypoint: "/code/entrypoint.sh"
-    command: 
-      - python3 manage.py tailwind start
-      - python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
-    env_file:
-      - ./.env
+  backend:
+    build: ./backend
+    image: kentkr/ff-backend:1.0.0dev
+    command: uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 4
+    restart: unless-stopped
     ports:
-      - "8000:8000"
+      - 8000:8000
+    env_file:
+      - ./backend/.env.dev
     depends_on:
       - redis
       - db
+
+  frontend:
+    build: 
+      context: ./frontend
+      args:
+        # set the mode which reads in correct env file (.env.<mode>)
+        - VITE_MODE=dev
+    image: kentkr/ff-frontend:1.0.0dev
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - 3000:80
+
   db:
     image: postgres:16
+    restart: unless-stopped
+    env_file:
+      ./backend/.env.dev
+    ports:
+      - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      - ./backend/init:/docker-entrypoint-initdb.d
   
   redis:
     image: redis:7
-  
-    #celery:
-    #  build: .
-    #  command: celery -A config worker -l info
-    #  volumes:
-    #    - .:/code
-    #  env_file:
-    #    - ./.env
-    #  depends_on:
-    #    - db
-    #    - redis
-    #    - web
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+
+  # lt accepts n-gram data in a volume - if desired check out languagetool_runbook.md
+  lt:
+    image: erikvl87/languagetool:6.5-dockerupdate-1
+    restart: unless-stopped
+    ports:
+      - 8010:8010                        # Using default port from the image
+    environment:
+      - Java_Xms=512m                    # OPTIONAL: Setting a minimal Java heap size of 512 mib
+      - Java_Xmx=1g                      # OPTIONAL: Setting a maximum Java heap size of 1 Gib
 
 volumes:
   postgres_data:

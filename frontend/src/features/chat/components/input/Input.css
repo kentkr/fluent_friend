@@ -1,0 +1,13 @@
+@import '../../../../styles/theme.css';
+
+.input-container {
+    @apply min-h-12;
+    @apply flex justify-between items-center;
+    @apply mt-2;
+}
+
+.mui-textfield-input {
+    @apply p-2;
+    @apply border-background border-2 rounded-lg focus-within:border-cyan;
+    @apply shadow-md shadow-purple focus-within:shadow-cyan;
+}

@@ -1,0 +1,26 @@
+@import '../../../../styles/theme.css';
+
+.entry-li {
+    @apply flex justify-between items-center m-1;
+}
+
+.button-div {
+    @apply flex items-center;
+}
+
+.entry-title {
+    @apply truncate overflow-hidden whitespace-nowrap;
+    @apply flex-1;
+}
+
+.use-placeholder {
+    @apply text-grey/80;
+}
+
+.edit-button {
+    @apply hover:text-cyan;
+}
+
+.delete-button {
+    @apply hover:text-red;
+}

@@ -1,0 +1,36 @@
+@import '../../styles/theme.css';
+
+.form-container {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+}
+
+.form-input {
+  width: 90%;
+  padding: 10px;
+  margin: 10px 0;
+  @apply border border-background rounded-md;
+  @apply focus:outline-none focus:ring-0 focus:border-cyan;
+}
+
+.form-button {
+  width: 90%;
+  padding: 10px;
+  margin: 20px 0;
+  transition: background-color 0.2s ease-in-out;
+  @apply bg-background hover:bg-cyan rounded-md;
+  @apply shadow shadow-purple;
+  @apply text-foreground hover:text-background;
+}
+
+.form-container {
+    @apply flex flex-col items-center justify-center;
+    @apply rounded-lg;
+    @apply m-auto mt-40 p-10;
+    @apply shadow-lg shadow-purple border border-background;
+}
+
+.register-link {
+  @apply text-cyan hover:text-green underline;
+}

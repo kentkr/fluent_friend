@@ -1,0 +1,80 @@
+@import '../../../../styles/theme.css';
+
+.editor-container-0 {
+    @apply flex flex-1 flex-col;
+    @apply p-2;
+    @apply overflow-auto;
+    @apply max-h-screen;
+}
+
+.editor-container-1 {
+    @apply flex flex-1;
+    @apply overflow-auto;
+    @apply mt-1;
+    @apply border border-background rounded-md;
+    @apply shadow-md shadow-purple;
+}
+
+.editor {
+    @apply flex-1;
+    @apply p-2;
+    @apply max-w-none;
+    @apply outline-none;
+    @apply overflow-auto;
+    @apply text-[16px];
+}
+
+.suggestion-text {
+    @apply text-red;
+    @apply bg-cyan;
+}
+
+.page-container {
+    @apply flex flex-1;
+}
+
+.title {
+    @apply p-2;
+}
+
+.icon {
+    @apply bg-cyan;
+}
+
+.correction-dec {
+    @apply bg-yellow/30;
+    @apply underline decoration-yellow decoration-wavy;
+}
+
+.error-dec {
+    @apply bg-red/30 hover:bg-red/50;
+    @apply underline decoration-red decoration-wavy;
+}
+
+.suggestion-dec {
+    @apply bg-cyan/30 hover:bg-cyan/50;
+    @apply underline decoration-cyan decoration-wavy;
+}
+
+.warning-dec {
+    @apply bg-yellow/30 hover:bg-yellow/70;
+    @apply underline decoration-yellow decoration-wavy;
+}
+
+/* Placeholder (at the top) */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Placeholder (on every new line) */
+/*.ProseMirror p.is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}*/

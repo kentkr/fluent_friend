@@ -1,0 +1,50 @@
+@import '../../../styles/theme.css';
+
+.chat-page {
+    @apply h-full; 
+    @apply flex flex-col;
+    @apply p-4;
+
+    @apply overflow-hidden;
+}
+
+.message-container {
+    @apply flex-1;
+    @apply border border-background border-2 rounded-md shadow-lg shadow-purple;
+    @apply p-2;
+    @apply overflow-y-auto;
+}
+
+#message-list {
+  @apply h-full; 
+  @apply overflow-y-auto; 
+  @apply pr-2; 
+}
+
+.send-button {
+    @apply bg-background hover:bg-cyan;
+    @apply text-foreground text-lg hover:text-background;
+    @apply border-1 border-foreground rounded-md;
+    @apply shadow-md shadow-purple hover:shadow-cyan;
+    @apply ml-2 p-3;
+}
+
+.input {
+    @apply flex-1;
+    @apply px-2;
+    @apply inline-flex items-center;
+}
+
+.input:empty:before {
+  content:attr(data-placeholder);
+  color:gray
+}
+
+.correction-insert {
+    @apply bg-green/50;
+}
+
+.correction-delete {
+    @apply bg-red/30;
+    text-decoration: line-through;
+}

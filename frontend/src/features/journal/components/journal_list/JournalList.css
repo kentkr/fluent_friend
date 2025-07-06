@@ -1,0 +1,36 @@
+@import '../../../../styles/theme.css';
+
+.new-button {
+    @apply w-[100%];
+    @apply py-2 mt-1;
+    @apply border border-foreground rounded-md;
+    @apply bg-background hover:bg-cyan shadow-md shadow-purple hover:shadow-cyan;
+    @apply text-sm font-medium text-foreground hover:text-background;
+}
+
+
+.new-button-span {
+    @apply flex justify-center items-center;
+}
+
+.component-container {
+    @apply flex flex-col;
+    @apply p-2;
+    @apply w-1/4 max-w-96;
+}
+
+.list-container {
+    @apply border border-background rounded-md;
+    @apply shadow-md shadow-purple;
+    @apply p-2;
+    @apply flex-1;
+}
+
+.list-title {
+    @apply text-2xl;
+    @apply mx-1;
+}
+
+.list-separator {
+    @apply w-[97%] mx-auto my-2;
+}

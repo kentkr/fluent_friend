@@ -1,0 +1,14 @@
+@import '../../styles/theme.css';
+
+.buy-button {
+  @apply flex items-center justify-center;
+  @apply bg-yellow hover:bg-cyan;
+  @apply text-background;
+  @apply rounded-2xl;
+  @apply mr-1 px-1;
+}
+
+.buy-heart {
+  @apply text-red;
+}
+
