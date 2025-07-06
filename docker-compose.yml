@@ -2,7 +2,7 @@
 services:
   backend:
     build: ./backend
-    image: kentkr/ff-backend:0.0.0dev
+    image: kentkr/ff-backend:1.0.0dev
     command: uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 4
     restart: unless-stopped
     ports:
@@ -19,7 +19,7 @@ services:
       args:
         # set the mode which reads in correct env file (.env.<mode>)
         - VITE_MODE=dev
-    image: kentkr/ff-frontend:0.0.0dev
+    image: kentkr/ff-frontend:1.0.0dev
     restart: unless-stopped
     depends_on:
       - backend

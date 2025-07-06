@@ -4,14 +4,14 @@ services:
     extends:
       file: docker-compose.yml
       service: backend
-    image: kentkr/ff-backend:0.0.0
+    image: kentkr/ff-backend:1.0.0
     env_file: ./backend/.env.prod
 
   frontend:
     extends:
       file: docker-compose.yml
       service: frontend
-    image: kentkr/ff-frontend:0.0.0
+    image: kentkr/ff-frontend:1.0.0
     build:
       args:
         - VITE_MODE=prod
