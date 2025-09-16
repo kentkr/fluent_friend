@@ -37,7 +37,7 @@ then spin them up. Swap out `env` for whatever you named your
 ```sh
 docker context create <env> --docker "host=<ssh_url>"
 docker context use <env>
-docker compose up --build -d
+docker compose -f <docker-compose_file> up --build -d
 ```
 
 Access the webpage at `http://<raspberrypi_host>:3000/`
